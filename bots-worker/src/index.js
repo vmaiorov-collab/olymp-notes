@@ -170,19 +170,29 @@ async function reportParallels(env, days) {
 const VIEWS = [["stats", "📊 Сводка"], ["top", "🏆 Топ"], ["par", "🧩 Параллели"]];
 
 function keyboard(view, days, env) {
-  const periods = PERIODS.map((d) => ({
-    text: d === days ? `• ${d === 1 ? "Сегодня" : d + " дн."} •` : d === 1 ? "Сегодня" : `${d} дн.`,
-    callback_data: `${view}:${d}`,
-  }));
-  const views = VIEWS.map(([v, label]) => ({ text: v === view ? `✔ ${label}` : label, callback_data: `${v}:${days}` }));
-  return { inline_keyboard: [periods, views, [{ text: "🔄 Обновить", callback_data: `${view}:${days}` }, { text: "🌐 Сайт", url: env.SITE_URL }]] };
+  const views = VIEWS.map(([v, label]) => ({ text: v === view ? `● ${label}` : label, callback_data: `${v}:${days}` }));
+  const periods = PERIODS.map((d) => {
+    const name = d === 1 ? "Сегодня" : `${d} дн.`;
+    return { text: d === days ? `● ${name}` : name, callback_data: `${view}:${d}` };
+  });
+  return { inline_keyboard: [views, periods, [{ text: "🔄 Обновить", callback_data: `${view}:${days}` }, { text: "🌐 Открыть сайт", url: env.SITE_URL }]] };
 }
+
+// постоянная клавиатура под полем ввода: команды набирать не нужно
+const REPLY_KB = {
+  keyboard: [[{ text: "📊 Сводка" }, { text: "☀️ Сегодня" }], [{ text: "🏆 Топ" }, { text: "🧩 Параллели" }]],
+  resize_keyboard: true,
+  is_persistent: true,
+  input_field_placeholder: "Выберите раздел…",
+};
+const BUTTON_CMD = { "📊 Сводка": "/stats", "☀️ Сегодня": "/today", "🏆 Топ": "/top", "🧩 Параллели": "/parallels" };
 
 const render = (env, view, days) => (view === "top" ? reportTop(env, days) : view === "par" ? reportParallels(env, days) : reportStats(env, days));
 const clampDays = (a, def = 7) => { const n = parseInt(a, 10); return Number.isFinite(n) && n >= 1 ? Math.min(n, 365) : def; };
 
 const HELP =
-  "👋 <b>Бот статистики olymp-notes</b>\n\nВыберите период и раздел кнопками — сообщение обновится на месте.\n\n" +
+  "👋 <b>Бот статистики olymp-notes</b>\n\n" +
+  "Кнопки внизу — быстрый доступ, а под каждым отчётом можно менять раздел и период.\n\n" +
   "Команды: /stats [дни] · /today · /top [дни] · /parallels [дни]";
 
 async function handleUpdate(update, env) {
@@ -204,12 +214,17 @@ async function handleUpdate(update, env) {
     return;
   }
   const msg = update.message;
-  if (!msg || !msg.text || !msg.text.startsWith("/")) return;
-  const parts = msg.text.trim().split(/\s+/);
+  if (!msg || !msg.text) return;
+  const raw = BUTTON_CMD[msg.text.trim()] || msg.text;
+  if (!raw.startsWith("/")) return;
+  const parts = raw.trim().split(/\s+/);
   const cmd = parts[0].split("@")[0].toLowerCase();
   let text, view = "stats", days = 7;
   try {
-    if (cmd === "/start" || cmd === "/help") text = HELP;
+    if (cmd === "/start" || cmd === "/help") {
+      await tg(token, "sendMessage", { chat_id: String(msg.chat.id), text: HELP, parse_mode: "HTML", reply_markup: REPLY_KB });
+      text = await reportStats(env, 7);
+    }
     else if (cmd === "/stats") { days = clampDays(parts[1]); text = await reportStats(env, days); }
     else if (cmd === "/today") { days = 1; text = await reportStats(env, 1); }
     else if (cmd === "/top") { view = "top"; days = clampDays(parts[1]); text = await reportTop(env, days); }
