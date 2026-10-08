@@ -764,6 +764,17 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 html[data-theme] .side-toc a.sub{padding-left:26px; font-size:.8rem}
 html[data-theme] .secpanel a.sub{padding-left:32px; font-size:.86rem}
 html[data-theme] .side-toc{max-height:calc(100vh - 110px)}
+
+/* полное оглавление: разделы и задачи с номерами и временем */
+html[data-look="book"] nav.toc ol, nav.toc ol{list-style:none; padding-left:0; columns:2 300px; column-gap:40px}
+nav.toc li{break-inside:avoid; padding:3px 0; display:flex; justify-content:space-between; gap:10px; align-items:baseline}
+nav.toc li.t2{margin-top:12px; font-weight:700; font-size:1.02rem}
+nav.toc li.t2:first-child{margin-top:0}
+nav.toc li.t3{padding-left:14px; font-size:.95rem}
+nav.toc .tn{font-family:var(--mono); font-size:.78rem; color:var(--faint); margin-right:4px}
+nav.toc .tt{font-family:var(--mono); font-size:.72rem; color:var(--faint); white-space:nowrap}
+nav.toc a{color:var(--ink)}
+@media(max-width:680px){nav.toc ol{columns:1}}
 </style>
 <style>
 .par h2{font-size:1.4rem;margin:1.8em 0 .5em}

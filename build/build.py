@@ -110,7 +110,7 @@ def process_headings(body: str, video: str):
         tc = tcm.group(1) if tcm else ""
         if lvl == "2": n2 += 1; n3 = 0; num = f"{n2}."; hid = f"s{n2}"
         else: n3 += 1; num = f"{n2}.{n3}."; hid = f"s{n2}-{n3}"
-        items.append((lvl, hid, num, re.sub(r"<[^>]+>", "", text)))
+        items.append((lvl, hid, num, re.sub(r"<[^>]+>", "", text), tc_label(tc) if tc else ""))
         return f'<h{lvl} id="{hid}">{num} {text}{" " + ts_link(video, tc) if tc else ""}</h{lvl}>'
     body = re.sub(r"<h([23])([^>]*)>(.*?)</h\1>", rep, body, flags=re.S)
     body = re.sub(r'<ts t="([\d:]+)"\s*/>', lambda m: ts_link(video, m.group(1)), body)
@@ -121,7 +121,9 @@ def page(meta, body, prev, nxt):
     video = meta["video"]
     body = wrap_code(body)
     body, items = process_headings(body, video)
-    toc = "".join(f'<li><a href="#{i[1]}">{i[3]}</a></li>' for i in items if i[0] == "2")
+    toc = "".join(
+        f'<li class="t{i[0]}"><a href="#{i[1]}"><span class="tn">{i[2]}</span> {html.escape(i[3])}</a>'
+        + (f'<span class="tt">{i[4]}</span>' if i[4] else "") + "</li>" for i in items)
     title = f'Занятие {meta["n"]}. {meta["pname"]} — {meta["title"]}'
     chips = "".join(f'<span class="chip">{c}</span>' for c in meta.get("chips", []))
     pg = f'<a class="prev" href="../{prev["href"]}"><small>← занятие {prev["n"]}</small><b>{html.escape(prev["title"])}</b></a>' if prev else ""
