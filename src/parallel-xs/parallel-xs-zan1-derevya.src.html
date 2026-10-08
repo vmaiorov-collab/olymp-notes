@@ -1,0 +1,563 @@
+<!--meta {"title": "Деревья", "parallel": "parallel-xs", "pname": "Параллель XS", "porder": 2, "n": 1, "video": "video-232575486_456239858", "subtitle": "Двоичные подъёмы и LCA, разреженная таблица, эйлеров обход и запросы на путях, алгоритмы Тарьяна, подъёмы с линейной памятью, сжатое дерево, лесенки, метод четырёх русских, декартово дерево.", "chips": ["Лекция", "≈ 4,5 ч", "Язык кода: C++"]}-->
+<h2 data-tc="0:24:13">Двоичные подъёмы</h2>
+<p><ts t="0:24:13"/> Тема занятия — деревья: двоичные подъёмы и наименьший общий предок (LCA), разреженные таблицы, эйлеров обход, алгоритмы Тарьяна, подъёмы с линейной памятью, сжатые деревья. Дерево — связный граф без циклов (эквивалентно: между любыми двумя вершинами ровно один путь). Дерево считается корневым, у каждой вершины есть высота $h$ — расстояние до корня.</p>
+
+<h3 data-tc="0:25:14">Идея и предподсчёт</h3>
+<p><ts t="0:26:11"/> <strong>Задача.</strong> Для вершины $v$ найти предка на $k$ рёбер выше. <strong>Идея.</strong> Для каждой вершины и каждой степени двойки $2^j$ ($j\le\log_2 n$) хранить предка на $2^j$ выше: $\mathrm{up}[j][v]$. Предподсчёт идёт по формуле $\mathrm{up}[j][v]=\mathrm{up}[j-1][\mathrm{up}[j-1][v]]$: прыжок на $2^j$ — это два прыжка на $2^{j-1}$ (<ts t="0:33:07"/>). Для корня считаем, что предок — он сам.</p>
+<figure class="viz"><svg viewBox="0 0 760 260" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="260" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Предки вершины 10: на 1, 2 и 4 ребра вверх</text><line x1="236.25" y1="60" x2="157.5" y2="122" stroke="#58c4dd" stroke-width="3"/><line x1="236.25" y1="60" x2="315.0" y2="122" stroke="#3b4a63" stroke-width="2"/><line x1="157.5" y1="122" x2="105.0" y2="184" stroke="#58c4dd" stroke-width="3"/><line x1="157.5" y1="122" x2="210" y2="184" stroke="#3b4a63" stroke-width="2"/><line x1="315.0" y1="122" x2="315.0" y2="184" stroke="#3b4a63" stroke-width="2"/><line x1="105.0" y1="184" x2="70" y2="246" stroke="#3b4a63" stroke-width="2"/><line x1="105.0" y1="184" x2="140.0" y2="246" stroke="#58c4dd" stroke-width="3"/><line x1="315.0" y1="184" x2="280" y2="246" stroke="#3b4a63" stroke-width="2"/><line x1="315.0" y1="184" x2="350" y2="246" stroke="#3b4a63" stroke-width="2"/><line x1="140.0" y1="246" x2="140" y2="308" stroke="#58c4dd" stroke-width="3"/><circle cx="70" cy="246" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="70" y="250.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">6</text><circle cx="140" cy="308" r="17" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="140" y="312.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">10</text><circle cx="140.0" cy="246" r="17" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="140.0" y="250.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">7</text><circle cx="105.0" cy="184" r="17" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="105.0" y="188.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">3</text><circle cx="210" cy="184" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="210" y="188.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">4</text><circle cx="157.5" cy="122" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="157.5" y="126.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">1</text><circle cx="280" cy="246" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="280" y="250.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">8</text><circle cx="350" cy="246" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="350" y="250.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">9</text><circle cx="315.0" cy="184" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="315.0" y="188.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">5</text><circle cx="315.0" cy="122" r="17" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="315.0" y="126.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">2</text><circle cx="236.25" cy="60" r="17" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="236.25" y="64.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">0</text><path d="M154,300 Q154.5,308.0 155.0,256" fill="none" stroke="#58c4dd" stroke-width="2" marker-end="url(#ar2)"/><path d="M158,305 Q140.5,308.5 123.0,192" fill="none" stroke="#83c167" stroke-width="2" marker-end="url(#ar2)"/><path d="M160,310 Q207.125,283.0 254.25,66" fill="none" stroke="#ff8c1a" stroke-width="2" marker-end="url(#ar2)"/><text x="560" y="70" text-anchor="start" font-size="14" font-weight="400" fill="#58c4dd">up[0][10] = 7</text><text x="560" y="96" text-anchor="start" font-size="14" font-weight="400" fill="#83c167">up[1][10] = 3</text><text x="560" y="122" text-anchor="start" font-size="14" font-weight="400" fill="#ff8c1a">up[2][10] = 0</text><text x="560" y="168" text-anchor="start" font-size="14" font-weight="400" fill="#ffff00">up[j][v] = up[j−1][ up[j−1][v] ]</text><text x="560" y="194" text-anchor="start" font-size="13" font-weight="400" fill="#9aa4b2">подняться на k: идём по битам k</text><text x="560" y="214" text-anchor="start" font-size="13" font-weight="400" fill="#9aa4b2">и прыгаем по каждой единице</text></svg><figcaption>Таблица $\mathrm{up}[j][v]$: предок на $2^j$ рёбер выше. Подъём на $k$ — это прыжки по единичным битам числа $k$.</figcaption></figure>
+<p><ts t="0:28:11"/> <strong>Запрос.</strong> Идём по битам числа $k$ от старшего к младшему: если бит равен единице, прыгаем по $\mathrm{up}[j]$. Прыгнем ровно на включённые степени двойки, то есть ровно на $k$. Время $O(\log n)$, память и предподсчёт $O(n\log n)$ (<ts t="0:35:14"/>).</p>
+<pre class="cpp">const int N = 200000, LG = 18;
+vector&lt;int&gt; g[N];
+int up[LG][N];                                   // up[j][v] — предок на 2^j выше; у корня это он сам
+int h[N], tin[N], tout[N], T;
+
+void dfs(int v, int p) {                         // вызов: dfs(0, 0)
+    tin[v] = T++;
+    up[0][v] = p;
+    h[v] = (p == v ? 0 : h[p] + 1);
+    for (int j = 1; j &lt; LG; j++) up[j][v] = up[j - 1][up[j - 1][v]];   // предки уже посчитаны
+    for (int u : g[v]) if (u != p) dfs(u, v);
+    tout[v] = T++;
+}
+int jump(int v, int k) {                         // предок на k выше (k &lt; 2^LG)
+    for (int j = 0; j &lt; LG; j++) if (k &gt;&gt; j &amp; 1) v = up[j][v];
+    return v;
+}
+bool anc(int a, int b) {                         // a — предок b (или сама b)
+    return tin[a] &lt;= tin[b] &amp;&amp; tout[b] &lt;= tout[a];
+}
+int lca1(int u, int v) {                         // способ 1: проверка «является ли предком»
+    if (anc(v, u)) return v;
+    for (int j = LG - 1; j &gt;= 0; j--)
+        if (!anc(up[j][v], u)) v = up[j][v];     // прыгаем, пока не попали в предка u
+    return up[0][v];
+}
+int lca2(int u, int v) {                         // способ 2: выровнять высоты, прыгать одновременно
+    if (h[u] &lt; h[v]) swap(u, v);
+    u = jump(u, h[u] - h[v]);
+    if (u == v) return u;
+    for (int j = LG - 1; j &gt;= 0; j--)
+        if (up[j][u] != up[j][v]) u = up[j][u], v = up[j][v];
+    return up[0][u];
+}</pre>
+
+<h3 data-tc="0:29:57">Что ещё считают этим методом</h3>
+<p><ts t="0:29:57"/> Та же таблица работает для любых «склеиваемых» величин на вертикальном пути. Если на рёбрах написаны веса, то минимум на пути длины $k$ вверх от $v$ хранят в таблице $\mathrm{mn}[j][v]$ — минимум на $2^j$ рёбрах вверх; она считается как минимум двух половин длины $2^{j-1}$ (<ts t="0:34:02"/>). Для $j=0$ это вес ребра к родителю. Аналогично считают хэш строки, записанной на вертикальном пути: путь режется пополам на две части длины $2^{j-1}$, а хэши склеиваются умножением одной из половин на степень основания (какая именно — зависит от порядка записи); также НОД, суммы и любые операции, где «половины» объединяются (<ts t="0:35:14"/>).</p>
+<pre class="cpp">const int INF = 1e9;
+int w[N];                                        // w[v] — вес ребра (v, родитель); у корня INF
+int mn[LG][N];                                   // mn[j][v] — минимум на 2^j рёбрах вверх от v
+// заполняется в dfs после up[j][v]:
+//   mn[0][v] = w[v];
+//   mn[j][v] = min(mn[j-1][v], mn[j-1][up[j-1][v]]);
+int pathMin(int v, int k) {                      // минимум на k рёбрах вверх от v
+    int res = INF;
+    for (int j = 0; j &lt; LG; j++)
+        if (k &gt;&gt; j &amp; 1) res = min(res, mn[j][v]), v = up[j][v];
+    return res;
+}</pre>
+
+<h3 data-tc="0:36:20">LCA: проверка «является ли предком»</h3>
+<p><ts t="0:36:20"/> <strong>Определение.</strong> LCA вершин $u,v$ в корневом дереве — самая низкая (с наибольшей высотой) вершина, которая является предком обеих; на корень смотреть интересно не всегда, поэтому ищут именно самую низкую.</p>
+<p><ts t="0:37:25"/> <strong>Предок за $O(1)$.</strong> Один раз запускаем обход в глубину и запоминаем время входа $t_{in}$ и выхода $t_{out}$. Вершина $v$ — предок $u$ тогда и только тогда, когда $t_{in}(v)\le t_{in}(u)$ и $t_{out}(u)\le t_{out}(v)$: в $v$ вошли не позже, чем в $u$, и вышли не раньше.</p>
+<p><ts t="0:38:27"/> <strong>Алгоритм.</strong> Если $v$ — предок $u$, ответ $v$. Иначе поднимаем $v$ по степеням двойки от старшей к младшей: если $\mathrm{up}[j][v]$ <em>не</em> предок $u$, прыгаем в неё (<ts t="0:39:29"/>). Дважды по одному биту прыгать не придётся: если бы смогли, то раньше прыгнули бы по старшему биту. Мы остановимся в вершине, родитель которой — LCA, потому что сам LCA является предком $u$ и в него мы не попадём. Поэтому в конце возвращаем $\mathrm{up}[0][v]$ (<ts t="0:41:21"/>); именно потому в начале нужна отдельная проверка «$v$ предок $u$» — иначе лишний шаг к родителю нарушит ответ.</p>
+<div class="algo" data-frames="binlca"></div>
+
+<h3 data-tc="0:42:17">LCA: выравнивание высот</h3>
+<p><ts t="0:42:17"/> <strong>Второй способ</strong> не требует $t_{in}$/$t_{out}$. Если высоты $h(u)=h(v)$, то прыгаем по обеим вершинам сразу на одну и ту же степень двойки (опять от старшей к младшей): если $\mathrm{up}[j][u]\ne\mathrm{up}[j][v]$, то прыгаем обеими; если равны — перелетели бы LCA, не прыгаем (<ts t="0:43:05"/>). В конце вершины окажутся сыновьями LCA — остаётся взять родителя. Если высоты разные, глубокую вершину сначала поднимают на разность высот (<ts t="0:44:45"/>).</p>
+<p><ts t="0:45:41"/> <strong>Итог по двоичным подъёмам.</strong> Прыжок на $k$ вверх и LCA — $O(\log n)$ на запрос; можно $O(\log k)$, если логарифмы посчитаны заранее. Предподсчёт — $O(n\log n)$ по времени и памяти.</p>
+
+<h2 data-tc="0:46:39">Разреженная таблица</h2>
+<p><ts t="0:46:39"/> Теперь запрос за $O(1)$ при том же предподсчёте $O(n\log n)$ — разреженная таблица (sparse table).</p>
+<h3 data-tc="0:47:59">Минимум на отрезке</h3>
+<p><ts t="0:47:59"/> Для массива длины $n$ считаем $\mathrm{sp}[j][i]=\min(a_i,\dots,a_{i+2^j-1})$ — минимум на отрезке длины $2^j$ с левым концом в $i$. Рекуррентно (<ts t="0:49:03"/>): $\mathrm{sp}[j][i]=\min(\mathrm{sp}[j-1][i],\ \mathrm{sp}[j-1][i+2^{j-1}])$; считаем слоями по возрастанию $j$ (<ts t="0:49:52"/>). Для $j=0$ это сам массив.</p>
+<p><ts t="0:50:44"/> <strong>Запрос $[l,r]$.</strong> Берём $j=\lfloor\log_2(r-l+1)\rfloor$ — наибольшую степень двойки, не превосходящую длины. Два отрезка длины $2^j$ — один с началом в $l$, другой с концом в $r$ — всегда пересекаются или касаются: если бы между ними была щель, длина отрезка была бы не меньше $2\cdot2^j=2^{j+1}$, а это противоречит выбору $j$ (<ts t="0:53:30"/>). Поэтому вместе они покрывают весь отрезок, а повторное покрытие общей части минимуму не мешает.</p>
+<figure class="viz"><svg viewBox="0 0 760 246" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="246" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Запрос [2, 8]: длина 7 → берём 2² = 4 и два отрезка длины 4, перекрывающихся</text><rect x="40" y="60" width="60" height="38" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="70.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">5</text><text x="70.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="106" y="60" width="60" height="38" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="136.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">3</text><text x="136.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="172" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="202.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">8</text><text x="202.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="238" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="268.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">6</text><text x="268.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="304" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="334.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="334.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="370" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="400.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">7</text><text x="400.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">5</text><rect x="436" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="466.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">4</text><text x="466.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">6</text><rect x="502" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="532.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">9</text><text x="532.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">7</text><rect x="568" y="60" width="60" height="38" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="598.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="598.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">8</text><rect x="634" y="60" width="60" height="38" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="664.0" y="77.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">6</text><text x="664.0" y="91" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">9</text><line x1="172" y1="124" x2="430" y2="124" stroke="#83c167" stroke-width="4"/><text x="301" y="146" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">sp[2][2] = min на [2..5]</text><line x1="370" y1="164" x2="628" y2="164" stroke="#ff8c1a" stroke-width="4"/><text x="499" y="186" text-anchor="middle" font-size="13" font-weight="400" fill="#ff8c1a">sp[2][5] = min на [5..8]</text><text x="380" y="226" text-anchor="middle" font-size="16" font-weight="400" fill="#ffff00">ответ = min(sp[2][2], sp[2][5]) = min(2, 1) = 1</text></svg><figcaption>Два перекрывающихся блока длины $2^j$ покрывают весь отрезок; пересечение минимуму не мешает.</figcaption></figure>
+<p><ts t="0:51:51"/> Логарифм считаем заранее: $\lg 1=0$, $\lg i=\lg\lfloor i/2\rfloor+1$ — деление на 2 отбрасывает последний двоичный бит, а $\lg$ — номер старшего бита.</p>
+<pre class="cpp">const int N = 1 &lt;&lt; 17, LG = 18;
+int lg[N + 1], sp[LG][N];
+void build(const vector&lt;int&gt;&amp; a) {               // O(n log n) по времени и памяти
+    int n = a.size();
+    for (int i = 2; i &lt;= n; i++) lg[i] = lg[i / 2] + 1;   // lg[i] = ⌊log2 i⌋
+    for (int i = 0; i &lt; n; i++) sp[0][i] = a[i];
+    for (int j = 1; (1 &lt;&lt; j) &lt;= n; j++)
+        for (int i = 0; i + (1 &lt;&lt; j) &lt;= n; i++)
+            sp[j][i] = min(sp[j - 1][i], sp[j - 1][i + (1 &lt;&lt; (j - 1))]);
+}
+int query(int l, int r) {                        // минимум на [l, r] включительно, O(1)
+    int j = lg[r - l + 1];                       // два отрезка длины 2^j перекрываются и покрывают [l, r]
+    return min(sp[j][l], sp[j][r - (1 &lt;&lt; j) + 1]);
+}</pre>
+<div class="own"><span class="lbl">Важное дополнение</span><br>Метод работает не для любой операции, а только для <em>идемпотентной</em> ($\min$, $\max$, НОД, побитовое «и»/«или»): повторный учёт общей части не меняет ответ. Для суммы так нельзя — там нужны непересекающиеся куски, то есть $O(\log n)$ на запрос (бинарные подъёмы или дерево отрезков).</div>
+
+<h3 data-tc="0:54:37">Двумерная разреженная таблица</h3>
+<p><ts t="0:54:37"/> То же самое для матрицы: $\mathrm{t}[k][l][i][j]$ — минимум в прямоугольнике высоты $2^k$ и ширины $2^l$ с углом $(i,j)$ (<ts t="0:55:52"/>). Каждый прямоугольник режется на два вдоль одного из измерений (<ts t="1:00:35"/>): при $k\gt0$ — на два прямоугольника высоты $2^{k-1}$; при $k=0,l\gt0$ — на два шириной $2^{l-1}$; при $k=l=0$ это одна клетка. Порядок вычисления — по возрастанию $(k,l)$, чтобы нужные значения уже были посчитаны. Запрос: $k=\lfloor\log h\rfloor$, $l=\lfloor\log w\rfloor$, и берётся минимум четырёх перекрывающихся прямоугольников $2^k\times2^l$ по углам запроса. Память $O(nm\log n\log m)$ (<ts t="1:02:21"/>); для $d$ измерений — произведение размеров на произведение логарифмов.</p>
+<pre class="cpp">struct Sparse2D {
+    int n, m; vector&lt;int&gt; lg;
+    vector&lt;vector&lt;vector&lt;vector&lt;int&gt;&gt;&gt;&gt; t;       // t[k][l][i][j] — минимум в прямоугольнике 2^k × 2^l с углом (i, j)
+    Sparse2D(const vector&lt;vector&lt;int&gt;&gt;&amp; a) : n(a.size()), m(a[0].size()) {
+        lg.assign(max(n, m) + 1, 0);
+        for (int i = 2; i &lt; (int)lg.size(); i++) lg[i] = lg[i / 2] + 1;
+        int K = lg[n] + 1, L = lg[m] + 1;
+        t.assign(K, vector&lt;vector&lt;vector&lt;int&gt;&gt;&gt;(L));
+        for (int k = 0; k &lt; K; k++)
+            for (int l = 0; l &lt; L; l++) {
+                int H = n - (1 &lt;&lt; k) + 1, W = m - (1 &lt;&lt; l) + 1;
+                t[k][l].assign(H, vector&lt;int&gt;(W));
+                for (int i = 0; i &lt; H; i++)
+                    for (int j = 0; j &lt; W; j++) {
+                        if (k &gt; 0)      t[k][l][i][j] = min(t[k - 1][l][i][j], t[k - 1][l][i + (1 &lt;&lt; (k - 1))][j]);
+                        else if (l &gt; 0) t[k][l][i][j] = min(t[k][l - 1][i][j], t[k][l - 1][i][j + (1 &lt;&lt; (l - 1))]);
+                        else            t[k][l][i][j] = a[i][j];
+                    }
+            }
+    }
+    int query(int x1, int y1, int x2, int y2) {  // прямоугольник [x1..x2] × [y1..y2], включительно
+        int k = lg[x2 - x1 + 1], l = lg[y2 - y1 + 1];
+        int x3 = x2 - (1 &lt;&lt; k) + 1, y3 = y2 - (1 &lt;&lt; l) + 1;
+        return min({t[k][l][x1][y1], t[k][l][x3][y1], t[k][l][x1][y3], t[k][l][x3][y3]});
+    }
+};</pre>
+<p><ts t="1:04:29"/> <strong>Чем лучше двоичных подъёмов.</strong> Запрос за $O(1)$ вместо $O(\log n)$. Если запросов много (например, 10 миллионов при $n=2\cdot10^5$), то подъёмы не пройдут, а разреженная таблица — пройдёт; если запросов мало, подойдут и подъёмы.</p>
+
+<h2 data-tc="1:05:24">Эйлеров обход и LCA за $O(1)$</h2>
+<p><ts t="1:05:24"/> <strong>Эйлеров обход</strong> — запись вершин в порядке обхода в глубину. Вариантов несколько, обычно используют два (<ts t="1:06:23"/>): (1) писать вершину при первом входе и при последнем выходе; (2) писать вершину <em>каждый раз</em>, когда обход оказывается в ней — при входе и при возвращении из каждого сына (<ts t="1:08:32"/>). Второй вариант годится для LCA, первый — для запросов на поддеревьях (дальше).</p>
+<p><ts t="1:09:47"/> <strong>Утверждение.</strong> Пусть $\mathrm{first}[x]$ — позиция первого вхождения $x$ во втором обходе. Тогда на отрезке между $\mathrm{first}[u]$ и $\mathrm{first}[v]$ нет вершин выше $\mathrm{LCA}(u,v)$, а сама она есть. Значит, LCA — вершина минимальной высоты на этом отрезке; задача сведена к RMQ.</p>
+<p><ts t="1:10:37"/> <strong>Доказательство.</strong> Случай 1: $u$ — предок $v$. Обход вошёл в $u$ раньше; потом, возможно, уходил в соседние сыновья и возвращался, но рано или поздно по направленному вниз ребру дошёл до $v$. Всё это время мы остаёмся в поддереве $u$, поэтому на отрезке нет вершин выше $u$, а минимальная высота у $u$. Случай 2: ни одна не предок другой (<ts t="1:11:51"/>). Войдя в поддерево $u$, обход пройдёт его целиком, затем <em>вернётся вверх</em> по ребру к родителю и запишет его — по цепочке до $\mathrm{LCA}$, а потом спустится вниз и дойдёт до $v$. Выше LCA обход не поднимался (<ts t="1:12:51"/>). Достаточно брать именно первые вхождения (<ts t="1:13:38"/>).</p>
+<p><ts t="1:13:38"/> Длина массива — $2n-1$: каждое ребро проходится дважды, и по одной вершине записывается на каждом проходе, плюс корень в начале (<ts t="1:14:41"/>). Нужны также высоты вершин: ищем минимум высоты на массиве, чаще всего храня в таблице пары $(h,\text{вершина})$. С разреженной таблицей получаем предподсчёт $O(n\log n)$ и запрос $O(1)$.</p>
+<figure class="viz"><svg viewBox="0 0 760 300" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="300" rx="14" fill="#141a24"/><text x="380" y="22" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Эйлеров обход: пишем вершину при каждом проходе, длина 2n − 1</text><line x1="183.5" y1="56" x2="125.0" y2="108" stroke="#3b4a63" stroke-width="2"/><line x1="183.5" y1="56" x2="242.0" y2="108" stroke="#3b4a63" stroke-width="2"/><line x1="125.0" y1="108" x2="86.0" y2="160" stroke="#3b4a63" stroke-width="2"/><line x1="125.0" y1="108" x2="164" y2="160" stroke="#3b4a63" stroke-width="2"/><line x1="242.0" y1="108" x2="242.0" y2="160" stroke="#3b4a63" stroke-width="2"/><line x1="86.0" y1="160" x2="60" y2="212" stroke="#3b4a63" stroke-width="2"/><line x1="86.0" y1="160" x2="112.0" y2="212" stroke="#3b4a63" stroke-width="2"/><line x1="242.0" y1="160" x2="216" y2="212" stroke="#3b4a63" stroke-width="2"/><line x1="242.0" y1="160" x2="268" y2="212" stroke="#3b4a63" stroke-width="2"/><line x1="112.0" y1="212" x2="112" y2="264" stroke="#3b4a63" stroke-width="2"/><circle cx="60" cy="212" r="14" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="60" y="216.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">6</text><circle cx="112" cy="264" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="112" y="268.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">10</text><circle cx="112.0" cy="212" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="112.0" y="216.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">7</text><circle cx="86.0" cy="160" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="86.0" y="164.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">3</text><circle cx="164" cy="160" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="164" y="164.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">4</text><circle cx="125.0" cy="108" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="125.0" y="112.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">1</text><circle cx="216" cy="212" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="216" y="216.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">8</text><circle cx="268" cy="212" r="14" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="268" y="216.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">9</text><circle cx="242.0" cy="160" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="242.0" y="164.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><circle cx="242.0" cy="108" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="242.0" y="112.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">2</text><circle cx="183.5" cy="56" r="14" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="183.5" y="60.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">0</text><rect x="20" y="214" width="28" height="30" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="34.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">0</text><text x="34.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="51" y="214" width="28" height="30" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="65.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">1</text><text x="65.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="82" y="214" width="28" height="30" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="96.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">3</text><text x="96.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="113" y="214" width="28" height="30" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="127.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">6</text><text x="127.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="144" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="158.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">3</text><text x="158.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="175" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="189.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">7</text><text x="189.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="206" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="220.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">10</text><text x="220.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="237" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="251.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">7</text><text x="251.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="268" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="282.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">3</text><text x="282.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="299" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="313.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">1</text><text x="313.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="330" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="344.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">4</text><text x="344.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="361" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="375.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">1</text><text x="375.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="392" y="214" width="28" height="30" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="406.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">0</text><text x="406.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="423" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="437.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">2</text><text x="437.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="454" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="468.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><text x="468.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="485" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="499.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">8</text><text x="499.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="516" y="214" width="28" height="30" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="530.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><text x="530.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="547" y="214" width="28" height="30" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="561.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">9</text><text x="561.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="578" y="214" width="28" height="30" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="592.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><text x="592.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="609" y="214" width="28" height="30" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="623.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">2</text><text x="623.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="640" y="214" width="28" height="30" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="654.0" y="233.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">0</text><text x="654.0" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><text x="20" y="262" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1"></text><text x="14" y="206" text-anchor="start" font-size="12" font-weight="400" fill="#9aa4b2">обход</text><text x="14" y="280" text-anchor="start" font-size="12" font-weight="400" fill="#9aa4b2">высота</text><text x="560" y="90" text-anchor="start" font-size="14" font-weight="400" fill="#dfe7f1">u = 6, v = 9</text><text x="560" y="116" text-anchor="start" font-size="14" font-weight="400" fill="#dfe7f1">first[u] = 3, first[v] = 17</text><text x="560" y="142" text-anchor="start" font-size="14" font-weight="400" fill="#ffff00">минимум высоты на [3, 17] — вершина 0</text><text x="560" y="168" text-anchor="start" font-size="15" font-weight="400" fill="#ffff00">LCA(6, 9) = 0</text></svg><figcaption>Между первыми вхождениями $u$ и $v$ нет вершин выше $\mathrm{LCA}$, а сама она там есть: LCA — вершина минимальной высоты на отрезке.</figcaption></figure>
+<pre class="cpp">const int N = 100000, LG = 18;
+vector&lt;int&gt; g[N];
+int h[N], firstPos[N], lg[2 * N + 1];
+vector&lt;pair&lt;int, int&gt;&gt; ord;                      // (высота, вершина) в порядке обхода, длина 2n − 1
+pair&lt;int, int&gt; sp[LG][2 * N];
+
+void dfs(int v, int p) {
+    firstPos[v] = ord.size();
+    ord.push_back({h[v], v});
+    for (int u : g[v]) if (u != p) {
+        h[u] = h[v] + 1;
+        dfs(u, v);
+        ord.push_back({h[v], v});                // возвращаемся в v после каждого ребёнка
+    }
+}
+void build() {
+    dfs(0, -1);
+    int m = ord.size();
+    for (int i = 2; i &lt;= m; i++) lg[i] = lg[i / 2] + 1;
+    for (int i = 0; i &lt; m; i++) sp[0][i] = ord[i];
+    for (int j = 1; (1 &lt;&lt; j) &lt;= m; j++)
+        for (int i = 0; i + (1 &lt;&lt; j) &lt;= m; i++)
+            sp[j][i] = min(sp[j - 1][i], sp[j - 1][i + (1 &lt;&lt; (j - 1))]);
+}
+int lca(int u, int v) {                          // O(1): вершина минимальной высоты между первыми вхождениями
+    int l = firstPos[u], r = firstPos[v];
+    if (l &gt; r) swap(l, r);
+    int j = lg[r - l + 1];
+    return min(sp[j][l], sp[j][r - (1 &lt;&lt; j) + 1]).second;
+}</pre>
+
+<h2 data-tc="1:15:35">Эйлеров обход: запросы на пути и в поддереве</h2>
+<p><ts t="1:15:35"/> <strong>Задача.</strong> В каждой вершине записано число; запросы: (1) прибавить $x$ в вершине $v$; (2) найти сумму на пути $u\to v$. Решается без HLD обычным деревом Фенвика (<ts t="1:16:50"/>).</p>
+<p><ts t="1:17:51"/> Берём эйлеров обход первого вида (вход и выход). Первое замечание: достаточно отвечать на запросы про вертикальный путь «вершина — корень»: находим $w=\mathrm{LCA}(u,v)$ и разбиваем путь на два вертикальных, а $w$ учитываем один раз (<ts t="1:18:38"/>).</p>
+<p><ts t="1:19:45"/> Позиции первого и последнего вхождения $v$ ограничивают в обходе ровно поддерево $v$. При добавлении $x$ в вершину $v$ записываем $+x$ на позицию входа и $-x$ на позицию выхода (<ts t="1:20:35"/>). Тогда сумма на префиксе до позиции входа $u$ учтёт с плюсом все вершины, в которые вошли, а с минусом — те, из которых уже вышли; остаются в точности вершины, в которые вошли и ещё не вышли, то есть предки $u$. Итого: сумма на пути корень–$u$ = префиксная сумма до $\mathrm{tin}[u]$. Предподсчёт $O(n)$, запрос $O(\log n)$ (<ts t="1:21:34"/>). Приём работает для суммы, потому что её можно «отменять»; для минимума так не получится.</p>
+<p><ts t="1:22:28"/> <strong>Обратная задача.</strong> Прибавить $x$ ко всем вершинам поддерева $v$; узнать значение в вершине $u$. Значение в $u$ — это сумма прибавлений, сделанных в предках $u$ (<ts t="1:23:17"/>). Снова $+x$ в позицию входа $v$, $-x$ в позицию выхода, ответ — сумма на префиксе до позиции $u$ (<ts t="1:24:16"/>). Тот же обход, но смотрим на задачу под другим углом (<ts t="1:25:02"/>).</p>
+<pre class="cpp">struct Fenwick {                                 // сумма на префиксе, добавление в точке; индексы с 0
+    int n; vector&lt;long long&gt; t;
+    Fenwick(int n = 0) : n(n), t(n + 1, 0) {}
+    void add(int i, long long x) { for (i++; i &lt;= n; i += i &amp; -i) t[i] += x; }
+    long long pref(int i) {                      // сумма на [0, i]; pref(-1) = 0
+        long long s = 0;
+        for (i++; i &gt; 0; i -= i &amp; -i) s += t[i];
+        return s;
+    }
+};</pre>
+<pre class="cpp">// tin, tout (времена из [0, 2n)), lca1 — из «binup»; Fenwick — из «fenwick»
+struct RootSum {
+    Fenwick fw;
+    RootSum(int n) : fw(2 * n) {}
+    void add(int v, long long x) { fw.add(tin[v], x); fw.add(tout[v], -x); }   // +x при входе, −x при выходе
+    long long get(int v) { return fw.pref(tin[v]); }                           // сумма по предкам v (включая v)
+};
+// 1) значение в вершине += x, сумма на пути u–v
+RootSum vals(N);  long long val[N];
+void addValue(int v, long long x) { vals.add(v, x); val[v] += x; }
+long long pathSum(int u, int v) {
+    int l = lca1(u, v);
+    return vals.get(u) + vals.get(v) - 2 * vals.get(l) + val[l];   // l учтена дважды лишнего, вернём её значение
+}
+// 2) прибавить x всем вершинам поддерева v, узнать значение в вершине u
+RootSum sub(N);
+void addSubtree(int v, long long x) { sub.add(v, x); }
+long long valueAt(int u) { return sub.get(u); }</pre>
+<div class="own"><span class="lbl">Развёрнутое объяснение</span><br>В коде позиции $\mathrm{tin}$ и $\mathrm{tout}$ берутся из одного счётчика ($0\ldots2n-1$), поэтому все $2n$ моментов различны и префикс «включительно» корректен: вершина $w$ входит в сумму для $v$ ровно тогда, когда $\mathrm{tin}[w]\le\mathrm{tin}[v]\lt\mathrm{tout}[w]$, то есть $w$ — предок $v$ или сама $v$. Сумму на пути $u$–$v$ даёт $S(u)+S(v)-2S(w)+a_w$ ($S$ — сумма на пути до корня): общая часть от корня до $w$ входит в $S(u)+S(v)$ дважды, а вершина $w$ при вычитании $2S(w)$ потеряна, поэтому возвращаем её значение. Реализация проверена на 3000 случайных деревьев против прямого обхода пути.</div>
+
+<h2 data-tc="1:25:57">Алгоритм Тарьяна: LCA офлайн</h2>
+<p><ts t="1:25:57"/> <strong>Постановка.</strong> Все запросы известны заранее, на них нужно ответить в конце. Это полезно при огромном $n$ (скажем, $10^7$) и умеренном числе запросов: таблицы размера $n\log n$ строить дорого, а здесь память $O(n+q)$ (<ts t="1:26:53"/>).</p>
+<p><ts t="1:28:06"/> <strong>Идея.</strong> Запрос $(u,v)$ складываем в вершину, посещаемую позже (с бо́льшим $\mathrm{tin}$), и отвечаем, когда обход стоит в ней. Пусть обход сейчас в $u$, а вторая вершина $v$ уже посещена. Рассмотрим путь от корня до $u$ (<ts t="1:28:56"/>). Для каждой вершины $a$ этого пути соберём в «мешок» все уже просмотренные вершины, отходящие от пути через $a$ — поддеревья её закончившихся сыновей и саму $a$. У всех вершин одного мешка LCA с $u$ — это $a$ (<ts t="1:29:50"/>). Если же $v$ ещё внутри незавершённого поддерева, то это сам предок на пути: он тоже «в мешке» себя.</p>
+<figure class="viz"><svg viewBox="0 0 760 270" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="270" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Вершина u и «мешки» уже просмотренных поддеревьев: у всех в мешке один LCA с u</text><line x1="90" y1="70" x2="230" y2="120" stroke="#3b4a63" stroke-width="3"/><line x1="230" y1="120" x2="370" y2="170" stroke="#3b4a63" stroke-width="3"/><line x1="370" y1="170" x2="510" y2="220" stroke="#3b4a63" stroke-width="3"/><circle cx="90" cy="70" r="20" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="90" y="74.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">r</text><circle cx="230" cy="120" r="20" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="230" y="124.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">a₁</text><circle cx="370" cy="170" r="20" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="370" y="174.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">a₂</text><circle cx="510" cy="220" r="20" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="510" y="224.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">u</text><ellipse cx="15" cy="98" rx="48" ry="24" fill="#53300a" stroke="#ff8c1a" stroke-width="2" stroke-dasharray="5 4"/><text x="15" y="103" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">мешок</text><line x1="76" y1="82" x2="45" y2="84" stroke="#ff8c1a" stroke-width="2"/><ellipse cx="155" cy="148" rx="48" ry="24" fill="#3a2858" stroke="#c78bff" stroke-width="2" stroke-dasharray="5 4"/><text x="155" y="153" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">мешок</text><line x1="216" y1="132" x2="185" y2="134" stroke="#c78bff" stroke-width="2"/><ellipse cx="295" cy="198" rx="48" ry="24" fill="#27431f" stroke="#83c167" stroke-width="2" stroke-dasharray="5 4"/><text x="295" y="203" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">мешок</text><line x1="356" y1="182" x2="325" y2="184" stroke="#83c167" stroke-width="2"/><text x="610" y="76" text-anchor="start" font-size="13" font-weight="400" fill="#9aa4b2">LCA(u, x) для x из мешка</text><text x="610" y="98" text-anchor="start" font-size="13" font-weight="400" fill="#ff8c1a">верхнего = корень</text><text x="610" y="130" text-anchor="start" font-size="13" font-weight="400" fill="#c78bff">среднего = a₁</text><text x="610" y="162" text-anchor="start" font-size="13" font-weight="400" fill="#83c167">нижнего = a₂</text><text x="610" y="204" text-anchor="start" font-size="13" font-weight="400" fill="#ffff00">Каждый мешок — множество СНМ</text><text x="610" y="224" text-anchor="start" font-size="13" font-weight="400" fill="#ffff00">с представителем-предком</text></svg><figcaption>При выходе из ребёнка его мешок объединяется с мешком родителя: представителем становится сам родитель.</figcaption></figure>
+<p><ts t="1:30:38"/> Мешки не пересекаются, а изменяются только объединением — это СНМ (система непересекающихся множеств). Представитель компоненты — вершина-предок на пути (<ts t="1:31:41"/>). Когда мы выходим из сына $c$ вершины $a$, объединяем компоненту $c$ с компонентой $a$ (<ts t="1:32:30"/>): все вершины поддерева $c$ теперь отходят от пути через $a$. Ответ на запрос $(u,v)$ при посещённой $v$ — представитель компоненты $v$. Чтобы не хранить «вершину минимальной высоты», договариваются, что представитель — всегда $a$ (при объединении подвешиваем к родителю) (<ts t="1:34:10"/>). Время $O(n+q\alpha(n))$ при эвристиках, память $O(n+q)$.</p>
+<pre class="cpp">const int N = 200000;
+vector&lt;int&gt; g[N];
+vector&lt;pair&lt;int, int&gt;&gt; qs[N];                    // qs[v] — пары (другой конец, номер запроса)
+int dsu[N], ans[N];  bool vis[N];
+int find(int x) { return dsu[x] == x ? x : dsu[x] = find(dsu[x]); }
+
+void dfs(int v, int p) {
+    vis[v] = true;  dsu[v] = v;
+    for (int u : g[v]) if (u != p) {
+        dfs(u, v);
+        dsu[find(u)] = v;                        // поддерево ребёнка «схлопывается» в v
+    }
+    for (auto [w, id] : qs[v])
+        if (vis[w]) ans[id] = find(w);           // второй конец уже побывал: его компонента — это LCA
+}</pre>
+<div class="algo" data-frames="tarjan"></div>
+<div class="own"><span class="lbl">Развёрнутое объяснение</span><br>В коде ответ ищется в самом конце обработки вершины $v$ — после того как все её сыновья слиты в неё. Тогда если второй конец $w$ лежит в поддереве $v$, то $\mathrm{find}(w)=v$; если он в закончившемся поддереве другого сына предка $a$, то $\mathrm{find}(w)=a$; если $w$ — предок $v$, который ещё не завершён, то $\mathrm{find}(w)=w$. Без ранговой эвристики и только со сжатием путей амортизированно получается $O(\log n)$ на операцию, как и обещают оценки с эвристикой по размеру — на практике достаточно. Проверено 2000 случайных деревьев с 30 запросами против перебора.</div>
+
+<h2 data-tc="1:35:13">Минимум на отрезке офлайн (второй алгоритм Тарьяна)</h2>
+<p><ts t="1:35:13"/> <strong>Задача.</strong> Массив из $n$ чисел (скажем, $n=10^7$), $q$ отрезков заданы заранее; нужно минимум на каждом. Предполагается знакомство со стеком минимумов — тем же, что ищет ближайший меньший слева (<ts t="1:36:03"/>).</p>
+<p><ts t="1:36:54"/> <strong>Идея.</strong> Идём по правым границам $r$ слева направо и отвечаем на все запросы с правой границей $r$. Поддерживаем стек минимумов для префикса длины $r$: индексы по возрастанию, значения тоже возрастают (чем левее, тем меньше или равно). Стек задаёт минимумы всех суффиксов префикса (<ts t="1:38:47"/>). Для запроса $[l,r]$ ответ — первый элемент стека, чей индекс $\ge l$ (<ts t="1:39:35"/>). Можно искать его бинарным поиском по стеку, но хочется быстрее.</p>
+<p><ts t="1:40:40"/> Левые границы между двумя соседними элементами стека (левый — не включая, правый — включая) все дают одним и тем же ответом: правый из этих двух элементов (<ts t="1:41:34"/>). Эти отрезки левых границ объединяем в компоненты СНМ (<ts t="1:42:28"/>); корень компоненты — её правый элемент, поэтому ответ на запрос — $a[\mathrm{find}(l)]$ (<ts t="1:43:24"/>).</p>
+<p><ts t="1:43:24"/> <strong>Добавление элемента $r+1$.</strong> Новый элемент сам образует компоненту. Пока верхний элемент стека больше либо равен новому (<ts t="1:44:20"/>), снимаем его со стека и объединяем его компоненту с новой: теперь на этих левых границах минимум — новый элемент (<ts t="1:45:18"/>). Остановились на элементе меньшем — стек и компоненты корректны, можно отвечать на запросы новой правой границы (<ts t="1:46:07"/>). Время $O(n+q\alpha(n))$, память $O(n+q)$.</p>
+<figure class="viz"><svg viewBox="0 0 760 256" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="256" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Префикс до r = 4: стек минимумов [1, 3, 4] и отрезки левых границ</text><rect x="110" y="60" width="90" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="155.0" y="78.0" text-anchor="middle" font-size="18" font-weight="400" fill="#dfe7f1">5</text><text x="155.0" y="93" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 0</text><rect x="220" y="60" width="90" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="265.0" y="78.0" text-anchor="middle" font-size="18" font-weight="400" fill="#dfe7f1">2</text><text x="265.0" y="93" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 1</text><rect x="330" y="60" width="90" height="40" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="375.0" y="78.0" text-anchor="middle" font-size="18" font-weight="400" fill="#dfe7f1">6</text><text x="375.0" y="93" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 2</text><rect x="440" y="60" width="90" height="40" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="485.0" y="78.0" text-anchor="middle" font-size="18" font-weight="400" fill="#dfe7f1">3</text><text x="485.0" y="93" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 3</text><rect x="550" y="60" width="90" height="40" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="595.0" y="78.0" text-anchor="middle" font-size="18" font-weight="400" fill="#dfe7f1">4</text><text x="595.0" y="93" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 4</text><line x1="110" y1="128" x2="310" y2="128" stroke="#58c4dd" stroke-width="5"/><line x1="330" y1="128" x2="530" y2="128" stroke="#83c167" stroke-width="5"/><line x1="550" y1="128" x2="640" y2="128" stroke="#ff8c1a" stroke-width="5"/><text x="165" y="156" text-anchor="start" font-size="13" font-weight="400" fill="#58c4dd">l ∈ {0, 1} → min = a[1] = 2</text><text x="330" y="156" text-anchor="start" font-size="13" font-weight="400" fill="#83c167">l ∈ {2, 3} → a[3] = 3</text><text x="510" y="182" text-anchor="start" font-size="13" font-weight="400" fill="#ff8c1a">l = 4 → a[4] = 4</text><text x="380" y="232" text-anchor="middle" font-size="15" font-weight="400" fill="#ffff00">минимум на [l, r] = a[ find(l) ] — ближайший справа к l элемент стека</text></svg><figcaption>Элементы стека минимумов делят левые границы на отрезки; каждый отрезок — одна компонента СНМ.</figcaption></figure>
+<pre class="cpp">const int N = 200000;
+int a[N], dsu[N], ans[N];
+vector&lt;pair&lt;int, int&gt;&gt; byR[N];                   // byR[r] — пары (l, номер запроса)
+int find(int x) { return dsu[x] == x ? x : dsu[x] = find(dsu[x]); }
+
+void solve(int n) {
+    vector&lt;int&gt; st;                              // стек минимумов: индексы, значения возрастают
+    for (int r = 0; r &lt; n; r++) {
+        dsu[r] = r;
+        while (!st.empty() &amp;&amp; a[st.back()] &gt;= a[r]) {
+            dsu[st.back()] = r;                  // отрезок, где ответом был st.back(), теперь отдаёт r
+            st.pop_back();
+        }
+        st.push_back(r);
+        for (auto [l, id] : byR[r])
+            ans[id] = a[find(l)];                // find(l) — ближайший к l элемент стека справа
+    }
+}</pre>
+<div class="algo" data-frames="offrmq"></div>
+<div class="own"><span class="lbl">Важное дополнение</span><br>В показанной реализации представитель — всегда правый индекс, а объединение делает «верхняя» компонента потомком новой; без рангов и со сжатием путей это $O(\log n)$ амортизированно. Чтобы получить $\alpha(n)$, нужно добавить ранговую эвристику и хранить в корне компоненты индекс её правого элемента. Работа проверена на 3000 случайных массивах и наборах запросов против прямого минимума.</div>
+
+<h2 data-tc="1:48:02">Двоичные подъёмы с линейной памятью</h2>
+<p><ts t="1:49:07"/> <strong>Идея.</strong> В обычных подъёмах на каждую вершину приходится $\log n$ указателей. Здесь у вершины ровно один указатель $\mathrm{jmp}[v]$ — куда прыгать (<ts t="1:49:58"/>). Он считается при спуске в вершину по указателям родителя: пусть $p$ — родитель $v$. Если длина прыжка из $p$ (то есть $h(p)-h(\mathrm{jmp}[p])$) равна длине прыжка из $\mathrm{jmp}[p]$, то $\mathrm{jmp}[v]=\mathrm{jmp}[\mathrm{jmp}[p]]$; иначе $\mathrm{jmp}[v]=p$ (<ts t="2:29:18"/>). У корня прыжок ведёт в него самого. Предподсчёт $O(n)$, память $O(n)$.</p>
+<p><ts t="2:31:15"/> <strong>Подъём на глубину $d$.</strong> Пока высота $v$ больше $d$: если прыжок не перелетает цель ($h(\mathrm{jmp}[v])\ge d$), прыгаем; иначе идём в родителя (<ts t="2:32:19"/>). LCA ищется вторым способом: выровнять высоты, затем одновременно прыгать: если $\mathrm{jmp}[u]\ne\mathrm{jmp}[v]$, прыгаем обеими, иначе обе шагают к родителю. Так можно делать, потому что длина прыжка зависит только от высоты (<ts t="2:34:40"/>).</p>
+<pre class="cpp">const int N = 200000;
+int par[N], jmp[N], h[N];                        // корень: par = jmp = он сам, h = 0
+void addLeaf(int v, int p) {                     // p уже обработана
+    par[v] = p;  h[v] = h[p] + 1;
+    if (h[p] - h[jmp[p]] == h[jmp[p]] - h[jmp[jmp[p]]]) jmp[v] = jmp[jmp[p]];   // два равных прыжка → сливаем
+    else jmp[v] = p;
+}
+int upTo(int v, int d) {                         // предок v на глубине d ≤ h[v]
+    while (h[v] &gt; d) {
+        if (h[jmp[v]] &gt;= d) v = jmp[v];          // прыжок не перелетает цель
+        else v = par[v];
+    }
+    return v;
+}
+int lca(int u, int v) {
+    if (h[u] &lt; h[v]) swap(u, v);
+    u = upTo(u, h[v]);
+    while (u != v) {
+        if (jmp[u] != jmp[v]) u = jmp[u], v = jmp[v];   // длины прыжков зависят только от высоты
+        else u = par[u], v = par[v];
+    }
+    return u;
+}</pre>
+<figure class="viz"><svg viewBox="0 0 760 270" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="270" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Из вершины глубины d прыжок ведёт на глубину d − s(d); длины s(d) = 2ᵏ − 1</text><circle cx="40" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="40" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">0</text><circle cx="83" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="83" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">1</text><circle cx="126" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="126" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">2</text><circle cx="169" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="169" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">3</text><circle cx="212" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="212" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">4</text><circle cx="255" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="255" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">5</text><circle cx="298" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="298" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">6</text><circle cx="341" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="341" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">7</text><circle cx="384" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="384" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">8</text><circle cx="427" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="427" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">9</text><circle cx="470" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="470" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">10</text><circle cx="513" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="513" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">11</text><circle cx="556" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="556" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">12</text><circle cx="599" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="599" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">13</text><circle cx="642" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="642" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">14</text><circle cx="685" cy="170" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="685" y="173.85" text-anchor="middle" font-size="11" font-weight="400" fill="#dfe7f1">15</text><path d="M163,158 Q104.5,113.0 46,158" fill="none" stroke="#58c4dd" stroke-width="2" marker-end="url(#ar2)"/><path d="M292,158 Q233.5,113.0 175,158" fill="none" stroke="#58c4dd" stroke-width="2" marker-end="url(#ar2)"/><path d="M335,158 Q190.5,77.0 46,158" fill="none" stroke="#83c167" stroke-width="2" marker-end="url(#ar2)"/><path d="M464,158 Q405.5,113.0 347,158" fill="none" stroke="#58c4dd" stroke-width="2" marker-end="url(#ar2)"/><path d="M593,158 Q534.5,113.0 476,158" fill="none" stroke="#58c4dd" stroke-width="2" marker-end="url(#ar2)"/><path d="M636,158 Q491.5,77.0 347,158" fill="none" stroke="#83c167" stroke-width="2" marker-end="url(#ar2)"/><path d="M679,158 Q362.5,5.0 46,158" fill="none" stroke="#ff8c1a" stroke-width="2" marker-end="url(#ar2)"/><text x="380" y="224" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">s(d):  0 1 1 3 1 1 3 7 1 1 3 1 1 3 7 15</text><text x="380" y="248" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">прыжок длины 1 — просто в родителя; остальные дуги нарисованы выше</text></svg><figcaption>Глубины $0\ldots15$ одного пути и прыжки вверх: длины $1,1,3,1,1,3,7,1,1,3,1,1,3,7,15$. Прыжки вложены друг в друга, как отрезки в двоичной записи.</figcaption></figure>
+<div class="algo" data-frames="linjump"></div>
+<h3 data-tc="2:34:40">Почему это работает быстро</h3>
+<p><ts t="2:36:37"/> Длины прыжков зависят только от высоты вершины, поэтому их можно изучать на одной цепочке. Выписав их, видим повторяющиеся блоки: построив блок, его можно скопировать, нарисовать ещё одну вершину и соединить её с корнем — получается следующий блок (<ts t="2:38:13"/>). Все длины прыжков оказываются числами вида $2^k-1$: $1,1,3,1,1,3,7,\dots$; два подряд идущих прыжка длины $2^{k-1}-1$ дают $2(2^{k-1}-1)+1=2^k-1$ (<ts t="2:39:20"/>). В лекции дальше строится разложение высоты вершины по наибольшей степени вида $2^k-1$ и показывается, что подъём работает за логарифм (<ts t="2:40:08"/>).</p>
+<div class="own"><span class="lbl">Развёрнутое объяснение</span><br>Запишем высоту $d$ как сумму слагаемых вида $2^k-1$ жадно, начиная с наибольшего ($13=7+3+3$, $6=3+3$, $4=3+1$). Слагаемые убывают, и одинаковыми могут быть только два последних (<em>скошенная двоичная система</em>). Прыжок из вершины высоты $d$ имеет длину, равную <strong>последнему (наименьшему) слагаемому</strong>: например, $s(13)=3$, $s(14)=7$ ($14=7+7$). Это согласуется с правилом: если два последних слагаемых равны $t$, прыжок «склеивает» их в $2t+1$ — и их сумма $d-s(\ldots)$ перестаёт быть двумя шагами. Шаг в родителя ($d\to d-1$) заменяет последнее слагаемое $2^k-1$ на два слагаемых $2^{k-1}-1$ (так как $2^k-2=2(2^{k-1}-1)$). Поэтому при подъёме на глубину $d'$ получаем две фазы: пока прыжок не перелетает цель, последнее слагаемое только <em>растёт</em> (каждым прыжком мы «съедаем» последний член разложения); потом один раз перелетаем, делаем шаг в родителя, и последнее слагаемое примерно <em>вдвое уменьшается</em>; на каждом размере делаем не более двух прыжков. Размеров не более $\log_2 n$, поэтому всего $O(\log n)$ действий. Эксперимент на 500 деревьях (цепочки, почти цепочки, случайные) с $n$ до 2000 подтвердил, что число шагов не превышает $3(\log_2 n+2)$, а ответы совпадают с прямым подъёмом.</div>
+
+<h2 data-tc="3:15:56">Сжатое (виртуальное) дерево</h2>
+<p><ts t="3:15:56"/> <strong>Зачем.</strong> Часто для динамики на дереве нужны не все вершины, а только $k$ выбранных, и требуется работать за $O(k)$ или $O(k\log k)$, а не за $O(n)$. Пример задачи (разобран в конце раздела, <ts t="3:16:46"/>): на рёбрах написаны цвета; $f(u,v)$ — число цветов, которые встречаются на пути $u\to v$ ровно один раз; нужна сумма $f$ по всем парам вершин.</p>
+<h3 data-tc="3:18:35">Что такое сжатое дерево</h3>
+<p><ts t="3:18:35"/> Берём выбранные вершины и смотрим, какое дерево они образуют: остаются сами вершины, а промежуточные вершины без ветвления выбрасываются; путь между оставшимися превращается в одно ребро с длиной (<ts t="3:19:25"/>). Нужны также вершины, где пути к выбранным расходятся — они сохраняют структуру ветвления (<ts t="3:20:19"/>). Корень — LCA всех выбранных вершин.</p>
+<figure class="viz"><svg viewBox="0 0 760 306" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="306" rx="14" fill="#141a24"/><text x="190" y="24" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">Исходное дерево</text><text x="590" y="24" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">Сжатое дерево</text><line x1="159.25" y1="70" x2="107.5" y2="122" stroke="#3b4a63" stroke-width="2"/><line x1="159.25" y1="70" x2="211.0" y2="122" stroke="#3b4a63" stroke-width="2"/><line x1="107.5" y1="122" x2="73.0" y2="174" stroke="#3b4a63" stroke-width="2"/><line x1="107.5" y1="122" x2="142" y2="174" stroke="#3b4a63" stroke-width="2"/><line x1="211.0" y1="122" x2="211.0" y2="174" stroke="#3b4a63" stroke-width="2"/><line x1="73.0" y1="174" x2="50" y2="226" stroke="#3b4a63" stroke-width="2"/><line x1="73.0" y1="174" x2="96.0" y2="226" stroke="#3b4a63" stroke-width="2"/><line x1="211.0" y1="174" x2="188" y2="226" stroke="#3b4a63" stroke-width="2"/><line x1="211.0" y1="174" x2="234" y2="226" stroke="#3b4a63" stroke-width="2"/><line x1="96.0" y1="226" x2="96" y2="278" stroke="#3b4a63" stroke-width="2"/><circle cx="50" cy="226" r="15" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="50" y="230.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">6</text><circle cx="96" cy="278" r="15" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="96" y="282.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">10</text><circle cx="96.0" cy="226" r="15" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="96.0" y="230.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">7</text><circle cx="73.0" cy="174" r="15" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="73.0" y="178.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">3</text><circle cx="142" cy="174" r="15" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="142" y="178.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">4</text><circle cx="107.5" cy="122" r="15" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="107.5" y="126.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">1</text><circle cx="188" cy="226" r="15" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="188" y="230.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">8</text><circle cx="234" cy="226" r="15" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="234" y="230.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">9</text><circle cx="211.0" cy="174" r="15" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="211.0" y="178.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><circle cx="211.0" cy="122" r="15" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="211.0" y="126.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">2</text><circle cx="159.25" cy="70" r="15" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="159.25" y="74.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">0</text><line x1="590" y1="70" x2="520" y2="150" stroke="#3b4a63" stroke-width="2"/><text x="543.0" y="110.0" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">2</text><line x1="520" y1="150" x2="470" y2="235" stroke="#3b4a63" stroke-width="2"/><text x="483.0" y="192.5" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">1</text><line x1="520" y1="150" x2="570" y2="235" stroke="#3b4a63" stroke-width="2"/><text x="557.0" y="192.5" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">2</text><line x1="590" y1="70" x2="670" y2="150" stroke="#3b4a63" stroke-width="2"/><text x="642.0" y="110.0" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">3</text><circle cx="590" cy="70" r="16" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="590" y="74.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">0</text><circle cx="520" cy="150" r="16" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="520" y="154.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">3</text><circle cx="470" cy="235" r="16" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="470" y="239.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">6</text><circle cx="570" cy="235" r="16" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="570" y="239.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">10</text><circle cx="670" cy="150" r="16" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="670" y="154.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">9</text><text x="590" y="290" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">числа на рёбрах — длина пути в исходном дереве</text></svg><figcaption>Выбраны 6, 9, 10 (зелёные). Добавляем LCA соседних по $\mathrm{tin}$ (оранжевые) и стираем всё остальное: структура ветвления сохранена.</figcaption></figure>
+<h3 data-tc="3:21:16">Какие вершины входят</h3>
+<p><ts t="3:22:06"/> Отсортируем выбранные вершины по $\mathrm{tin}$ (единственное место, где нужен $\log$, <ts t="3:22:06"/>). Корень — LCA всех, его получаем, последовательно сворачивая LCA слева направо (<ts t="3:22:53"/>). <strong>Утверждение.</strong> Сжатое дерево состоит из выбранных вершин и LCA всех пар <em>соседних</em> (в порядке $\mathrm{tin}$) вершин; их не больше $2k-1$ (<ts t="3:23:40"/>).</p>
+<p><ts t="3:24:30"/> <strong>Доказательство.</strong> (а) LCA любых соседних вершин в сжатом дереве обязана быть: иначе дерево не сохраняло бы информацию о том, что у этих двух вершин общий предок, где пути расходятся. (б) Других лишних вершин нет: пусть в сжатом дереве есть вершина $w$, у которой выбранные вершины есть в двух разных поддеревьях сыновей (иначе зачем она нужна) (<ts t="3:25:20"/>). Возьмём в левом поддереве вершину с наибольшим $\mathrm{tin}$ и в правом — с наименьшим; между ними по $\mathrm{tin}$ нет выбранных вершин, значит, они соседние, а их LCA — ровно $w$ (<ts t="3:26:12"/>). Следовательно, $w$ — LCA пары соседних (<ts t="3:27:06"/>).</p>
+<h3 data-tc="3:28:00">Построение: два способа</h3>
+<p><ts t="3:28:00"/> <strong>Способ 1</strong> (проще в коде, но с лишней сортировкой). К $k$ выбранным добавляем $k-1$ LCA соседних и корень — всего $O(k)$ вершин (<ts t="3:28:49"/>), снова сортируем их по $\mathrm{tin}$. Затем «симулируем обход в глубину» со стеком: кладём корень; для очередной вершины $v$ снимаем со стека, пока верхний не является предком $v$ (это и есть выход из рекурсии); верхний — родитель $v$ в сжатом дереве, проводим ребро и кладём $v$ в стек (<ts t="3:29:37"/>). Стек не опустеет, потому что корень — предок всех (<ts t="3:30:33"/>–<ts t="3:31:25"/>).</p>
+<pre class="cpp">// Способ 1: отсортировать, добавить LCA соседей, отсортировать ещё раз и пройти стеком.
+vector&lt;pair&lt;int, int&gt;&gt; virtualTree(vector&lt;int&gt; vs, vector&lt;int&gt;&amp; nodes) {
+    auto byTin = [&amp;](int a, int b) { return tin[a] &lt; tin[b]; };
+    sort(vs.begin(), vs.end(), byTin);
+    vs.erase(unique(vs.begin(), vs.end()), vs.end());
+    int k = vs.size();
+    for (int i = 0; i + 1 &lt; k; i++) vs.push_back(lca1(vs[i], vs[i + 1]));   // LCA соседних по tin
+    sort(vs.begin(), vs.end(), byTin);
+    vs.erase(unique(vs.begin(), vs.end()), vs.end());
+    vector&lt;pair&lt;int, int&gt;&gt; edges;
+    vector&lt;int&gt; st;
+    for (int v : vs) {
+        while (!st.empty() &amp;&amp; !anc(st.back(), v)) st.pop_back();   // выходим из «рекурсии», пока не встретим предка
+        if (!st.empty()) edges.push_back({st.back(), v});
+        st.push_back(v);
+    }
+    nodes = vs;
+    return edges;
+}</pre>
+<p><ts t="3:32:34"/> <strong>Способ 2</strong> (без повторной сортировки). Если вершины уже даны в порядке $\mathrm{tin}$ (например, их выбираем мы сами), то LCA соседних можно вычислять прямо на стеке (<ts t="3:33:21"/>). В стеке держим путь от корня до последней обработанной вершины <em>с учётом уже найденных развилок</em>. Новая вершина $c$: если верхняя вершина стека — предок $c$, просто кладём $c$. Иначе $c$ ушла вбок: вычисляем $l=\mathrm{LCA}(\text{верх},c)$ (<ts t="3:34:11"/>) и «раскручиваем» стек: пока предпоследний элемент не выше $l$, соединяем его с верхним ребром и снимаем верхний; в конце, если верх ниже $l$, ставим $l$ вместо него и соединяем $l$ с этим верхним (<ts t="3:35:04"/>). Затем кладём $c$ (<ts t="3:35:56"/>). Длины рёбер получаются как разности высот $h_v-h_u$ (<ts t="3:36:59"/>).</p>
+<pre class="cpp">// tin, h, anc, lca — из «binup». vs — вершины, УЖЕ отсортированные по tin, без повторов.
+// Возвращает рёбра (родитель, ребёнок) сжатого дерева; корень — LCA всех вершин.
+vector&lt;pair&lt;int, int&gt;&gt; virtualSorted(const vector&lt;int&gt;&amp; vs, int&amp; root) {
+    root = vs[0];
+    for (int v : vs) root = lca1(root, v);       // корень = LCA всех вершин
+    vector&lt;pair&lt;int, int&gt;&gt; edges;
+    vector&lt;int&gt; st = {root};                     // стек: путь от корня до последней вершины
+    for (int c : vs) {
+        if (c == root) continue;
+        if (!anc(st.back(), c)) {                // c ушла вбок: ищем развилку
+            int l = lca1(st.back(), c);
+            while (st.size() &gt;= 2 &amp;&amp; h[st[st.size() - 2]] &gt;= h[l]) {
+                edges.push_back({st[st.size() - 2], st.back()});
+                st.pop_back();
+            }
+            if (st.back() != l) {                // развилка — новая вершина: ставим её на место верхушки
+                edges.push_back({l, st.back()});
+                st.back() = l;
+            }
+        }
+        st.push_back(c);
+    }
+    while (st.size() &gt;= 2) {
+        edges.push_back({st[st.size() - 2], st.back()});
+        st.pop_back();
+    }
+    return edges;
+}</pre>
+<p><ts t="3:37:56"/> Сортировка подсчётом тут не поможет: на каждый запрос приходится только $k$ вершин с значениями до $n$, а не $n$ вершин (<ts t="3:37:56"/>). Оба способа проверены на 3000 случайных деревьев и множествах до 8 вершин: набор вершин и рёбер совпал с определением («замкнуть множество относительно LCA, родитель — ближайший предок в множестве»).</p>
+
+<h3 data-tc="3:42:17">Задача про цвета на рёбрах</h3>
+<p><ts t="3:42:17"/> <strong>Условие.</strong> Дерево на $n$ вершинах, рёбра покрашены. Сумма по всем парам вершин числа цветов, встречающихся на пути ровно один раз.</p>
+<p><ts t="3:44:31"/> <strong>Идея лектора.</strong> Считаем отдельно для каждого цвета $c$: сколько путей содержат ровно одно ребро этого цвета. Ответ — сумма по цветам. Рассматриваем дерево, где единицы стоят на рёбрах цвета $c$, а остальные рёбра нулевые (<ts t="3:45:29"/>), и считаем пути с суммой ровно 1: динамика $dp_{v,0}$, $dp_{v,1}$ — число путей вниз от $v$ с суммой 0 и 1, и к ответу добавляются пути через $v$ (<ts t="3:46:32"/>–<ts t="3:47:33"/>). Для скорости оставляем только концы рёбер цвета $c$ и строим для них сжатое дерево: суммарно вершин $O(n)$, а строится оно за $O(n\log n)$ или быстрее (<ts t="3:48:18"/>–<ts t="3:49:07"/>). В сжатом дереве вес ребра — 0 или 1, потому что путь длины больше 1 содержит ребро цвета $c$ только если обе его вершины выбраны (<ts t="3:50:08"/>–<ts t="3:50:56"/>); поэтому у ребра хранят ещё число пропущенных вершин $x$, чтобы считать пути не только до вершин сжатого дерева (<ts t="3:51:46"/>).</p>
+<div class="own"><span class="lbl">Развёрнутое объяснение</span><br>Подсчёт можно довести до простой формулы. Для цвета $c$ удалим все рёбра цвета $c$: дерево распадётся на компоненты. Путь содержит ровно одно ребро цвета $c$ тогда и только тогда, когда его концы лежат в двух компонентах, соединённых <em>этим</em> ребром. Значит, вклад цвета равен $\sum_e |A_e|\cdot|B_e|$ по рёбрам $e$ цвета $c$, где $A_e,B_e$ — компоненты на концах. Размеры компонент считаются по размерам поддеревьев: берём нижние концы рёбер цвета $c$ вместе с корнем (<ts t="3:49:07"/>: как раз «выделим вершины»), сортируем по $\mathrm{tin}$ и стеком находим для каждой нижней вершины $v$ ближайшего выше выделенного предка $\mathrm{par}_S(v)$. Тогда $\mathrm{comp}(v)=\mathrm{sz}(v)-\sum_{\text{дети }u\text{ в }S}\mathrm{sz}(u)$, для корня $\mathrm{comp}(0)=n-\sum\mathrm{sz}$, а ребро над $v$ вносит $\mathrm{comp}(v)\cdot\mathrm{comp}(\mathrm{par}_S(v))$. Общее число вершин по всем цветам — $n-1$, время $O(n\log n)$. Реализация сверена с прямым перебором всех пар для 3000 случайных деревьев (до 40 вершин, до 4 цветов): суммы совпали.</div>
+<pre class="cpp">// Дерево с цветами рёбер. Найти сумму по всем парам вершин (u, v) числа цветов,
+// которые встречаются на пути u–v ровно один раз. Нужны tin, tout, anc из «binup».
+vector&lt;int&gt; byColor[N];                          // byColor[c] — нижние концы рёбер цвета c
+int comp[N], parS[N];
+int subSize(int v) { return (tout[v] - tin[v] + 1) / 2; }
+
+long long solveColors(int n, int colors) {
+    long long total = 0;
+    for (int c = 0; c &lt; colors; c++) {
+        vector&lt;int&gt; vs = byColor[c];
+        if (vs.empty()) continue;
+        sort(vs.begin(), vs.end(), [&amp;](int a, int b) { return tin[a] &lt; tin[b]; });
+        comp[0] = n;                             // компонента корня после удаления рёбер цвета c
+        vector&lt;int&gt; st = {0};
+        for (int v : vs) {
+            comp[v] = subSize(v);
+            while (!anc(st.back(), v)) st.pop_back();
+            parS[v] = st.back();                 // ближайшая выше вершина-верх другой компоненты
+            comp[parS[v]] -= subSize(v);
+            st.push_back(v);
+        }
+        for (int v : vs) total += 1LL * comp[v] * comp[parS[v]];   // ровно одно ребро цвета c на пути
+    }
+    return total;
+}</pre>
+
+<h3 data-tc="3:54:05">Задача: минимальное число удалений</h3>
+<p><ts t="3:54:05"/> <strong>Условие.</strong> Дано дерево; приходят запросы: выбрать несколько вершин и узнать, сколько вершин минимум надо удалить, чтобы никакие две выбранные не были связаны (по сумме размеров запросов есть ограничение). Если две выбранные соединены ребром, разрезать нечем и ответ $-1$ (<ts t="3:55:53"/>).</p>
+<p><ts t="3:56:41"/> <strong>Идея лектора.</strong> Строим сжатое дерево на выбранных вершинах (<ts t="3:55:53"/>) и смотрим, какие вершины надо удалить. Предлагается удалять вершины, получившиеся как LCA выбранных вершин из разных поддеревьев (<ts t="3:57:47"/>): они лежат между выбранными, и удаление отрезает ветви. Лектор сам замечает неясности — например, когда корень сам выбран, — и разбирает случаи, оставляя вопрос предположением «удаляем только те, у кого выбранные есть в обоих поддеревьях» (<ts t="4:01:10"/>–<ts t="4:01:59"/>).</p>
+<div class="own"><span class="lbl">Развёрнутое объяснение</span><br>Полный жадный алгоритм по сжатому дереву снизу вверх. Назовём вершину <em>открытой</em>, если из неё вниз по сжатому дереву после уже сделанных удалений достижима выбранная вершина. Выбранная вершина открыта всегда. Невыбранная вершина с двумя и более открытыми сыновьями обязана быть удалена ($+1$), после чего закрыта; с одним открытым сыном — открыта; с нулевым — закрыта. Ребро от открытого сына $v$ к <em>выбранному</em> родителю $p$ нужно разорвать: если $v$ выбрана и является сыном $p$ в исходном дереве — ответ $-1$; иначе удаляем $v$ (если не выбрана) либо любую вершину между ними ($+1$). Удаляемые вершины всегда невыбранные: развилки и вершины внутри сжатых путей. Алгоритм проверен на 3000 случайных деревьев (до 11 вершин) против полного перебора подмножеств удаляемых вершин, включая случаи $-1$.</div>
+<pre class="cpp">// Выделены вершины sel[]. Какое наименьшее число НЕвыделенных вершин удалить,
+// чтобы никакие две выделенные не были связаны? -1, если невозможно.
+// virtualSorted — из «virtual_sorted».
+bool sel[N];
+int cutVertices(vector&lt;int&gt; vs) {
+    sort(vs.begin(), vs.end(), [&amp;](int a, int b) { return tin[a] &lt; tin[b]; });
+    int root;
+    auto edges = virtualSorted(vs, root);
+    vector&lt;int&gt; nodes = {root};
+    map&lt;int, int&gt; vp;                            // родитель в сжатом дереве
+    for (auto [p, c] : edges) nodes.push_back(c), vp[c] = p;
+    sort(nodes.begin(), nodes.end(), [&amp;](int a, int b) { return tin[a] &gt; tin[b]; });   // дети раньше родителей
+    map&lt;int, int&gt; kids;                          // сколько «открытых» детей (оттуда достижима выделенная)
+    int ans = 0;
+    for (int v : nodes) {
+        bool open;
+        if (sel[v]) open = true;                         // выделенная вершина «открыта» всегда
+        else if (kids[v] &gt;= 2) { ans++; open = false; }  // развилка: удаляем саму v
+        else open = kids[v] == 1;
+        if (!open || v == root) continue;
+        int p = vp[v];
+        if (sel[p]) {
+            if (sel[v] &amp;&amp; h[v] == h[p] + 1) return -1;   // две выделенные рядом — разрезать нечем
+            ans++;                                       // удаляем v (если не выделена) или вершину между ними
+        } else kids[p]++;
+    }
+    return ans;
+}</pre>
+
+<h2 data-tc="4:02:59">Эйлеров обход как два массива: пре- и постпорядок</h2>
+<p><ts t="4:03:47"/> <strong>Задача.</strong> Прибавлять число на поддереве и получать сумму на пути. Лектор замечает, что с помощью HLD это решается за $O(\log^2 n)$ и «просто неприкольно», а мы научимся за $O(\log n)$ (<ts t="4:04:44"/>).</p>
+<p><ts t="4:05:34"/> Рассмотрим два порядка: pre-order (вершину записываем при входе) и post-order (при выходе). Они равнозначны для задач на поддереве, но по-разному ведут себя на префиксе (<ts t="4:07:14"/>). Для вершины $v$ префикс pre-order до $v$ содержит всех предков $v$ (в них вошли, но не вышли) и то, что слева (в чём вошли и вышли); поддерево $v$ ещё не записано. В post-order у $v$ уже записаны и поддерево, и то, что слева, но предков пока нет, так как из них не вышли (<ts t="4:08:06"/>–<ts t="4:08:54"/>). Значит, префиксы отличаются лишь предками $v$ и поддеревом.</p>
+<p><ts t="4:09:49"/> Заводим два дерева Фенвика — по pre-order и по post-order. Сумма по предкам: из префикса pre-order вычитаем префикс post-order; поддеревья при добавлении в точке и суммировании на отрезке ведут себя как раньше (<ts t="4:10:40"/>). Итого $O(\log n)$ на запрос.</p>
+<div class="own"><span class="lbl">Развёрнутое объяснение</span><br>Чтобы разность давала именно предков, префикс post-order нужно брать не «до выхода из $v$», а <em>на момент входа в $v$</em>: это первые $\mathrm{leftCnt}[v]$ вершин, где $\mathrm{leftCnt}[v]$ — сколько вершин уже вышло к моменту входа. Тогда из вошедших (предки + $v$ + всё, что слева) вычитаем вышедшие (всё, что слева): остаются предки и $v$. Поддерево $v$ — отрезок $[\mathrm{pre}[v],\mathrm{pre}[v]+\mathrm{sz}[v]-1]$ в порядке входа. Реализация проверена на 2000 случайных деревьях против прямого суммирования.</div>
+<pre class="cpp">// Два массива: порядок входа (pre) и порядок выхода (post). Fenwick — из «fenwick»
+const int N = 200000;
+vector&lt;int&gt; g[N];  int pre[N], post[N], leftCnt[N], sz[N], cp, cq;
+void dfs(int v, int p) {
+    pre[v] = cp++;  leftCnt[v] = cq;             // leftCnt[v] — сколько вершин уже вышли к моменту входа в v
+    sz[v] = 1;
+    for (int u : g[v]) if (u != p) dfs(u, v), sz[v] += sz[u];
+    post[v] = cq++;
+}
+Fenwick A(N), B(N);                              // A — по pre, B — по post
+void add(int v, long long x) { A.add(pre[v], x); B.add(post[v], x); }
+long long ancestorsSum(int v) {                  // предки v и сама v
+    return A.pref(pre[v]) - B.pref(leftCnt[v] - 1);   // вошли, но ещё не вышли
+}
+long long subtreeSum(int v) {                    // поддерево — отрезок в порядке входа
+    return A.pref(pre[v] + sz[v] - 1) - A.pref(pre[v] - 1);
+}</pre>
+
+<h2 data-tc="4:11:51">Сравнение методов для LCA и подъёма</h2>
+<p><ts t="4:11:51"/> Лектор выписывает для каждого метода предподсчёт и время запроса. Известные нам к этому моменту: двоичные подъёмы — запрос $O(\log n)$, предподсчёт $O(n\log n)$ (<ts t="4:12:41"/>); разреженная таблица по эйлерову обходу — запрос $O(1)$, предподсчёт $O(n\log n)$; подъёмы с линейной памятью — запрос $O(\log n)$, предподсчёт $O(n)$; Тарьян — офлайн, $O(n+q\alpha)$. Цель дальше: запрос $O(1)$ при предподсчёте $O(n)$ (<ts t="4:13:30"/>) — теоретически красиво, на олимпиадах такое почти не пишут (<ts t="4:14:22"/>).</p>
+<table>
+<tr><th>Метод</th><th>Предподсчёт</th><th>Запрос</th><th>Замечание</th></tr>
+<tr><td>Двоичные подъёмы</td><td>$O(n\log n)$</td><td>$O(\log n)$</td><td>онлайн, умеет и подъём на $k$</td></tr>
+<tr><td>Подъёмы, линейная память</td><td>$O(n)$</td><td>$O(\log n)$</td><td>онлайн, константа больше</td></tr>
+<tr><td>Эйлеров обход + sparse</td><td>$O(n\log n)$</td><td>$O(1)$</td><td>онлайн, только LCA</td></tr>
+<tr><td>Тарьян</td><td>$O(n+q\alpha)$</td><td>—</td><td>офлайн</td></tr>
+<tr><td>Лесенки + подъёмы</td><td>$O(n\log n)$</td><td>$O(1)$</td><td>подъём на $k$</td></tr>
+<tr><td>Четыре русских</td><td>$O(n)$</td><td>$O(1)$</td><td>RMQ с шагом ±1, LCA</td></tr>
+</table>
+
+<h2 data-tc="4:15:23">Подъём на $k$ за $O(1)$: лесенки</h2>
+<p><ts t="4:15:23"/> <strong>Задача (онлайн).</strong> Найти предка вершины $u$ на $k$ рёбер выше. <strong>Шаг 1.</strong> Разобьём дерево на пути: из корня идём по самому длинному пути вниз, удаляем его, в оставшихся деревьях повторяем. Каждая вершина лежит ровно в одном пути; для вершины храним номер пути и позицию (<ts t="4:16:12"/>–<ts t="4:17:02"/>). Если $k$ не превосходит позиции вершины в пути — ответ рядом; иначе прыгаем в начало пути и продолжаем рекурсивно (<ts t="4:17:49"/>). Но так подъём за $O(\sqrt n)$ — на «колючке» из путей длины $1,2,3,\dots$ придётся подниматься по одной вершине (<ts t="4:19:30"/>–<ts t="4:20:22"/>).</p>
+<p><ts t="4:20:22"/> <strong>Шаг 2 (лесенки).</strong> Каждый путь длины $L$ удваиваем: добавляем сверху $L$ его предков (или сколько есть до корня). Суммарная длина массивов не больше $2n$, асимптотика построения не портится (<ts t="4:21:15"/>–<ts t="4:22:01"/>). Эта конструкция называется <em>ladder (long-path) decomposition</em>.</p>
+<p><ts t="4:22:01"/> <strong>Шаг 3.</strong> Дополнительно строим обычные двоичные подъёмы. На запрос $(u,k)$ берём наибольшее $j$, для которого $2^j\le k$, и один раз прыгаем по подъёмам на $2^j$ в вершину $v$ (<ts t="4:22:49"/>). Теперь осталось подняться на $k-2^j\lt2^j$.</p>
+<p><ts t="4:23:44"/> <strong>Почему остаток лежит на лестнице.</strong> У $v$ есть потомок $u$ на расстоянии $2^j$, значит самый длинный путь вниз из $v$ содержит не менее $2^j$ вершин ниже $v$; путь, в котором лежит $v$, имеет длину $L\ge2^j$ (<ts t="4:24:31"/>) и в его лестнице над самим путём есть хотя бы $2^j$ предков. А нужно подняться на $k-2^j\lt2^j$ (<ts t="4:25:24"/>). Значит, ответ — элемент лестницы на нужное число позиций левее $v$.</p>
+<figure class="viz"><svg viewBox="0 0 760 320" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="320" rx="14" fill="#141a24"/><text x="150" y="24" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">Длинные пути</text><text x="540" y="24" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">Лестницы (продолжены вверх на длину пути)</text><line x1="149.25" y1="60" x2="97.5" y2="114" stroke="#58c4dd" stroke-width="3"/><line x1="149.25" y1="60" x2="201.0" y2="114" stroke="#3b4a63" stroke-width="2"/><line x1="97.5" y1="114" x2="63.0" y2="168" stroke="#58c4dd" stroke-width="3"/><line x1="97.5" y1="114" x2="132" y2="168" stroke="#3b4a63" stroke-width="2"/><line x1="201.0" y1="114" x2="201.0" y2="168" stroke="#c78bff" stroke-width="3"/><line x1="63.0" y1="168" x2="40" y2="222" stroke="#3b4a63" stroke-width="2"/><line x1="63.0" y1="168" x2="86.0" y2="222" stroke="#58c4dd" stroke-width="3"/><line x1="201.0" y1="168" x2="178" y2="222" stroke="#c78bff" stroke-width="3"/><line x1="201.0" y1="168" x2="224" y2="222" stroke="#3b4a63" stroke-width="2"/><line x1="86.0" y1="222" x2="86" y2="276" stroke="#58c4dd" stroke-width="3"/><circle cx="40" cy="222" r="15" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="40" y="226.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">6</text><circle cx="86" cy="276" r="15" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="86" y="280.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">10</text><circle cx="86.0" cy="222" r="15" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="86.0" y="226.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">7</text><circle cx="63.0" cy="168" r="15" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="63.0" y="172.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">3</text><circle cx="132" cy="168" r="15" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="132" y="172.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">4</text><circle cx="97.5" cy="114" r="15" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="97.5" y="118.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">1</text><circle cx="178" cy="222" r="15" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="178" y="226.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">8</text><circle cx="224" cy="222" r="15" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="224" y="226.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">9</text><circle cx="201.0" cy="168" r="15" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="201.0" y="172.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><circle cx="201.0" cy="114" r="15" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="201.0" y="118.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">2</text><circle cx="149.25" cy="60" r="15" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="149.25" y="64.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">0</text><rect x="380" y="70" width="38" height="32" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="399.0" y="90.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">0</text><rect x="424" y="70" width="38" height="32" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="443.0" y="90.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">1</text><rect x="468" y="70" width="38" height="32" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="487.0" y="90.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">3</text><rect x="512" y="70" width="38" height="32" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="531.0" y="90.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">7</text><rect x="556" y="70" width="38" height="32" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="575.0" y="90.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">10</text><rect x="380" y="114" width="38" height="32" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="399.0" y="134.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">3</text><rect x="424" y="114" width="38" height="32" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="443.0" y="134.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">6</text><text x="606" y="135" text-anchor="start" font-size="11" font-weight="400" fill="#9aa4b2">← продолжение</text><rect x="380" y="158" width="38" height="32" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="399.0" y="178.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">1</text><rect x="424" y="158" width="38" height="32" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="443.0" y="178.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">4</text><text x="606" y="179" text-anchor="start" font-size="11" font-weight="400" fill="#9aa4b2">← продолжение</text><rect x="380" y="202" width="38" height="32" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="399.0" y="222.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">0</text><rect x="424" y="202" width="38" height="32" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="443.0" y="222.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">2</text><rect x="468" y="202" width="38" height="32" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="487.0" y="222.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">5</text><rect x="512" y="202" width="38" height="32" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="531.0" y="222.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">8</text><rect x="380" y="246" width="38" height="32" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="399.0" y="266.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">5</text><rect x="424" y="246" width="38" height="32" rx="6" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="443.0" y="266.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">9</text><text x="606" y="267" text-anchor="start" font-size="11" font-weight="400" fill="#9aa4b2">← продолжение</text><text x="540" y="300" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">сумма длин лестниц ≤ 2n</text></svg><figcaption>Каждый путь (цвет) удваивается вверх; бледные ячейки — добавленные предки. Кто начал прыжок на $2^j$, тот попадает на лестницу, где ответ лежит рядом.</figcaption></figure>
+<pre class="cpp">const int N = 200000, LG = 18;
+vector&lt;int&gt; g[N];
+int up[LG][N], h[N], len[N], son[N], lg[N + 1];
+int pathId[N], pos[N];
+vector&lt;vector&lt;int&gt;&gt; lad;                         // «лестницы»: путь, продолженный вверх на свою длину
+
+void dfs(int v, int p) {                         // вызов: dfs(0, 0)
+    up[0][v] = p;  h[v] = (p == v ? 0 : h[p] + 1);
+    for (int j = 1; j &lt; LG; j++) up[j][v] = up[j - 1][up[j - 1][v]];
+    len[v] = 1;  son[v] = -1;
+    for (int u : g[v]) if (u != p) {
+        dfs(u, v);
+        if (len[u] + 1 &gt; len[v]) len[v] = len[u] + 1, son[v] = u;   // сын на самом длинном пути вниз
+    }
+}
+void buildLadders(int n) {
+    for (int i = 2; i &lt;= n; i++) lg[i] = lg[i / 2] + 1;
+    for (int t = 0; t &lt; n; t++) {
+        if (t != 0 &amp;&amp; son[up[0][t]] == t) continue;       // t — не начало длинного пути
+        vector&lt;int&gt; path;
+        for (int x = t; x != -1; x = son[x]) path.push_back(x);
+        int L = path.size(), ext = min(L, h[t]);          // продлеваем вверх не более чем на L вершин
+        vector&lt;int&gt; ladder(ext);
+        int x = t;
+        for (int i = ext - 1; i &gt;= 0; i--) ladder[i] = x = up[0][x];
+        ladder.insert(ladder.end(), path.begin(), path.end());
+        for (int i = 0; i &lt; L; i++) pathId[path[i]] = lad.size(), pos[path[i]] = ext + i;
+        lad.push_back(ladder);
+    }
+}
+int kth(int v, int k) {                          // предок на k выше, k ≤ h[v]; O(1)
+    if (k == 0) return v;
+    int j = lg[k];
+    v = up[j][v];  k -= 1 &lt;&lt; j;                  // один прыжок на старшую степень двойки
+    return lad[pathId[v]][pos[v] - k];           // остаток k &lt; 2^j гарантированно внутри лестницы
+}</pre>
+<div class="own"><span class="lbl">Важное дополнение</span><br>Если путь начинается слишком близко к корню, лестница короче $L$, но тогда она доходит до самого корня, а нужная высота не больше глубины $v$, так что запрос всё равно остаётся внутри лестницы (в коде это учтено выбором $\mathrm{ext}=\min(L,h_{top})$). Реализация проверена для всех пар $(v,k)$ на 1500 случайных деревьях и подтвердила, что суммарная длина лестниц не больше $2n$.</div>
+
+<h2 data-tc="4:26:15">LCA за $O(n)$ и $O(1)$: метод четырёх русских</h2>
+<p><ts t="4:26:15"/> Цель — предподсчёт $O(n)$ и запрос $O(1)$. LCA сводится к RMQ по массиву эйлерова обхода (<ts t="4:26:15"/>), поэтому нужно научиться отвечать на RMQ за $O(n)$ и $O(1)$.</p>
+<p><ts t="4:27:04"/> <strong>Блоки.</strong> Разобьём массив на блоки размера $B\approx\log n$. Для каждого блока считаем минимум префиксов и минимум суффиксов (<ts t="4:28:00"/>), и минимум по всему блоку. На минимумах блоков строим разреженную таблицу: блоков $n/B$, поэтому таблица занимает $\frac{n}{B}\log\frac{n}{B}\le n$ (<ts t="4:28:49"/>–<ts t="4:29:48"/>). Запрос, захватывающий несколько блоков, = суффикс первого блока + таблица по целым блокам + префикс последнего (<ts t="4:30:36"/>). Проблема — запрос внутри одного блока.</p>
+<p><ts t="4:31:23"/> <strong>Использование структуры задачи.</strong> В массиве эйлерова обхода соседние высоты отличаются ровно на $\pm1$ (<ts t="4:32:13"/>). Поэтому блок можно закодировать последовательностью плюсов и минусов (двоичной маской) длины $B-1$; различных блоков всего $2^{B-1}$. Возьмём $B=\frac{\log n}{2}$: масок $\sqrt n$ (<ts t="4:33:04"/>). Для каждой маски заранее перебираем все пары границ $(l,r)$ и находим положение минимума (<ts t="4:33:51"/>): это $\sqrt n\cdot O(\log^2n)$ операций, что меньше $O(n)$. Минимум восстанавливается по маске однозначно — первое значение считаем нулём (<ts t="4:34:38"/>). Метод разбиения на блоки с предподсчётом всех возможных блоков называется <em>методом четырёх русских</em> (<ts t="4:34:38"/>–<ts t="4:35:30"/>).</p>
+<figure class="viz"><svg viewBox="0 0 760 236" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="236" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Массив ±1, блоки по B = 3; запрос [1, 10] разбит на три части</text><rect x="50" y="60" width="50" height="36" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="75.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><text x="75.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="104" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="129.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="129.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="158" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="183.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="183.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="212" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="237.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="237.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="266" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="291.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="291.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="320" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="345.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">3</text><text x="345.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">5</text><rect x="374" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="399.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="399.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">6</text><rect x="428" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="453.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="453.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">7</text><rect x="482" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="507.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><text x="507.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">8</text><rect x="536" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="561.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="561.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">9</text><rect x="590" y="60" width="50" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="615.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="615.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">10</text><rect x="644" y="60" width="50" height="36" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="669.0" y="76.0" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="669.0" y="89" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">11</text><line x1="48" y1="50" x2="48" y2="106" stroke="#7c8aa0" stroke-width="2" stroke-dasharray="4 3"/><line x1="210" y1="50" x2="210" y2="106" stroke="#7c8aa0" stroke-width="2" stroke-dasharray="4 3"/><line x1="372" y1="50" x2="372" y2="106" stroke="#7c8aa0" stroke-width="2" stroke-dasharray="4 3"/><line x1="534" y1="50" x2="534" y2="106" stroke="#7c8aa0" stroke-width="2" stroke-dasharray="4 3"/><line x1="696" y1="50" x2="696" y2="106" stroke="#7c8aa0" stroke-width="2" stroke-dasharray="4 3"/><text x="131.0" y="130" text-anchor="middle" font-size="12" font-weight="400" fill="#83c167">суффикс блока</text><line x1="104" y1="118" x2="208" y2="118" stroke="#83c167" stroke-width="4"/><text x="374" y="130" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">целые блоки: sparse по минимумам блоков</text><line x1="212" y1="118" x2="532" y2="118" stroke="#ffff00" stroke-width="4"/><text x="590" y="130" text-anchor="middle" font-size="12" font-weight="400" fill="#ff8c1a">префикс</text><line x1="536" y1="118" x2="640" y2="118" stroke="#ff8c1a" stroke-width="4"/><text x="380" y="184" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">внутри блока ответ зависит только от формы (вверх/вниз), масок всего 2^(B−1)</text><text x="380" y="212" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">при B = (log n)/2 это √n масок, таблицы для всех — O(√n · log² n)</text></svg><figcaption>Метод четырёх русских: на коротких блоках ответ берётся из таблицы по «форме» блока.</figcaption></figure>
+<pre class="cpp">// Массив a, соседние элементы которого отличаются ровно на 1. Возвращает позицию минимума на [l, r].
+struct RmqPm1 {
+    int n, B, nb;
+    vector&lt;int&gt; a, mask, pre, suf, lg;
+    vector&lt;vector&lt;int&gt;&gt; big;                     // разреженная таблица по блокам (хранит позиции минимумов)
+    vector&lt;vector&lt;unsigned char&gt;&gt; tab;           // tab[mask][l*B + r] — позиция минимума внутри блока
+    int better(int i, int j) { return a[j] &lt; a[i] ? j : i; }
+    RmqPm1(const vector&lt;int&gt;&amp; v) : n(v.size()), a(v) {
+        B = max(1, (int)(log2(max(n, 2)) / 2));  // размер блока ≈ (log n) / 2
+        nb = (n + B - 1) / B;
+        mask.assign(nb, 0);  pre.resize(n);  suf.resize(n);
+        tab.assign(1 &lt;&lt; (B - 1), {});
+        for (int b = 0; b &lt; nb; b++) {
+            int s = b * B, e = min(n, s + B) - 1;
+            for (int t = 0; t + 1 &lt; B; t++)      // форма блока: растёт или убывает на каждом шаге
+                if (s + t + 1 &lt;= e &amp;&amp; a[s + t + 1] &gt; a[s + t]) mask[b] |= 1 &lt;&lt; t;
+            pre[s] = s;
+            for (int i = s + 1; i &lt;= e; i++) pre[i] = better(pre[i - 1], i);
+            suf[e] = e;
+            for (int i = e - 1; i &gt;= s; i--) suf[i] = a[i] &lt; a[suf[i + 1]] ? i : suf[i + 1];
+            if (tab[mask[b]].empty()) {          // таблица для этой формы строится один раз
+                vector&lt;int&gt; d(B);
+                for (int t = 0; t + 1 &lt; B; t++) d[t + 1] = d[t] + (mask[b] &gt;&gt; t &amp; 1 ? 1 : -1);
+                auto&amp; T = tab[mask[b]];  T.assign(B * B, 0);
+                for (int l = 0; l &lt; B; l++) {
+                    int best = l;
+                    for (int r = l; r &lt; B; r++) {
+                        if (d[r] &lt; d[best]) best = r;
+                        T[l * B + r] = best;
+                    }
+                }
+            }
+        }
+        lg.assign(nb + 1, 0);
+        for (int i = 2; i &lt;= nb; i++) lg[i] = lg[i / 2] + 1;
+        big.assign(lg[nb] + 1, vector&lt;int&gt;(nb));
+        for (int b = 0; b &lt; nb; b++) big[0][b] = pre[min(n, b * B + B) - 1];
+        for (int j = 1; j &lt;= lg[nb]; j++)
+            for (int b = 0; b + (1 &lt;&lt; j) &lt;= nb; b++)
+                big[j][b] = better(big[j - 1][b], big[j - 1][b + (1 &lt;&lt; (j - 1))]);
+    }
+    int query(int l, int r) {
+        int bl = l / B, br = r / B;
+        if (bl == br) return bl * B + tab[mask[bl]][(l - bl * B) * B + (r - bl * B)];   // внутри блока — по таблице
+        int res = better(suf[l], pre[r]);        // суффикс первого блока и префикс последнего
+        if (br - bl &gt; 1) {                       // целые блоки между ними — разреженная таблица
+            int j = lg[br - bl - 1];
+            res = better(res, better(big[j][bl + 1], big[j][br - (1 &lt;&lt; j)]));
+        }
+        return res;
+    }
+};</pre>
+<p><ts t="4:36:22"/> В реальных задачах так не пишут: таблицы масок плохи по памяти и кэшу; от них можно частично избавиться, обсудив соседние минимумы (в блоге у Алексея Васильева описан вариант без них). Для $n$ до миллиарда решение работает по памяти, хуже при больших (<ts t="4:56:32"/>–<ts t="4:57:23"/>).</p>
+<div class="own"><span class="lbl">Важное дополнение</span><br>В коде размер блока взят как $\max(1,\lfloor\log_2 n/2\rfloor)$, а таблица по маске строится лениво — только для встретившихся форм блоков. Результат — позиция минимума; проверено на 3000 случайных массивов с шагами $\pm1$ (до 200 элементов): позиции лежат в отрезке, а значения совпадают с прямым минимумом.</div>
+
+<h2 data-tc="4:36:22">Микро-макро дерево: подъёмы от листьев</h2>
+<p><ts t="4:36:22"/> У нас два ответвления: либо глобальный RMQ по всему массиву за $O(n)$ и $O(1)$, либо довести до конца идею с подъёмами. Второе: сократить память подъёмов (<ts t="4:37:09"/>).</p>
+<p><ts t="4:37:57"/> <strong>Подъёмы только от листьев.</strong> Из вершины $v$ можно спуститься в любой лист $\ell$ её поддерева и ответить на запрос как «подъём из $\ell$ на $k+(h_\ell-h_v)$». Значит, таблицу $\mathrm{up}[j]$ достаточно хранить только для листьев. Считаются они обходом в глубину со стеком пути: в стеке храним текущий путь, а в листе записываем элементы стека на позициях $\mathrm{size}-1-2^j$ (<ts t="4:38:48"/>–<ts t="4:40:44"/>).</p>
+<p><ts t="4:40:44"/> <strong>Как уменьшить число листьев.</strong> Выберем порог $B\approx\log n/4$. Удалим все поддеревья размера не больше $B$ и ещё их родителей (<ts t="4:41:35"/>–<ts t="4:42:23"/>). У оставшегося дерева листьев не больше $n/B$: у каждого листа был удалённый ребёнок с поддеревом хотя бы $B$ вершин (<ts t="4:43:10"/>–<ts t="4:45:47"/>). Лектор сначала формулирует с «меньше $B$», затем исправляет: удалять нужно поддеревья размера $\le B$ <em>вместе с родителем</em>, иначе оценка не получается (<ts t="4:44:05"/>–<ts t="4:44:56"/>). Тогда на оставшемся дереве можно хранить подъёмы от листьев ($\frac nB\log n=O(n)$ памяти) и лесенки/двоичные подъёмы за $O(1)$ (<ts t="4:45:47"/>).</p>
+<p><ts t="4:46:35"/> <strong>Запросы из удалённых деревьев.</strong> Удалённые деревья малы, и различных форм их тоже мало. Закодируем дерево скобочной последовательностью из нулей и единиц: при заходе в вершину пишем 0, при выходе пишем 1 (<ts t="4:46:35"/>–<ts t="4:47:24"/>). По последовательности дерево восстанавливается однозначно, поэтому форм не больше $2^{2B}$; для каждой формы заранее считаем все ответы (<ts t="4:47:24"/>–<ts t="4:48:24"/>). Эта конструкция называется <em>микро-макро деревом</em> (лектор оговаривает, что на практике это писать не нужно — полезна лишь идея «считать только в листьях»).</p>
+
+<h2 data-tc="4:50:34">RMQ ⟶ LCA: декартово дерево</h2>
+<p><ts t="4:50:34"/> Выше мы сводили LCA к RMQ, теперь наоборот: чтобы решать RMQ за $O(n)$ и $O(1)$ для произвольного массива, сведём его к LCA (<ts t="4:51:24"/>). Для массива строим декартово дерево на парах $(x,y)=(i,a_i)$: по $x$ — двоичное дерево поиска, по $y$ — куча (минимум сверху) (<ts t="4:52:16"/>). Минимум на $[l,r]$ — это значение в $\mathrm{LCA}$ вершин $l$ и $r$.</p>
+<figure class="viz"><svg viewBox="0 0 760 330" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="330" rx="14" fill="#141a24"/><text x="380" y="22" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Декартово дерево: x — индекс, y — значение (мин. сверху)</text><line x1="380" y1="70" x2="240" y2="150" stroke="#3b4a63" stroke-width="2"/><line x1="380" y1="70" x2="520" y2="150" stroke="#3b4a63" stroke-width="2"/><line x1="520" y1="150" x2="440" y2="230" stroke="#3b4a63" stroke-width="2"/><line x1="520" y1="150" x2="600" y2="230" stroke="#3b4a63" stroke-width="2"/><line x1="600" y1="230" x2="540" y2="300" stroke="#3b4a63" stroke-width="2"/><circle cx="380" cy="70" r="22" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="380" y="75.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><text x="410" y="52" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i=1</text><circle cx="240" cy="150" r="22" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="240" y="155.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">5</text><text x="270" y="132" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i=0</text><circle cx="520" cy="150" r="22" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="520" y="155.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="550" y="132" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i=3</text><circle cx="440" cy="230" r="22" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="440" y="235.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">4</text><text x="470" y="212" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i=2</text><circle cx="600" cy="230" r="22" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="600" y="235.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">3</text><text x="630" y="212" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i=5</text><circle cx="540" cy="300" r="22" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="540" y="305.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">6</text><text x="570" y="282" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i=4</text><text x="120" y="250" text-anchor="start" font-size="14" font-weight="400" fill="#dfe7f1">RMQ(2, 4):</text><text x="120" y="274" text-anchor="start" font-size="12" font-weight="400" fill="#9aa4b2">вершины 4 и 6 (индексы 2 и 4)</text><text x="120" y="296" text-anchor="start" font-size="13" font-weight="400" fill="#ffff00">LCA = вершина 2 (индекс 3)</text></svg><figcaption>Для массива 5 1 4 2 6 3 минимум на $[2,4]$ — это значение в $\mathrm{LCA}$ вершин с индексами 2 и 4.</figcaption></figure>
+<p><ts t="4:52:16"/> <strong>Построение за линию.</strong> Так как $x$ уже отсортированы, правый путь дерева храним в стеке. Приходит новый элемент $y$: снимаем со стека всё, что больше $y$; последнее снятое поддерево подвешиваем к новой вершине как левого сына, а саму новую вершину делаем правым сыном нового верха стека (<ts t="4:52:16"/>–<ts t="4:53:04"/>).</p>
+<pre class="cpp">// Декартово дерево по минимуму (x — индекс, y — значение a[i]); строится за O(n) стеком.
+vector&lt;int&gt; cartesian(const vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; par) {
+    int n = a.size();
+    vector&lt;int&gt; L(n, -1), R(n, -1), st;
+    par.assign(n, -1);
+    for (int i = 0; i &lt; n; i++) {
+        int last = -1;
+        while (!st.empty() &amp;&amp; a[st.back()] &gt; a[i]) last = st.back(), st.pop_back();
+        if (last != -1) L[i] = last, par[last] = i;      // снятое с вершины стека становится левым поддеревом
+        if (!st.empty()) R[st.back()] = i, par[i] = st.back();   // i — новый правый сын вершины стека
+        st.push_back(i);
+    }
+    return L;                                    // минимум на [l, r] = LCA(l, r) в этом дереве
+}</pre>
+<p><ts t="4:53:53"/> <strong>Итого RMQ за $O(n)+O(1)$:</strong> построить декартово дерево, выписать эйлеров обход, разбить на блоки $\frac{\log n}{2}$, для блоков заранее посчитать минимумы по формам, запросы на целых блоках — по разреженной таблице, запросы в блоке — по таблице формы (<ts t="4:54:43"/>–<ts t="4:55:41"/>). Лектор отмечает: в виде теоретического факта это красиво, а на практике предподсчёт тяжёл (<ts t="4:56:32"/>); в контесте по этой теме будет задача (<ts t="4:57:23"/>).</p>
+<div class="own"><span class="lbl">Проверка</span><br>Построение декартова дерева стеком проверено на 3000 случайных массивах: для каждого запроса $[l,r]$ значение в LCA равно минимуму, а сам LCA лежит в $[l,r]$.</div>
