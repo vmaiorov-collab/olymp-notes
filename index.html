@@ -759,6 +759,11 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 .algo .fsvg{width:100%;height:auto;display:block;border-radius:4px}
 .algo .fcap{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.04em;margin-bottom:6px;text-transform:uppercase}
 .algo .fmsg{min-height:2.6em;font-size:.92rem;color:var(--muted);margin-top:6px}
+
+/* подпункты (h3) в боковом оглавлении и панели разделов */
+html[data-theme] .side-toc a.sub{padding-left:26px; font-size:.8rem}
+html[data-theme] .secpanel a.sub{padding-left:32px; font-size:.86rem}
+html[data-theme] .side-toc{max-height:calc(100vh - 110px)}
 </style>
 <style>
 .par h2{font-size:1.4rem;margin:1.8em 0 .5em}
@@ -778,11 +783,11 @@ html[data-look="book"] .top{margin-left:0}
 <header class="hero"><h1>Олимп-конспекты</h1>
 <div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div></header>
 <input id="q" placeholder="Поиск по занятиям…" autocomplete="off"><div id="hits"></div>
-<section class="par"><h2>Параллель C</h2><div class="grid"><a class="lec" href="parallel-c/parallel-c-zan4-razbor.html"><span class="n">Занятие 4</span><span class="tt">Разбор контестов</span><span class="sb">Разбор задач трёх контестов: контейнеры (стек, очередь, дек), линейные алгоритмы (префиксные суммы, два указателя) и бинарный поиск (по ответу, вещественный, вложенный).</span></a></div></section>
+<section class="par"><h2>Параллель C</h2><div class="grid"><a class="lec" href="parallel-c/parallel-c-zan4-razbor.html"><span class="n">Занятие 4</span><span class="tt">Разбор контестов</span><span class="sb">Разбор задач трёх контестов: контейнеры (стек, очередь, дек), линейные алгоритмы (префиксные суммы, два указателя) и бинарный поиск (по ответу, вещественный, вложенный).</span></a></div></section><section class="par"><h2>Параллель B</h2><div class="grid"><a class="lec" href="parallel-b/parallel-b-zan5-derevo-otrezkov.html"><span class="n">Занятие 5</span><span class="tt">Дерево отрезков и разбор динамики</span><span class="sb">Разбор контеста по динамике (деревья, строки, отрезки, подарки по циклам) и лекция про дерево отрезков с массовыми операциями, деревья Фенвика, неявные деревья и приём с потенциалом.</span></a></div></section>
 <footer><a href="https://vmaiorov.goatcounter.com/" target="_blank" rel="noopener">статистика посещений</a></footer>
 </div>
 <button class="toplink" id="topBtn">↑ наверх</button>
-<script>var D=[{"t": "Параллель C · Разбор контестов", "h": "parallel-c/parallel-c-zan4-razbor.html"}];
+<script>var D=[{"t": "Параллель C · Разбор контестов", "h": "parallel-c/parallel-c-zan4-razbor.html"}, {"t": "Параллель B · Дерево отрезков и разбор динамики", "h": "parallel-b/parallel-b-zan5-derevo-otrezkov.html"}];
 var q=document.getElementById('q'),h=document.getElementById('hits');
 q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();h.innerHTML=v?D.filter(function(x){return x.t.toLowerCase().indexOf(v)>=0}).map(function(x){return '<p><a href="'+x.h+'">'+x.t+'</a></p>'}).join(''):''});</script>
 <script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#theme-toggle")){var h=document.documentElement;h.classList.add("theme-anim");setTimeout(function(){h.classList.remove("theme-anim")},350)}},true);document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".code .copy");if(!b)return;var pre=b.closest(".code").querySelector("pre"),t=pre.innerText;function ok(){b.textContent="скопировано ✓";setTimeout(function(){b.textContent="копировать"},1600)}function sel(){var r=document.createRange();r.selectNodeContents(pre);var x=getSelection();x.removeAllRanges();x.addRange(r);b.textContent="выделено — нажмите ⌘C"}if(navigator.clipboard){navigator.clipboard.writeText(t).then(ok,sel)}else{sel()}});</script>
@@ -969,12 +974,12 @@ q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();h.inner
 <script>(function(){var b=document.getElementById("look-toggle");if(!b)return;var h=document.documentElement;function label(){b.textContent=h.getAttribute("data-look")==="book"?"↩ старый вид":"↪ новый вид"}label();b.addEventListener("click",function(){var next=h.getAttribute("data-look")==="book"?"paper":"book";h.setAttribute("data-look",next);try{localStorage.setItem("olympLook",next)}catch(e){}label()});})();</script>
 <script>
 (function(){
-  var heads = [].slice.call(document.querySelectorAll(".wrap h2[id]"));
+  var heads = [].slice.call(document.querySelectorAll(".wrap h2[id], .wrap h3[id]"));
   if (!heads.length) return;
   var bar = document.createElement("div"); bar.className = "progress"; document.body.appendChild(bar);
   function label(h){ var c = h.cloneNode(true); [].forEach.call(c.querySelectorAll(".ts"), function(x){ x.remove(); });
     return c.textContent.replace(/^\s*(?:\d+\.)+\s*/, "").trim(); }
-  function links(box){ return heads.map(function(h){ var a = document.createElement("a"); a.href = "#" + h.id; a.textContent = label(h); box.appendChild(a); return a; }); }
+  function links(box){ return heads.map(function(h){ var a = document.createElement("a"); a.href = "#" + h.id; a.textContent = label(h); if (h.tagName === "H3") a.className = "sub"; box.appendChild(a); return a; }); }
   var side = document.createElement("nav"); side.className = "side-toc"; side.setAttribute("aria-label", "Разделы");
   side.innerHTML = "<p>Разделы</p>"; var sideLinks = links(side); document.body.appendChild(side);
   var btn = document.createElement("button"); btn.className = "secbtn"; btn.type = "button"; btn.textContent = "≡ разделы";

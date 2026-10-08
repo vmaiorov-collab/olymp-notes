@@ -13,3 +13,8 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 .algo .fsvg{width:100%;height:auto;display:block;border-radius:4px}
 .algo .fcap{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.04em;margin-bottom:6px;text-transform:uppercase}
 .algo .fmsg{min-height:2.6em;font-size:.92rem;color:var(--muted);margin-top:6px}
+
+/* подпункты (h3) в боковом оглавлении и панели разделов */
+html[data-theme] .side-toc a.sub{padding-left:26px; font-size:.8rem}
+html[data-theme] .secpanel a.sub{padding-left:32px; font-size:.86rem}
+html[data-theme] .side-toc{max-height:calc(100vh - 110px)}

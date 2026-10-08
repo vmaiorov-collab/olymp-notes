@@ -1,11 +1,11 @@
 
 (function(){
-  var heads = [].slice.call(document.querySelectorAll(".wrap h2[id]"));
+  var heads = [].slice.call(document.querySelectorAll(".wrap h2[id], .wrap h3[id]"));
   if (!heads.length) return;
   var bar = document.createElement("div"); bar.className = "progress"; document.body.appendChild(bar);
   function label(h){ var c = h.cloneNode(true); [].forEach.call(c.querySelectorAll(".ts"), function(x){ x.remove(); });
     return c.textContent.replace(/^\s*(?:\d+\.)+\s*/, "").trim(); }
-  function links(box){ return heads.map(function(h){ var a = document.createElement("a"); a.href = "#" + h.id; a.textContent = label(h); box.appendChild(a); return a; }); }
+  function links(box){ return heads.map(function(h){ var a = document.createElement("a"); a.href = "#" + h.id; a.textContent = label(h); if (h.tagName === "H3") a.className = "sub"; box.appendChild(a); return a; }); }
   var side = document.createElement("nav"); side.className = "side-toc"; side.setAttribute("aria-label", "Разделы");
   side.innerHTML = "<p>Разделы</p>"; var sideLinks = links(side); document.body.appendChild(side);
   var btn = document.createElement("button"); btn.className = "secbtn"; btn.type = "button"; btn.textContent = "≡ разделы";
