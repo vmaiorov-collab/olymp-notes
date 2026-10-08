@@ -11,7 +11,9 @@ build/                       сборщик (build.py), стили, скрипт
 bots-worker/                 Cloudflare Worker: счётчик визитов и Telegram-бот статистики
 ```
 
-Сборка: `python3 build/build.py`
+Сборка: `python3 build/build.py` (нужен локальный KaTeX: `cd build && npm pack katex@0.16.11 && tar xzf katex-*.tgz`).
+
+Иллюстрации и плееры каждого конспекта генерируют скрипты в `figures/` (`python3 figures/make_<имя>.py`), затем запускается сборка.
 
 ## Бот статистики
 
