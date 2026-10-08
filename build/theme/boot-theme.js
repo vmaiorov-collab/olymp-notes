@@ -1,1 +1,1 @@
-(function(){try{var t=localStorage.getItem("olympTheme");if(!t){t=(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches)?"dark":"light";localStorage.setItem("olympTheme",t)}document.documentElement.setAttribute("data-theme",t)}catch(e){}})();
+(function(){try{var t=localStorage.getItem("olympTheme")||"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}})();

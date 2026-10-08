@@ -23,18 +23,18 @@ def th(name):
 
 
 HEAD_CSS = "".join(f"<style>{th(n)}</style>\n" for n in ["base.css"]) + f"<style>{(B / 'katex.inline.css').read_text()}</style>\n" + \
-    "".join(f"<style>{th(n)}</style>\n" for n in ["back.css", "paper.css", "accent.css", "book.css", "extras.css"])
+    "".join(f"<style>{th(n)}</style>\n" for n in ["back.css", "paper.css", "accent.css", "book.css", "extras.css", "yb.css"])
 KJS = (B / "package/dist/katex.min.js").read_text()
 KAUTO = (B / "package/dist/contrib/auto-render.min.js").read_text()
 TAIL_JS = "".join(f"<script>{th(n)}</script>\n" for n in
-                  ["clicks.js", "topbtn.js", "render.js", "theme.js", "algos1.js", "algos2.js", "frames.js", "look.js", "reader.js"])
+                  ["clicks.js", "topbtn.js", "render.js", "theme.js", "algos1.js", "algos2.js", "frames.js", "reader.js"])
 BOOT = f"<script>{th('boot-theme.js')}</script>\n<script>{th('boot-look.js')}</script>\n"
 GOAT = '<script data-goatcounter="https://vmaiorov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>'
 # маячок бота статистики: без cookie
 BEACON = ("<script>try{if(location.protocol.indexOf('http')===0&&navigator.sendBeacon)navigator.sendBeacon('" + HIT_URL +
           "?p='+encodeURIComponent(location.pathname))}catch(e){}</script>")
 FAVICON = ("<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E"
-           "%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230d7c72'/%3E%3Cstop offset='1' stop-color='%23f0a94a'/%3E"
+           "%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffd400'/%3E"
            "%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3C/svg%3E\">")
 
 CPP_KW = set("""alignas auto bool break case catch char class const constexpr continue default delete do double else enum explicit extern false
@@ -153,7 +153,7 @@ def page(meta, body, prev, nxt):
 {BOOT}{HEAD_CSS}</head>
 <body>
 <div class="wrap">
-<div class="top"><a class="back" href="../index.html">← Все конспекты</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button><button type="button" id="look-toggle" class="look-toggle">↩ старый вид</button></div>
+<div class="top"><a class="sitelink" href="https://vmaiorov-collab.github.io/">← На главный сайт</a><a class="back" href="../index.html">← Все конспекты</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button></div>
 
 <header class="hero">
   <h1>{html.escape(title)}</h1>
@@ -213,7 +213,7 @@ html[data-look="book"] .top{{margin-left:0}}
 </style></head>
 <body>
 <div class="wrap">
-<div class="top"><span>olymp-notes</span><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button><button type="button" id="look-toggle" class="look-toggle">↩ старый вид</button></div>
+<div class="top"><a class="sitelink" href="https://vmaiorov-collab.github.io/">← Назад на главный сайт</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button></div>
 <header class="hero"><h1>Олимп-конспекты</h1>
 <div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div></header>
 <input id="q" placeholder="Поиск по занятиям…" autocomplete="off"><div id="hits"></div>
