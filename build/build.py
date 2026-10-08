@@ -105,6 +105,7 @@ def process_headings(body: str, video: str):
     def rep(m):
         nonlocal n2, n3
         lvl, attrs, text = m.group(1), m.group(2), m.group(3)
+        text = re.sub(r"^\s*(?:\d+\.)+\s*", "", text)          # номера ставит сборщик; ручные («1.4.») убираем
         tcm = re.search(r'data-tc="([^"]+)"', attrs)
         tc = tcm.group(1) if tcm else ""
         if lvl == "2": n2 += 1; n3 = 0; num = f"{n2}."; hid = f"s{n2}"
