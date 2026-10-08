@@ -857,3 +857,4 @@ header.phead .tagrow{display:flex;align-items:center;gap:12px;font-family:var(--
 .pnav a:last-child:nth-child(2){text-align:right}.pnav .ph0{visibility:hidden}
 .hits p{margin:.4em 0}#hits a{color:var(--ink)}
 .lv .lh{min-height:48px}
+.levels.big .lv{min-height:170px}.levels.big .lv .lt{font-size:.95rem}

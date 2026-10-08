@@ -110,10 +110,9 @@ cards = ''
 for k in ORDER:
     ls = lessons[k]
     tag = f'<span class="lg">{TAG[k]}</span>' if k in TAG else ''
-    items = ''.join(f'<li><span>{l["n"]}.</span>{esc(l["title"])}</li>' for l in ls)
     cards += (f'<a class="lv" href="parallel-{k}/"><div class="lh"><span class="lk">{k.upper()}</span>'
               f'<div><h3>Параллель {k.upper()}</h3>{tag}</div></div>'
-              f'<div class="lt">{esc(DESC[k])}</div><ol>{items}</ol>'
+              f'<div class="lt">{esc(DESC[k])}</div>'
               f'<div class="lc"><span>{word(len(ls))}</span><em>открыть →</em></div></a>')
 data = [dict(t=f'Параллель {k.upper()} · {l["title"]}', s=l['sub'], h=l['href'])
         for k in ORDER for l in lessons[k]]
