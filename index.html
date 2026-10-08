@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffd400'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffdd2d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3C/svg%3E">
 <title>Олимп-конспекты</title>
 <meta name="description" content="Подробные офлайн-конспекты занятий по олимпиадному программированию.">
 <script>(function(){try{var t=localStorage.getItem("olympTheme")||"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}})();</script>
@@ -777,7 +777,7 @@ nav.toc a{color:var(--ink)}
 @media(max-width:680px){nav.toc ol{columns:1}}
 </style>
 <style>/* жёлто-чёрная палитра */
-html[data-look="book"]{--acc-l:#8a6500; --acc-d:#ffd400}
+html[data-look="book"]{--acc-l:#8a6500; --acc-d:#ffdd2d}
 html[data-look="book"]{
   --desk:#f3e9b8; --sheet-grid:rgba(120,90,0,.07);
   --bg:#fffdf2; --card:#fffdf2;
@@ -788,21 +788,25 @@ html[data-look="book"]{
   --hl-c:#7a7035; --hl-k:#141100; --hl-t:#6b4b00; --hl-s:#5b6b00; --hl-n:#a14a00; --hl-f:#3d3500; --hl-p:#9c3322;
 }
 html[data-look="book"][data-theme="dark"]{
-  --desk:#000; --sheet-grid:rgba(255,212,0,.05);
+  --desk:#000; --sheet-grid:rgba(255,221,45,.05);
   --bg:#0b0a00; --card:#0b0a00;
   --ink:#f5f0d0; --muted:#c2b66a; --faint:#8a7f3c;
   --line:#2b2600; --rule-hard:#4a4000;
   --tag:#2b2600;
   --code-bg:#15120a; --code-paper:#15120a; --code-line:#3a3200; --code-ink:#f5f0d0; --code-text:#f5f0d0;
-  --hl-c:#8a7f3c; --hl-k:#ffd400; --hl-t:#ffe985; --hl-s:#d8e58a; --hl-n:#ffab40; --hl-f:#f5f0d0; --hl-p:#ff8a65;
+  --hl-c:#8a7f3c; --hl-k:#ffdd2d; --hl-t:#ffe985; --hl-s:#d8e58a; --hl-n:#ffab40; --hl-f:#f5f0d0; --hl-p:#ff8a65;
 }
 html[data-look="book"] header.hero{background:none!important;color:var(--ink)}
-html[data-look="book"] ::selection{background:#ffd400;color:#000}
+html[data-look="book"] ::selection{background:#ffdd2d;color:#333}
 .viz svg rect:first-child{fill:#0a0a0a}
-.sitelink{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--rule-hard);background:#ffd400;color:#000!important;font-weight:700;font-size:.85rem;text-decoration:none!important}
-.sitelink:hover{background:#000;color:#ffd400!important;border-color:#ffd400}
+.sitelink{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--rule-hard);background:#ffdd2d;color:#333!important;font-weight:700;font-size:.85rem;text-decoration:none!important}
+.sitelink:hover{background:#000;color:#ffdd2d!important;border-color:#ffdd2d}
 .top .sitelink{margin-right:8px}
 .look-toggle{display:none!important}
+.sitelink{border-color:#ffdd2d;border-radius:8px}
+.sitelink:hover{background:#333;color:#ffdd2d!important;border-color:#333}
+html[data-look="book"] .toc li.on>a, html[data-look="book"] mark{background:#ffdd2d;color:#333}
+.tgen{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:8px;background:#ffdd2d;color:#333;font-weight:700;font-size:.85rem}
 </style>
 <style>
 .par h2{font-size:1.4rem;margin:1.8em 0 .5em}
@@ -820,7 +824,8 @@ html[data-look="book"] .top{margin-left:0}
 <div class="wrap">
 <div class="top"><a class="sitelink" href="https://vmaiorov-collab.github.io/">← Назад на главный сайт</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button></div>
 <header class="hero"><h1>Олимп-конспекты</h1>
-<div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div></header>
+<div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div>
+<div class="tgen">Лекции из Т-поколения</div></header>
 <input id="q" placeholder="Поиск по занятиям…" autocomplete="off"><div id="hits"></div>
 <section class="par"><h2>Параллель X</h2><div class="grid"><a class="lec" href="parallel-x/parallel-x-zan1-primenenie-do.html"><span class="n">Занятие 1</span><span class="tt">Применение дерева отрезков</span><span class="sb">Организация параллели X; подсчёт на отрезке, персистентное дерево отрезков, число различных, MEX, k-я статистика на отрезке и на пути, disjoint sparse table, дерево отрезков без push.</span></a><a class="lec" href="parallel-x/parallel-x-zan2-teoriya-chisel.html"><span class="n">Занятие 2</span><span class="tt">Теория чисел</span><span class="sb">Разбор контеста по дереву отрезков; алгоритм Евклида, дерево Штерна—Броко, геометрия решёток, рациональная реконструкция, floor sum, решёта, мультипликативные функции, НОД-свёртки.</span></a><a class="lec" href="parallel-x/parallel-x-zan3-potoki.html"><span class="n">Занятие 3</span><span class="tt">Введение в потоки</span><span class="sb">Разбор задач на суффиксный массив и лекция про потоки: максимальный поток и минимальный разрез, алгоритмы Форда—Фалкерсона, Эдмонса—Карпа и Диница, паросочетания, гаджеты для разрезов.</span></a></div></section><section class="par"><h2>Параллель XS</h2><div class="grid"><a class="lec" href="parallel-xs/parallel-xs-zan4-matematika-1.html"><span class="n">Занятие 4</span><span class="tt">Математика 1</span><span class="sb">Разбор контеста по строкам и дистанционного тура; решето Эратосфена и линейное решето, мультипликативные функции, теорема Эйлера, расширенный Евклид, китайская теорема, включения-исключения, биномиальные коэффициенты, числа Каталана.</span></a></div></section><section class="par"><h2>Параллель B</h2><div class="grid"><a class="lec" href="parallel-b/parallel-b-zan5-derevo-otrezkov.html"><span class="n">Занятие 5</span><span class="tt">Дерево отрезков и разбор динамики</span><span class="sb">Разбор контеста по динамике (деревья, строки, отрезки, подарки по циклам) и лекция про дерево отрезков с массовыми операциями, деревья Фенвика, неявные деревья и приём с потенциалом.</span></a></div></section><section class="par"><h2>Параллель BS</h2><div class="grid"><a class="lec" href="parallel-bs/parallel-bs-zan1-stl-zhadniki.html"><span class="n">Занятие 1</span><span class="tt">STL и жадные алгоритмы</span><span class="sb">Организация курса; вектор, итераторы, сортировка и компараторы, lower_bound, сжатие координат, set, map, multiset, стек, дек, очередь, быстрый ввод-вывод; семинар по жадным алгоритмам.</span></a><a class="lec" href="parallel-bs/parallel-bs-zan3-linejnye.html"><span class="n">Занятие 3</span><span class="tt">Линейные алгоритмы</span><span class="sb">Префиксные суммы и разностные массивы, сканирующая прямая, второй максимум, сдвиг на месте, ближайшие большие и меньшие элементы, гистограммы и дождевая вода.</span></a></div></section><section class="par"><h2>Параллель C</h2><div class="grid"><a class="lec" href="parallel-c/parallel-c-zan1-kontejnery.html"><span class="n">Занятие 1</span><span class="tt">Контейнеры</span><span class="sb">Организация курса и оценка, повторение асимптотики, стек, очередь и дек; стек и очередь с минимумом, проверка скобочной последовательности, постфиксная запись.</span></a><a class="lec" href="parallel-c/parallel-c-zan2-linejnye.html"><span class="n">Занятие 2</span><span class="tt">Линейные алгоритмы</span><span class="sb">Префиксные суммы (одномерные и двумерные), максимальный подотрезок, разностный массив и метод двух указателей: общие элементы, слияние, пары точек.</span></a><a class="lec" href="parallel-c/parallel-c-zan3-binarnyj-poisk.html"><span class="n">Занятие 3</span><span class="tt">Бинарный поиск</span><span class="sb">Игра «угадай число» и логарифмическая асимптотика, инвариант «L не подходит, R подходит», lower_bound и upper_bound, вещественный бинпоиск, бинпоиск по ответу.</span></a><a class="lec" href="parallel-c/parallel-c-zan4-razbor.html"><span class="n">Занятие 4</span><span class="tt">Разбор контестов</span><span class="sb">Разбор задач трёх контестов: контейнеры (стек, очередь, дек), линейные алгоритмы (префиксные суммы, два указателя) и бинарный поиск (по ответу, вещественный, вложенный).</span></a></div></section>
 <footer><a href="https://vmaiorov.goatcounter.com/" target="_blank" rel="noopener">статистика посещений</a></footer>

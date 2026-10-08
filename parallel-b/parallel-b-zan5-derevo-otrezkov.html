@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffd400'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffdd2d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3C/svg%3E">
 <title>Занятие 5. Параллель B — Дерево отрезков и разбор динамики</title>
 <meta name="description" content="Разбор контеста по динамике (деревья, строки, отрезки, подарки по циклам) и лекция про дерево отрезков с массовыми операциями, деревья Фенвика, неявные деревья и приём с потенциалом.">
 <meta property="og:type" content="article">
@@ -780,7 +780,7 @@ nav.toc a{color:var(--ink)}
 @media(max-width:680px){nav.toc ol{columns:1}}
 </style>
 <style>/* жёлто-чёрная палитра */
-html[data-look="book"]{--acc-l:#8a6500; --acc-d:#ffd400}
+html[data-look="book"]{--acc-l:#8a6500; --acc-d:#ffdd2d}
 html[data-look="book"]{
   --desk:#f3e9b8; --sheet-grid:rgba(120,90,0,.07);
   --bg:#fffdf2; --card:#fffdf2;
@@ -791,21 +791,25 @@ html[data-look="book"]{
   --hl-c:#7a7035; --hl-k:#141100; --hl-t:#6b4b00; --hl-s:#5b6b00; --hl-n:#a14a00; --hl-f:#3d3500; --hl-p:#9c3322;
 }
 html[data-look="book"][data-theme="dark"]{
-  --desk:#000; --sheet-grid:rgba(255,212,0,.05);
+  --desk:#000; --sheet-grid:rgba(255,221,45,.05);
   --bg:#0b0a00; --card:#0b0a00;
   --ink:#f5f0d0; --muted:#c2b66a; --faint:#8a7f3c;
   --line:#2b2600; --rule-hard:#4a4000;
   --tag:#2b2600;
   --code-bg:#15120a; --code-paper:#15120a; --code-line:#3a3200; --code-ink:#f5f0d0; --code-text:#f5f0d0;
-  --hl-c:#8a7f3c; --hl-k:#ffd400; --hl-t:#ffe985; --hl-s:#d8e58a; --hl-n:#ffab40; --hl-f:#f5f0d0; --hl-p:#ff8a65;
+  --hl-c:#8a7f3c; --hl-k:#ffdd2d; --hl-t:#ffe985; --hl-s:#d8e58a; --hl-n:#ffab40; --hl-f:#f5f0d0; --hl-p:#ff8a65;
 }
 html[data-look="book"] header.hero{background:none!important;color:var(--ink)}
-html[data-look="book"] ::selection{background:#ffd400;color:#000}
+html[data-look="book"] ::selection{background:#ffdd2d;color:#333}
 .viz svg rect:first-child{fill:#0a0a0a}
-.sitelink{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--rule-hard);background:#ffd400;color:#000!important;font-weight:700;font-size:.85rem;text-decoration:none!important}
-.sitelink:hover{background:#000;color:#ffd400!important;border-color:#ffd400}
+.sitelink{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--rule-hard);background:#ffdd2d;color:#333!important;font-weight:700;font-size:.85rem;text-decoration:none!important}
+.sitelink:hover{background:#000;color:#ffdd2d!important;border-color:#ffdd2d}
 .top .sitelink{margin-right:8px}
 .look-toggle{display:none!important}
+.sitelink{border-color:#ffdd2d;border-radius:8px}
+.sitelink:hover{background:#333;color:#ffdd2d!important;border-color:#333}
+html[data-look="book"] .toc li.on>a, html[data-look="book"] mark{background:#ffdd2d;color:#333}
+.tgen{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:8px;background:#ffdd2d;color:#333;font-weight:700;font-size:.85rem}
 </style>
 </head>
 <body>
@@ -816,6 +820,7 @@ html[data-look="book"] ::selection{background:#ffd400;color:#000}
   <h1>Занятие 5. Параллель B — Дерево отрезков и разбор динамики</h1>
   <div class="sub">Разбор контеста по динамике (деревья, строки, отрезки, подарки по циклам) и лекция про дерево отрезков с массовыми операциями, деревья Фенвика, неявные деревья и приём с потенциалом.</div>
   <div class="meta"><span class="chip">Разбор контеста + лекция</span><span class="chip">≈ 3 ч 40 мин</span><span class="chip">Язык кода: C++ (в разборе — псевдокод)</span></div>
+  <div class="tgen">Лекции из Т-поколения</div>
 </header>
 
 <nav class="toc">

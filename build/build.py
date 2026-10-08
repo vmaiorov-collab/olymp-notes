@@ -34,7 +34,7 @@ GOAT = '<script data-goatcounter="https://vmaiorov.goatcounter.com/count" async 
 BEACON = ("<script>try{if(location.protocol.indexOf('http')===0&&navigator.sendBeacon)navigator.sendBeacon('" + HIT_URL +
           "?p='+encodeURIComponent(location.pathname))}catch(e){}</script>")
 FAVICON = ("<link rel=\"icon\" href=\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E"
-           "%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffd400'/%3E"
+           "%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23000'/%3E%3Cstop offset='1' stop-color='%23ffdd2d'/%3E"
            "%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='9' fill='url(%23g)'/%3E%3C/svg%3E\">")
 
 CPP_KW = set("""alignas auto bool break case catch char class const constexpr continue default delete do double else enum explicit extern false
@@ -159,6 +159,7 @@ def page(meta, body, prev, nxt):
   <h1>{html.escape(title)}</h1>
   <div class="sub">{meta.get('subtitle', '')}</div>
   <div class="meta">{chips}</div>
+  <div class="tgen">Лекции из Т-поколения</div>
 </header>
 
 <nav class="toc">
@@ -215,7 +216,8 @@ html[data-look="book"] .top{{margin-left:0}}
 <div class="wrap">
 <div class="top"><a class="sitelink" href="https://vmaiorov-collab.github.io/">← Назад на главный сайт</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button></div>
 <header class="hero"><h1>Олимп-конспекты</h1>
-<div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div></header>
+<div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div>
+<div class="tgen">Лекции из Т-поколения</div></header>
 <input id="q" placeholder="Поиск по занятиям…" autocomplete="off"><div id="hits"></div>
 {cards}
 <footer><a href="https://vmaiorov.goatcounter.com/" target="_blank" rel="noopener">статистика посещений</a></footer>
