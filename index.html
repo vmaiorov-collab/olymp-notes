@@ -778,11 +778,11 @@ html[data-look="book"] .top{margin-left:0}
 <header class="hero"><h1>Олимп-конспекты</h1>
 <div class="sub">Подробные самодостаточные конспекты занятий по олимпиадному программированию: определения, доказательства, разборы задач, код и схемы. Каждая страница работает офлайн.</div></header>
 <input id="q" placeholder="Поиск по занятиям…" autocomplete="off"><div id="hits"></div>
-<section class="par"><h2>Параллель T</h2><div class="grid"><a class="lec" href="parallel-t/parallel-t-zan1-test.html"><span class="n">Занятие 1</span><span class="tt">Проверка шаблона</span><span class="sb">Образец оформления: формулы, код, блоки, схема и плеер.</span></a></div></section>
+<section class="par"><h2>Параллель C</h2><div class="grid"><a class="lec" href="parallel-c/parallel-c-zan4-razbor.html"><span class="n">Занятие 4</span><span class="tt">Разбор контестов</span><span class="sb">Разбор задач трёх контестов: контейнеры (стек, очередь, дек), линейные алгоритмы (префиксные суммы, два указателя) и бинарный поиск (по ответу, вещественный, вложенный).</span></a></div></section>
 <footer><a href="https://vmaiorov.goatcounter.com/" target="_blank" rel="noopener">статистика посещений</a></footer>
 </div>
 <button class="toplink" id="topBtn">↑ наверх</button>
-<script>var D=[{"t": "Параллель T · Проверка шаблона", "h": "parallel-t/parallel-t-zan1-test.html"}];
+<script>var D=[{"t": "Параллель C · Разбор контестов", "h": "parallel-c/parallel-c-zan4-razbor.html"}];
 var q=document.getElementById('q'),h=document.getElementById('hits');
 q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();h.innerHTML=v?D.filter(function(x){return x.t.toLowerCase().indexOf(v)>=0}).map(function(x){return '<p><a href="'+x.h+'">'+x.t+'</a></p>'}).join(''):''});</script>
 <script>document.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#theme-toggle")){var h=document.documentElement;h.classList.add("theme-anim");setTimeout(function(){h.classList.remove("theme-anim")},350)}},true);document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".code .copy");if(!b)return;var pre=b.closest(".code").querySelector("pre"),t=pre.innerText;function ok(){b.textContent="скопировано ✓";setTimeout(function(){b.textContent="копировать"},1600)}function sel(){var r=document.createRange();r.selectNodeContents(pre);var x=getSelection();x.removeAllRanges();x.addRange(r);b.textContent="выделено — нажмите ⌘C"}if(navigator.clipboard){navigator.clipboard.writeText(t).then(ok,sel)}else{sel()}});</script>
