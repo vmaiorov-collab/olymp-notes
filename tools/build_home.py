@@ -56,9 +56,9 @@ ICON = ('<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.
         'font-family=\'Georgia\' font-weight=\'700\' text-anchor=\'middle\' fill=\'%23333\'%3E%D0%9E%3C/text%3E%3C/svg%3E">')
 
 
-def head(title, desc, url, prefix):
+def head(title, desc, url, prefix, image='og-image.png'):
     t, d = esc(title), esc(desc)
-    img = BASE + 'og-image.png'
+    img = BASE + image
     return f'''<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -151,7 +151,7 @@ for i, k in enumerate(ORDER):
             if i else '<a class="ph0"></a>')
     nxt = (f'<a href="../parallel-{ORDER[i+1]}/index.html"><small>следующая →</small><b>Параллель {ORDER[i+1].upper()}</b></a>'
            if i < len(ORDER) - 1 else '')
-    page = head(f'Параллель {k.upper()} — Олимп-конспекты', DESC[k], f'{BASE}parallel-{k}/', '../') + f'''<body>
+    page = head(f'Параллель {k.upper()} — Олимп-конспекты', DESC[k], f'{BASE}parallel-{k}/', '../', image=f'og-parallel-{k}.png') + f'''<body>
 <div class="wrap">
 <div class="top"><a class="sitelink" data-up href="../index.html">← Все параллели</a>{TOGGLE}</div>
 <header class="phead"><div class="tagrow"><span class="lk">{k.upper()}</span>{tag}<span>{word(len(ls))}</span></div>
