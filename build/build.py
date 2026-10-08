@@ -99,6 +99,16 @@ def ts_link(video, tc):
             f'title="Смотреть лекцию с этого момента">{tc_label(tc)}</a>')
 
 
+def escape_math(body: str) -> str:
+    """'<' и '>' внутри формул ($...$, $$...$$) превращаем в сущности: иначе '<l$' парсится как тег."""
+    def fix(seg):
+        f = lambda m: m.group(0).replace("<", "&lt;").replace(">", "&gt;")
+        seg = re.sub(r"\$\$.*?\$\$", f, seg, flags=re.S)
+        return re.sub(r"\$[^$\n]+?\$", f, seg)
+    parts = re.split(r"(<pre\b.*?</pre>|<svg\b.*?</svg>)", body, flags=re.S)
+    return "".join(p if i % 2 else fix(p) for i, p in enumerate(parts))
+
+
 def process_headings(body: str, video: str):
     items, n2, n3 = [], 0, 0
 
@@ -226,7 +236,7 @@ def main():
     for f in sorted(src.glob("*/*.src.html")):
         text = f.read_text()
         m = re.match(r"\s*<!--meta (.*?)-->\s*", text, re.S)
-        meta = json.loads(m.group(1)); body = text[m.end():]
+        meta = json.loads(m.group(1)); body = escape_math(text[m.end():])
         algos = f.with_name(f.name.replace(".src.html", ".algos.js"))
         meta["algos_js"] = algos.read_text() if algos.exists() else ""
         out_rel = f"{f.parent.name}/{f.name.replace('.src.html', '.html')}"
