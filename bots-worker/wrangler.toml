@@ -9,3 +9,4 @@ database_id = "9583be4d-5f88-46ee-84e2-2a4765709155"
 
 [vars]
 SITE_URL = "https://vmaiorov-collab.github.io/olymp-notes/"
+GC_SITE = "vmaiorov"

@@ -93,7 +93,32 @@ function range(days) {
   return { start: dayStr(start), end: dayStr(today), prevStart: dayStr(prevStart), prevEnd: dayStr(new Date(start.getTime() - DAY)), startDate: start, today };
 }
 
+// ---------- GoatCounter (если задан секрет GC_API_TOKEN) ----------
+// Сайт общий со старым conspectus, поэтому берём только страницы нового сайта (/olymp-notes/…).
+const GC_PREFIX = "/olymp-notes";
+
+async function gcHits(env, from, to) {
+  const url = new URL(`https://${env.GC_SITE}.goatcounter.com/api/v0/stats/hits`);
+  url.searchParams.set("start", `${from}T00:00:00Z`);
+  url.searchParams.set("end", `${to}T23:59:59Z`);
+  url.searchParams.set("limit", "100");
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${env.GC_API_TOKEN}` } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || JSON.stringify(data));
+  return (data.hits || []).filter((h) => (h.path || "").startsWith(GC_PREFIX + "/") || h.path === GC_PREFIX);
+}
+
+const normPath = (p) => (p.slice(GC_PREFIX.length).replace(/\/index\.html$/, "/") || "/");
+
 async function perDay(env, from, to) {
+  if (env.GC_API_TOKEN) {
+    const m = new Map();
+    for (const h of await gcHits(env, from, to)) for (const d of h.stats || []) {
+      if (d.day < from || d.day > to) continue;
+      m.set(d.day, { v: (m.get(d.day)?.v || 0) + d.daily, u: 0 });
+    }
+    return m;
+  }
   const hits = await env.DB.prepare("SELECT day, SUM(n) AS v FROM hits WHERE day BETWEEN ? AND ? GROUP BY day").bind(from, to).all();
   const uniq = await env.DB.prepare("SELECT day, COUNT(*) AS u FROM visitors WHERE day BETWEEN ? AND ? GROUP BY day").bind(from, to).all();
   const m = new Map();
@@ -118,7 +143,7 @@ async function reportStats(env, days) {
   const best = rows.reduce((a, b) => (b.v > a.v ? b : a), rows[0]);
   const lines = [`📊 <b>Статистика olymp-notes</b> · ${periodLabel(days)}`, ""];
   lines.push(`👁 Просмотров: <b>${views}</b>  <i>${delta(views, pv)} к прошлому периоду (${pv})</i>`);
-  lines.push(`👥 Посетителей (по дням): <b>${uniq}</b>`);
+  if (!env.GC_API_TOKEN) lines.push(`👥 Посетителей (по дням): <b>${uniq}</b>`);
   if (days > 1) {
     lines.push(`📈 В среднем: <b>${(views / rows.length).toFixed(1)}</b> просмотров в день`);
     if (best.v > 0) lines.push(`🔥 Рекорд: <b>${best.v}</b> — ${fmtDay(best.day)}`);
@@ -130,6 +155,9 @@ async function reportStats(env, days) {
 
 async function topRows(env, days) {
   const r = range(days);
+  if (env.GC_API_TOKEN) {
+    return (await gcHits(env, r.start, r.end)).map((h) => ({ path: normPath(h.path), v: h.count })).sort((a, b) => b.v - a.v);
+  }
   const q = await env.DB.prepare("SELECT path, SUM(n) AS v FROM hits WHERE day BETWEEN ? AND ? GROUP BY path ORDER BY v DESC LIMIT 200").bind(r.start, r.end).all();
   return q.results;
 }
