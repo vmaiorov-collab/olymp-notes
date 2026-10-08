@@ -858,3 +858,7 @@ header.phead .tagrow{display:flex;align-items:center;gap:12px;font-family:var(--
 .hits p{margin:.4em 0}#hits a{color:var(--ink)}
 .lv .lh{min-height:48px}
 .levels.big .lv{min-height:170px}.levels.big .lv .lt{font-size:.95rem}
+.idea{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:46px;padding:22px 24px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
+.idea h2{margin:0 0 6px!important;font-size:1.2rem}.idea p{margin:0;max-width:34em;color:var(--muted);font-size:.95rem;line-height:1.5}
+.ibtn{display:inline-block;padding:11px 20px;border-radius:10px;background:#ffdd2d;color:#222!important;font-weight:700;text-decoration:none!important;white-space:nowrap}
+.ibtn:hover{background:#ffe85c}

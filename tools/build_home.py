@@ -99,6 +99,7 @@ def tail(prefix, extra=''):
 def footer(prefix):
     return ('<footer class="foot"><a href="https://education.tbank.ru/school/generation/algo/">'
             'education.tbank.ru/school/generation/algo</a>'
+            '<a href="https://t.me/t_conspectus_ideas_bot" target="_blank" rel="noopener">идея или ошибка → бот</a>'
             '<a href="https://vmaiorov-collab.github.io/">все проекты</a>'
             '<a href="https://vmaiorov.goatcounter.com/" target="_blank" rel="noopener">статистика посещений</a></footer>')
 
@@ -129,6 +130,9 @@ index = head('Олимп-конспекты',
 <input id="q" placeholder="Поиск по занятиям: например, бинпоиск или потоки" autocomplete="off"><div id="hits"></div>
 <div class="lvh">Выберите параллель</div><nav class="levels big">{cards}</nav>
 </header>
+<section class="idea"><div><h2>Нашли ошибку или есть идея?</h2>
+<p>Напишите в Telegram-бот: можно с вопросом, пожеланием или скриншотом. Аккаунт на GitHub не нужен, автор ответит прямо в чате.</p></div>
+<a class="ibtn" href="https://t.me/t_conspectus_ideas_bot" target="_blank" rel="noopener">Написать в бот</a></section>
 {footer('')}
 </div>
 '''
