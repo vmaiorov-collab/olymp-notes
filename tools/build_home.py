@@ -110,7 +110,7 @@ cards = ''
 for k in ORDER:
     ls = lessons[k]
     tag = f'<span class="lg">{TAG[k]}</span>' if k in TAG else ''
-    cards += (f'<a class="lv" href="parallel-{k}/"><div class="lh"><span class="lk">{k.upper()}</span>'
+    cards += (f'<a class="lv" href="parallel-{k}/index.html"><div class="lh"><span class="lk">{k.upper()}</span>'
               f'<div><h3>Параллель {k.upper()}</h3>{tag}</div></div>'
               f'<div class="lt">{esc(DESC[k])}</div>'
               f'<div class="lc"><span>{word(len(ls))}</span><em>открыть →</em></div></a>')
@@ -142,13 +142,13 @@ for i, k in enumerate(ORDER):
         f'<a class="lec" href="{os.path.basename(l["href"])}"><span class="n">Занятие {l["n"]}</span>'
         f'<span class="tt">{esc(l["title"])}</span><span class="sb">{esc(l["sub"])}</span>'
         + (f'<span class="du">{esc(l["dur"])}</span>' if l['dur'] else '') + '</a>' for l in ls)
-    prev = (f'<a href="../parallel-{ORDER[i-1]}/"><small>← предыдущая</small><b>Параллель {ORDER[i-1].upper()}</b></a>'
+    prev = (f'<a href="../parallel-{ORDER[i-1]}/index.html"><small>← предыдущая</small><b>Параллель {ORDER[i-1].upper()}</b></a>'
             if i else '<a class="ph0"></a>')
-    nxt = (f'<a href="../parallel-{ORDER[i+1]}/"><small>следующая →</small><b>Параллель {ORDER[i+1].upper()}</b></a>'
+    nxt = (f'<a href="../parallel-{ORDER[i+1]}/index.html"><small>следующая →</small><b>Параллель {ORDER[i+1].upper()}</b></a>'
            if i < len(ORDER) - 1 else '')
     page = head(f'Параллель {k.upper()} — Олимп-конспекты', DESC[k], f'{BASE}parallel-{k}/', '../') + f'''<body>
 <div class="wrap">
-<div class="top">{SITE}<a class="back" href="../">← Все параллели</a>{TOGGLE}</div>
+<div class="top">{SITE}<a class="back" href="../index.html">← Все параллели</a>{TOGGLE}</div>
 <header class="phead"><div class="tagrow"><span class="lk">{k.upper()}</span>{tag}<span>{word(len(ls))}</span></div>
 <h1>Параллель {k.upper()}</h1><p class="lead">{esc(DESC[k])}</p></header>
 <div class="grid" style="margin-top:22px">{cards}</div>
