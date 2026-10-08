@@ -771,7 +771,7 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <header class="hero">
   <h1>Занятие 4. Параллель C — Разбор контестов</h1>
   <div class="sub">Разбор задач трёх контестов: контейнеры (стек, очередь, дек), линейные алгоритмы (префиксные суммы, два указателя) и бинарный поиск (по ответу, вещественный, вложенный).</div>
-  <div class="meta"><span class="chip">Разбор трёх контестов</span><span class="chip">≈ 3 ч 15 мин</span><span class="chip">Язык кода: C++</span></div>
+  <div class="meta"><span class="chip">Разбор трёх контестов</span><span class="chip">≈ 3 ч 15 мин</span><span class="chip">Псевдокод</span></div>
 </header>
 
 <nav class="toc">
@@ -786,17 +786,20 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><strong>Идея.</strong> Вместе с каждым числом храним <strong>минимум среди всех, кто лежит не выше него</strong> (то есть самого числа и всех ниже). Тогда ячейка стека — это пара (число, минимум до этой ячейки).</p>
 <p>Пример. Приходят числа 1, 2, 1, 4. Ячейки: (1, 1), (2, 1), (1, 1), (4, 1) — в каждой второе число показывает, какой минимум у стека до этого места включительно. Убираем 4 — просто удаляем верхнюю пару целиком, и в вершине снова лежит (1, 1) с правильным минимумом. Если потом после опустошения стека положить 4, 2, 3, то получится (4, 4), (2, 2), (3, 2): минимум стека всегда читается с вершины.</p>
 <div class="good"><span class="lbl">Инвариант</span><br>Для каждой ячейки второе число равно минимуму всех чисел от дна стека до этой ячейки. При добавлении числа $x$ новый минимум равен $\min(x,\ \text{минимум вершины})$ (для пустого стека — просто $x$). При удалении вершины все оставшиеся ячейки не меняются, поэтому инвариант сохраняется сам собой.</div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">struct</span> MinStack {
-    <span class="t">vector</span>&lt;<span class="t">pair</span>&lt;<span class="k">int</span>, <span class="k">int</span>&gt;&gt; st;                 <span class="c">// (число, минимум среди всех, кто ниже и он сам)</span>
-    <span class="k">void</span> <span class="f">push</span>(<span class="k">int</span> x) {
-        <span class="k">int</span> mn = st.<span class="f">empty</span>() ? x : <span class="f">min</span>(x, st.<span class="f">back</span>().second);
-        st.<span class="f">push_back</span>({x, mn});
-    }
-    <span class="k">void</span> <span class="f">pop</span>() { st.<span class="f">pop_back</span>(); }                <span class="c">// пара удаляется целиком</span>
-    <span class="k">int</span> <span class="f">getMin</span>() <span class="k">const</span> { <span class="k">return</span> st.<span class="f">back</span>().second; }   <span class="c">// стек не должен быть пустым</span>
-    <span class="k">bool</span> <span class="f">empty</span>() <span class="k">const</span> { <span class="k">return</span> st.<span class="f">empty</span>(); }
-};</code></pre></div>
-<p>Все операции работают за $O(1)$, память — $O(n)$. На записи отмечено, что стек можно реализовать и обычным <code>std::vector</code> (<code>push_back</code> и <code>pop_back</code>), как выше: отдельный <code>std::stack</code> не обязателен.</p>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>структура СтекСМинимумом:
+    ячейки — список пар (число, минимум)
+
+    положить(x):
+        если стек пуст: m = x
+        иначе:          m = min(x, ячейки.последняя.минимум)
+        ячейки.добавить_в_конец((x, m))
+
+    убрать():
+        ячейки.удалить_последнюю()          // пара удаляется целиком
+
+    минимум():
+        вернуть ячейки.последняя.минимум</code></pre></div>
+<p>Все операции работают за $O(1)$, память — $O(n)$. На записи отмечено, что стек можно реализовать и обычным динамическим массивом (добавление и удаление с конца), как выше: отдельная структура «стек» из библиотеки не обязательна.</p>
 <div class="warn"><span class="lbl">Типичные ошибки</span><br>Хранить один «глобальный минимум» и обновлять его только при добавлении: после удаления минимального числа он перестанет быть верным. Вызывать <code>getMin</code> у пустого стека.</div>
 
 <h3 id="s1-2">1.2. 1.2. Задача E. Очередь с минимумом <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=3m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">3:00</a></h3>
@@ -808,23 +811,23 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 </ul>
 <figure class="viz"><svg viewBox="0 0 700 310" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="700" height="310" rx="14" fill="#141a24"/><text x="380" y="28" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Очередь = два стека; в каждой ячейке пара (число, минимум под ним)</text><text x="118.0" y="282" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">вход — сюда приходят</text><line x1="62" y1="260" x2="174" y2="260" stroke="#7c8aa0" stroke-width="2"/><rect x="70" y="222" width="96" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="118.0" y="243.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">(4, 4)</text><rect x="70" y="184" width="96" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="118.0" y="205.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">(2, 2)</text><rect x="70" y="146" width="96" height="34" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="118.0" y="167.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">(5, 2)</text><text x="118" y="60" text-anchor="middle" font-size="1" font-weight="400" fill="#dfe7f1"></text><text x="548.0" y="282" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">выход — отсюда уходят</text><line x1="492" y1="260" x2="604" y2="260" stroke="#7c8aa0" stroke-width="2"/><rect x="500" y="222" width="96" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="548.0" y="243.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">(5, 5)</text><rect x="500" y="184" width="96" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="548.0" y="205.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">(2, 2)</text><rect x="500" y="146" width="96" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="548.0" y="167.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">(4, 2)</text><line x1="210" y1="150" x2="480" y2="150" stroke="#ffff00" stroke-width="3" marker-end="url(#ar)"/><text x="345" y="134" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">если выход пуст:</text><text x="345" y="172" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">перекладываем всё сверху вниз</text><text x="345" y="215" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">первым пришёл — окажется на вершине</text><text x="345" y="290" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">минимум очереди = min(минимум входа, минимум выхода)</text></svg><figcaption>Слева — стек тех, кто пришёл (4, затем 2, затем 5). Когда нужно удалить первого, а выходной стек пуст, всё перекладывается в выходной: вершиной становится 4 — самый ранний.</figcaption></figure>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=6m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">6:00</a> <strong>Минимум.</strong> Теперь делаем каждый из двух стеков стеком с минимумом из предыдущей задачи. Все элементы очереди лежат либо во входном, либо в выходном стеке, поэтому минимум очереди — это минимум из двух минимумов. На записи этот факт объяснён так: если множество разбито на две части, то минимум всего множества равен минимуму из минимумов частей (например, $\min(1,2,3,4,5)=\min(\min(1,2,3),\min(4,5))$).</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">struct</span> MinQueue {
-    MinStack in, out;                       <span class="c">// MinStack — из предыдущей задачи</span>
-    <span class="k">void</span> <span class="f">push</span>(<span class="k">int</span> x) { in.<span class="f">push</span>(x); }
-    <span class="k">void</span> <span class="f">pop</span>() {                            <span class="c">// очередь не пуста</span>
-        <span class="k">if</span> (out.<span class="f">empty</span>())
-            <span class="k">while</span> (!in.<span class="f">empty</span>()) {           <span class="c">// перекладываем всех из входного в выходной</span>
-                out.<span class="f">push</span>(in.st.<span class="f">back</span>().first);
-                in.<span class="f">pop</span>();
-            }
-        out.<span class="f">pop</span>();
-    }
-    <span class="k">int</span> <span class="f">getMin</span>() <span class="k">const</span> {                    <span class="c">// очередь не пуста</span>
-        <span class="k">if</span> (in.<span class="f">empty</span>())  <span class="k">return</span> out.<span class="f">getMin</span>();
-        <span class="k">if</span> (out.<span class="f">empty</span>()) <span class="k">return</span> in.<span class="f">getMin</span>();
-        <span class="k">return</span> <span class="f">min</span>(in.<span class="f">getMin</span>(), out.<span class="f">getMin</span>());
-    }
-};</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>структура ОчередьСМинимумом:
+    вход, выход — два стека с минимумом
+
+    добавить(x):
+        вход.положить(x)
+
+    убрать():
+        если выход пуст:
+            пока вход не пуст:                 // перекладываем всех
+                выход.положить(вход.вершина.число)
+                вход.убрать()
+        выход.убрать()
+
+    минимум():
+        если вход пуст:  вернуть выход.минимум()
+        если выход пуст: вернуть вход.минимум()
+        вернуть min(вход.минимум(), выход.минимум())</code></pre></div>
 <p><strong>Сложность.</strong> Каждый элемент за всё время перекладывается из входного стека в выходной не более одного раза, поэтому операции работают за $O(1)$ <em>амортизированно</em> (одно удаление может занять $O(n)$, но в среднем по всем операциям — константа).</p>
 <div class="warn"><span class="lbl">Типичные ошибки</span><br>Перекладывать входной стек в выходной, когда выходной ещё <strong>не пуст</strong> (порядок очереди сломается). Брать минимум только из одного стека, забыв, что другой может быть пустым.</div>
 
@@ -840,27 +843,27 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 </ul>
 <p>Разбор примера: $(1,1)$ и $(2,2)$ кладём; $(3,4)$ — лопает сама (лопнуло 4); следующая $(2,1)$ совпадает цветом с вершиной $(2,2)$ — получается три, лопаем (ещё 3) и снимаем вершину; последняя $(1,2)$ совпадает с вершиной $(1,1)$ — снова три, лопаем (ещё 3). Всего лопнуло 10, осталось 0.</p>
 <div class="algo" data-frames="balls"></div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">int</span> <span class="f">ballsLeft</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; a) {
-    <span class="t">vector</span>&lt;<span class="t">pair</span>&lt;<span class="k">int</span>, <span class="k">int</span>&gt;&gt; g;                         <span class="c">// группы (цвет, длина)</span>
-    <span class="k">for</span> (<span class="k">int</span> x : a) {
-        <span class="k">if</span> (!g.<span class="f">empty</span>() &amp;&amp; g.<span class="f">back</span>().first == x) g.<span class="f">back</span>().second++;
-        <span class="k">else</span> g.<span class="f">push_back</span>({x, <span class="n">1</span>});
-    }
-    <span class="t">vector</span>&lt;<span class="t">pair</span>&lt;<span class="k">int</span>, <span class="k">int</span>&gt;&gt; st;                        <span class="c">// оставшиеся группы</span>
-    <span class="k">int</span> burst = <span class="n">0</span>;                                    <span class="c">// сколько шариков лопнуло</span>
-    <span class="k">for</span> (<span class="k">auto</span> [c, k] : g) {
-        <span class="k">if</span> (!st.<span class="f">empty</span>() &amp;&amp; st.<span class="f">back</span>().first == c) {    <span class="c">// склеиваем с вершиной</span>
-            st.<span class="f">back</span>().second += k;
-            k = st.<span class="f">back</span>().second;
-            <span class="k">if</span> (k &gt;= <span class="n">3</span>) { burst += k; st.<span class="f">pop_back</span>(); }
-        } <span class="k">else</span> <span class="k">if</span> (k &gt;= <span class="n">3</span>) {
-            burst += k;                               <span class="c">// лопнула сама</span>
-        } <span class="k">else</span> {
-            st.<span class="f">push_back</span>({c, k});
-        }
-    }
-    <span class="k">return</span> (<span class="k">int</span>)a.<span class="f">size</span>() - burst;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция оставшиесяШарики(a[1..n]):
+    // 1. сворачиваем в группы (цвет, длина)
+    g = пустой список
+    для каждого x из a:
+        если g не пуст и g.последняя.цвет == x: g.последняя.длина += 1
+        иначе: g.добавить((x, 1))
+
+    // 2. обрабатываем группы слева направо
+    стек = пустой; лопнуло = 0
+    для каждой группы (цвет, k) из g:
+        если стек не пуст и стек.вершина.цвет == цвет:   // склеиваем с вершиной
+            стек.вершина.длина += k
+            k = стек.вершина.длина
+            если k &gt;= 3:
+                лопнуло += k
+                стек.убрать()
+        иначе если k &gt;= 3:
+            лопнуло += k                                 // лопнула сама
+        иначе:
+            стек.положить((цвет, k))
+    вернуть n - лопнуло</code></pre></div>
 <p><strong>Почему так можно.</strong> Лопнувшая группа ничем не мешает дальнейшему: после неё соседи склеиваются, а склейка рассматривается, когда мы дойдём до следующей группы. Поскольку начальная группа из трёх и более ровно одна, каскады идут цепочкой от неё, и один проход слева направо со стеком их воспроизводит. Удалений из середины нет — всё происходит на вершине стека. Время и память — $O(n)$.</p>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=17m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">17:00</a> <strong>Вопросы из чата.</strong> Предложение «заменять лопнувшие на $-1$ и искать группы заново» не работает так просто: после замены соседние шарики не склеиваются, а нужно, чтобы цвета по обе стороны от образовавшейся «дыры» снова считались соседями. Решение «идти по массиву с вспомогательным вектором и проверять последние три элемента» тоже можно довести до рабочего, но нельзя удалять тройку сразу: если дальше идёт четвёртый такой же шарик, нужно удалить всю четвёрку целиком — поэтому и удобнее считать длины групп.</p>
 
@@ -871,17 +874,14 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><strong>Алгоритм.</strong> Для очередной буквы $c$ пока стек не пуст и вершина — соседняя с $c$ по алфавиту буква: снимаем вершину и заменяем $c$ на меньшую из двух. Затем кладём $c$ на стек. Цикл нужен потому, что после замены новая буква может образовать подходящую пару уже с буквой <em>под</em> вершиной (так и получается на разборе: замена $B$ на $A$ образует новую пару с тем, что лежало ниже).</p>
 <div class="algo" data-frames="letters"></div>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=30m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">30:00</a> <strong>Как сравнивать буквы.</strong> Тип <code>char</code> хранит числовой код символа (кодировка ASCII). Коды латинских букв нижнего регистра идут подряд: <code>'a'</code> = 97, <code>'b'</code> = 98, …, <code>'z'</code> = 122; заглавные идут подряд тоже (<code>'A'</code> = 65 … <code>'Z'</code> = 90), цифры — тоже. Поэтому буквы можно сравнивать как числа, а «соседние в алфавите» означает, что коды отличаются ровно на 1: <code>abs(a - b) == 1</code>. На записи лектор сначала назвал код буквы <code>a</code> неверно (по памяти), а затем исправил — правильно 97.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="t">string</span> <span class="f">reduceLetters</span>(<span class="k">const</span> <span class="t">string</span>&amp; s) {
-    <span class="t">string</span> st;                                        <span class="c">// стек обработанных букв</span>
-    <span class="k">for</span> (<span class="k">char</span> c : s) {
-        <span class="k">while</span> (!st.<span class="f">empty</span>() &amp;&amp; <span class="f">abs</span>(st.<span class="f">back</span>() - c) == <span class="n">1</span>) {
-            c = <span class="f">min</span>(st.<span class="f">back</span>(), c);                    <span class="c">// остаётся меньшая</span>
-            st.<span class="f">pop_back</span>();
-        }
-        st.<span class="f">push_back</span>(c);
-    }
-    <span class="k">return</span> st;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция сжатьБуквы(s):
+    стек = пустой
+    для каждой буквы c из s:
+        пока стек не пуст и |код(стек.вершина) - код(c)| == 1:
+            c = min(стек.вершина, c)         // остаётся меньшая
+            стек.убрать()
+        стек.положить(c)
+    вернуть стек как строку</code></pre></div>
 <div class="warn"><span class="lbl">Осторожно с регистром</span><br>Сравнивать на «больше–меньше» можно буквы одного регистра. Заглавные и строчные буквы в таблице кодов лежат отдельными блоками, и заглавная буква <em>меньше</em> любой строчной.</div>
 
 <h3 id="s1-5">1.5. 1.5. Задача H. Парикмахерская <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=35m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">35:00</a></h3>
@@ -894,18 +894,20 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 </ul>
 <figure class="viz"><svg viewBox="0 0 760 225" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="225" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">Парикмахерская: каждого стригут 20 минут; ушёл сразу, если людей перед ним больше терпимости</text><line x1="70" y1="150" x2="700" y2="150" stroke="#7c8aa0" stroke-width="2"/><line x1="87.0" y1="146" x2="87.0" y2="156" stroke="#7c8aa0" stroke-width="2"/><text x="87.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">60</text><line x1="155.0" y1="146" x2="155.0" y2="156" stroke="#7c8aa0" stroke-width="2"/><text x="155.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">80</text><line x1="223.0" y1="146" x2="223.0" y2="156" stroke="#7c8aa0" stroke-width="2"/><text x="223.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">100</text><line x1="291.0" y1="146" x2="291.0" y2="156" stroke="#7c8aa0" stroke-width="2"/><text x="291.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">120</text><line x1="359.0" y1="146" x2="359.0" y2="156" stroke="#7c8aa0" stroke-width="2"/><text x="359.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">140</text><line x1="427.0" y1="146" x2="427.0" y2="156" stroke="#7c8aa0" stroke-width="2"/><text x="427.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">160</text><rect x="87.0" y="96" width="68.0" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="121.0" y="120.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">клиент 1</text><rect x="291.0" y="96" width="68.0" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="325.0" y="120.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">клиент 2</text><rect x="359.0" y="96" width="68.0" height="40" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="393.0" y="120.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">клиент 4</text><line x1="87.0" y1="74" x2="87.0" y2="96" stroke="#9aa4b2" stroke-width="1.5" stroke-dasharray="3 3"/><line x1="291.0" y1="74" x2="291.0" y2="96" stroke="#9aa4b2" stroke-width="1.5" stroke-dasharray="3 3"/><line x1="294.4" y1="68" x2="294.4" y2="96" stroke="#9aa4b2" stroke-width="1.5" stroke-dasharray="3 3"/><line x1="297.79999999999995" y1="74" x2="297.79999999999995" y2="96" stroke="#9aa4b2" stroke-width="1.5" stroke-dasharray="3 3"/><line x1="301.2" y1="68" x2="301.2" y2="96" stroke="#9aa4b2" stroke-width="1.5" stroke-dasharray="3 3"/><text x="294.4" y="52" text-anchor="middle" font-size="12" font-weight="400" fill="#fc6255">клиент 3 уходит сразу</text><text x="321.2" y="40" text-anchor="middle" font-size="12" font-weight="400" fill="#fc6255">клиент 5 уходит сразу</text><text x="297.79999999999995" y="205" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">клиент 4 приходит в 122, ждёт клиента 2 и выйдет в 140 + 20 = 160</text></svg><figcaption>Моменты прихода (пунктир) и стрижка. Клиент 3 в 121 видит перед собой клиента 2 (терпимость 0) и уходит; клиент 4 готов ждать троих и выходит в 160.</figcaption></figure>
 <p>Пример с записи: клиенты приходят в $60, 120, 121, 122, 123$ минут. Первый стрижётся до 80 и уходит в 80. Второй (терпимость 0) приходит, когда очередь пуста, и заканчивает в 140. Третий в 121 видит перед собой второго, а его терпимость 0 — уходит сразу, в 121. Четвёртый (терпимость 3) в 122 готов ждать и заканчивает в $140+20=160$ (а не в 142: сначала нужно дождаться второго). Пятый в 123 видит двоих при терпимости 0 и уходит сразу. Ответ: 80, 140, 121, 160, 123.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="t">vector</span>&lt;<span class="k">int</span>&gt; <span class="f">barber</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; t, <span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; patience) {
-    <span class="t">deque</span>&lt;<span class="k">int</span>&gt; q;                                     <span class="c">// моменты окончания стрижки тех, кто стоит</span>
-    <span class="t">vector</span>&lt;<span class="k">int</span>&gt; res;
-    <span class="k">for</span> (<span class="t">size_t</span> i = <span class="n">0</span>; i &lt; t.<span class="f">size</span>(); i++) {
-        <span class="k">while</span> (!q.<span class="f">empty</span>() &amp;&amp; q.<span class="f">front</span>() &lt;= t[i]) q.<span class="f">pop_front</span>();   <span class="c">// уже подстриглись и ушли</span>
-        <span class="k">if</span> ((<span class="k">int</span>)q.<span class="f">size</span>() &gt; patience[i]) { res.<span class="f">push_back</span>(t[i]); <span class="k">continue</span>; }   <span class="c">// уходит сразу</span>
-        <span class="k">int</span> fin = (q.<span class="f">empty</span>() ? t[i] : q.<span class="f">back</span>()) + <span class="n">20</span>;
-        q.<span class="f">push_back</span>(fin);
-        res.<span class="f">push_back</span>(fin);
-    }
-    <span class="k">return</span> res;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция парикмахерская(t[1..n], терпимость[1..n]):
+    очередь = пустая                         // моменты окончания стрижки
+    для i от 1 до n:
+        пока очередь не пуста и очередь.первый &lt;= t[i]:
+            очередь.убрать_первый()          // уже подстриглись и ушли
+        если размер(очередь) &gt; терпимость[i]:
+            ответ[i] = t[i]                  // ушёл сразу
+        иначе:
+            если очередь пуста: начало = t[i]
+            иначе:              начало = очередь.последний
+            конец = начало + 20
+            очередь.добавить_в_конец(конец)
+            ответ[i] = конец
+    вернуть ответ</code></pre></div>
 <p>Работает за $O(n)$: каждый клиент попадает в очередь и покидает её не более одного раза. Как пояснено на записи, терпимость 0 означает «не готов терпеть никого», а не «ждёт бесконечно»: клиент встанет в очередь только если перед ним в этот момент никого нет.</p>
 
 <h3 id="s1-6">1.6. 1.6. Задача I. Очередь из блоков одинаковых чисел <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=47m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">47:00</a></h3>
@@ -916,20 +918,21 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <li>иначе из пары убираем только $c$ чисел: прибавляем $c\cdot x$, уменьшаем $k$ на $c$ и заканчиваем.</li>
 </ul>
 <p>Пример. Добавили две двойки — пара $(2, 2)$. Удаляем одно число: сумма 2, остаётся $(1, 2)$. Добавили пять четвёрок: очередь $(1,2),(5,4)$. Удаляем три числа: первая пара уходит целиком (сумма 2, осталось удалить 2), из $(5,4)$ убираем две четвёрки (ещё 8, остаётся $(3,4)$) — ответ 10.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">struct</span> GroupQueue {
-    <span class="t">deque</span>&lt;<span class="t">pair</span>&lt;<span class="k">long</span> <span class="k">long</span>, <span class="k">long</span> <span class="k">long</span>&gt;&gt; q;            <span class="c">// (сколько, значение)</span>
-    <span class="k">void</span> <span class="f">add</span>(<span class="k">long</span> <span class="k">long</span> c, <span class="k">long</span> <span class="k">long</span> x) { q.<span class="f">push_back</span>({c, x}); }
-    <span class="k">long</span> <span class="k">long</span> <span class="f">removeSum</span>(<span class="k">long</span> <span class="k">long</span> c) {
-        <span class="k">long</span> <span class="k">long</span> s = <span class="n">0</span>;
-        <span class="k">while</span> (c &gt; <span class="n">0</span>) {                               <span class="c">// в очереди заведомо достаточно чисел</span>
-            <span class="k">auto</span>&amp; [k, x] = q.<span class="f">front</span>();
-            <span class="k">long</span> <span class="k">long</span> d = <span class="f">min</span>(c, k);                  <span class="c">// сколько берём из первой пары</span>
-            s += d * x; k -= d; c -= d;
-            <span class="k">if</span> (k == <span class="n">0</span>) q.<span class="f">pop_front</span>();
-        }
-        <span class="k">return</span> s;
-    }
-};</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>структура ОчередьБлоков:
+    очередь пар (сколько, значение)
+
+    добавить(c, x):
+        очередь.добавить_в_конец((c, x))
+
+    удалитьИВывестиСумму(c):
+        сумма = 0
+        пока c &gt; 0:                          // в очереди заведомо достаточно чисел
+            (k, x) = очередь.первая
+            d = min(c, k)                    // сколько берём из первой пары
+            сумма += d * x
+            первая.k -= d;  c -= d
+            если первая.k == 0: очередь.убрать_первую()
+        вернуть сумма                        // сумма — в 64-битном типе</code></pre></div>
 <p><strong>Сложность.</strong> Каждая пара добавляется один раз и целиком удаляется не более одного раза; кроме того, за один запрос удаления может остаться не более одной пары, из которой убрали лишь часть. Поэтому суммарное время — $O(q)$ по числу операций. Сумму храните в <code>long long</code>: произведения $c\cdot x$ легко выходят за <code>int</code>.</p>
 <p>Вопрос из чата о том, как удалять, если в паре меньше чисел, чем нужно удалить: удаляем её целиком, уменьшаем оставшееся количество и берём следующую пару — именно для этого нужен цикл <code>while</code>. Хранить пары нужно именно в очереди (<code>queue</code> или <code>deque</code>), потому что добавляем в конец, а удаляем из начала.</p>
 
@@ -938,15 +941,15 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><strong>Идея.</strong> Поддерживаем число $\text{need}$ — какой вагон должен ехать на второй путь следующим (сначала 1). Каждый приехавший вагон приходится положить в тупик — другого выхода нет. После этого, пока на вершине тупика лежит именно нужный вагон, отправляем его на второй путь и увеличиваем $\text{need}$. Если на вершине лежит не он — выпускать нельзя (порядок нарушится), ждём следующих вагонов.</p>
 <div class="algo" data-frames="trains"></div>
 <p>Прогон для $4,1,3,2$: 4 в тупик (ждём 1); приехал 1 — это нужный, уезжает; приехал 3 — в тупик (ждём 2); приехал 2 — нужный, уезжает; теперь на вершине 3 — нужный, уезжает; затем 4. Получили $1,2,3,4$. Для $3,2,1$ тоже получается сортировка. Для $2,3,1$: 2 и 3 ложатся в тупик, 1 уезжает, теперь нужна двойка, но на вершине лежит 3, а двойка под ней — и новых вагонов нет. Отсортировать нельзя — ответ 0.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">bool</span> <span class="f">canSort</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; a) {
-    <span class="t">stack</span>&lt;<span class="k">int</span>&gt; st;
-    <span class="k">int</span> need = <span class="n">1</span>;
-    <span class="k">for</span> (<span class="k">int</span> x : a) {
-        st.<span class="f">push</span>(x);
-        <span class="k">while</span> (!st.<span class="f">empty</span>() &amp;&amp; st.<span class="f">top</span>() == need) { st.<span class="f">pop</span>(); need++; }   <span class="c">// отправляем, пока можем</span>
-    }
-    <span class="k">return</span> st.<span class="f">empty</span>();                                <span class="c">// в тупике остались вагоны — нельзя</span>
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция можноОтсортировать(a[1..n]):
+    стек = пустой
+    нужен = 1
+    для каждого x из a:
+        стек.положить(x)
+        пока стек не пуст и стек.вершина == нужен:
+            стек.убрать()                    // вагон уезжает на второй путь
+            нужен += 1
+    вернуть (стек пуст)                      // иначе — вывести 0</code></pre></div>
 <p><strong>Почему жадность верна.</strong> Если нужный вагон лежит на вершине, его выгодно отправить сразу: пока он лежит, любой следующий вагон ляжет сверху и закроет его, а убирать другие вагоны со второго пути нельзя. А если на вершине не нужный вагон, отправить его на второй путь — значит нарушить порядок, так что делать нечего. Если нужно вывести и сами операции, достаточно записывать «въезд в тупик» и «выезд на второй путь» в те же места кода.</p>
 
 <h3 id="s1-8">1.8. 1.8. Задача K. Невероятная очередь <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h4m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:04:00</a></h3>
@@ -955,21 +958,21 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><strong>Идея.</strong> Храним две половины очереди в двух деках <code>L</code> (левая) и <code>R</code> (правая) с условием $|L| = |R|$ или $|L| = |R|+1$. Тогда «середина» — это граница между ними:</p>
 <ul>
 <li>человек вклинивается — встаёт в <strong>начало правой</strong> половины (<code>R.push_front</code>) — именно поэтому половинки нужны в виде деков;</li>
-<li>человек приходит в конец — <code>R.push_back</code>;</li>
+<li>человек приходит в конец — добавляем в конец <code>R</code>;</li>
 <li>уходит человек из начала — <code>L.pop_front</code>;</li>
 <li>после каждой операции <strong>выравниваем</strong> размеры: пока $|L|&lt;|R|$ — перекладываем начало <code>R</code> в конец <code>L</code>; пока $|L|&gt;|R|+1$ — перекладываем конец <code>L</code> в начало <code>R</code>.</li>
 </ul>
 <figure class="viz"><svg viewBox="0 0 760 275" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="275" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Две половины-дека: левая (|L| = |R| или |R|+1) и правая</text><rect x="40" y="60" width="56" height="42" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="68.0" y="86.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="102" y="60" width="56" height="42" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="130.0" y="86.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="164" y="60" width="56" height="42" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="192.0" y="86.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">3</text><text x="130" y="124" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">L — левая половина</text><rect x="440" y="60" width="56" height="42" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="468.0" y="86.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">4</text><rect x="502" y="60" width="56" height="42" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="530.0" y="86.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">5</text><text x="500" y="124" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">R — правая половина</text><line x1="372" y1="50" x2="372" y2="112" stroke="#ffff00" stroke-width="3" stroke-dasharray="5 4"/><text x="372" y="44" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">середина</text><rect x="300" y="160" width="56" height="42" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="328.0" y="186.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">6</text><line x1="328" y1="158" x2="392" y2="108" stroke="#ff8c1a" stroke-width="2" marker-end="url(#ar)"/><text x="250" y="232" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">вклиниться = положить в НАЧАЛО правой половины (push_front), потом выровнять размеры</text><text x="250" y="256" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">уйти из начала — pop_front у L; прийти в конец — push_back у R</text></svg><figcaption>Очередь 1 2 3 | 4 5. Новый участник 6 встаёт сразу за серединой — это начало правой половины.</figcaption></figure>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">struct</span> MidQueue {
-    <span class="t">deque</span>&lt;<span class="k">int</span>&gt; L, R;                        <span class="c">// |L| == |R| или |L| == |R| + 1</span>
-    <span class="k">void</span> <span class="f">balance</span>() {
-        <span class="k">while</span> (L.<span class="f">size</span>() &lt; R.<span class="f">size</span>())     { L.<span class="f">push_back</span>(R.<span class="f">front</span>());  R.<span class="f">pop_front</span>(); }
-        <span class="k">while</span> (L.<span class="f">size</span>() &gt; R.<span class="f">size</span>() + <span class="n">1</span>) { R.<span class="f">push_front</span>(L.<span class="f">back</span>());  L.<span class="f">pop_back</span>(); }
-    }
-    <span class="k">void</span> <span class="f">pushBack</span>(<span class="k">int</span> x) { R.<span class="f">push_back</span>(x);  <span class="f">balance</span>(); }
-    <span class="k">void</span> <span class="f">pushMid</span>(<span class="k">int</span> x)  { R.<span class="f">push_front</span>(x); <span class="f">balance</span>(); }   <span class="c">// сразу за серединой</span>
-    <span class="k">int</span> <span class="f">popFront</span>() { <span class="k">int</span> x = L.<span class="f">front</span>(); L.<span class="f">pop_front</span>(); <span class="f">balance</span>(); <span class="k">return</span> x; }
-};</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>структура НевероятнаяОчередь:
+    L, R — два дека; всегда |L| == |R| или |L| == |R| + 1
+
+    выровнять():
+        пока |L| &lt; |R|:      L.добавить_в_конец(R.первый);  R.убрать_первый()
+        пока |L| &gt; |R| + 1:  R.добавить_в_начало(L.последний);  L.убрать_последний()
+
+    встатьВКонец(x):    R.добавить_в_конец(x);   выровнять()
+    вклиниться(x):      R.добавить_в_начало(x);  выровнять()      // сразу за серединой
+    уйти():             x = L.первый;  L.убрать_первый();  выровнять();  вернуть x</code></pre></div>
 <p>Разбор примера с записи: очередь $1,2,3\mid 4,5$. Уходит 1 — из начала <code>L</code>, размеры $2$ и $2$ нормальны. Уходит 2 — остаётся $|L|=1$, $|R|=2$, поэтому 4 переезжает из начала <code>R</code> в конец <code>L</code>: $3,4\mid 5$. Вклинивается 6 — встаёт в начало правой половины: $3,4\mid 6,5$. Приходит 7 в конец — в конец правой: $3,4\mid 6,5,7$, размеры $2$ и $3$, поэтому 6 переезжает в левую: $3,4,6\mid 5,7$.</p>
 <p>Каждая операция переносит не больше одного элемента между половинами, поэтому всё работает за $O(1)$ на операцию.</p>
 
@@ -977,21 +980,17 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h13m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:13:00</a> <strong>Условие.</strong> Задано выражение в <strong>постфиксной записи</strong>: последовательность чисел и операций, где операция применяется к двум последним числам стека. Независимые операции можно выполнять одновременно — за один «шаг». Нужно найти значение выражения и минимальное число шагов.</p>
 <p><strong>Идея.</strong> Вместе с каждым числом в стеке храним, <strong>за сколько шагов оно вычисляется</strong>. Число из входа вычисляется за 0 шагов. Операция берёт два верхних числа с их шагами $a$ и $b$, и, так как слагаемые можно считать параллельно, результат готов через $\max(a,b)+1$ шагов.</p>
 <p>Пример: $(1+2)\cdot(3+4)-6$ в постфиксной записи — <code>1 2 + 3 4 + * 6 -</code>. Числа 1, 2, 3, 4 — по 0 шагов. $1+2=3$ за $\max(0,0)+1=1$ шаг; $3+4=7$ тоже за 1 шаг (параллельно с первым). Произведение $3\cdot7=21$ — за $\max(1,1)+1=2$ шага. Шестёрка — 0 шагов, вычитание $21-6=15$ — за $\max(2,0)+1=3$ шага. Ответ: значение 15, шагов 3. Если бы одно из слагаемых считалось за 3 шага, а другое за 1, то для следующей операции получилось бы $\max(3,1)+1=4$: короткое вычисление скрывается внутри длинного.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="c">// токены: числа и операции + - *; возвращает (значение, число шагов)</span>
-<span class="t">pair</span>&lt;<span class="k">long</span> <span class="k">long</span>, <span class="k">int</span>&gt; <span class="f">evalParallel</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="t">string</span>&gt;&amp; tokens) {
-    <span class="t">vector</span>&lt;<span class="t">pair</span>&lt;<span class="k">long</span> <span class="k">long</span>, <span class="k">int</span>&gt;&gt; st;                 <span class="c">// (значение, шаги)</span>
-    <span class="k">for</span> (<span class="k">const</span> <span class="t">string</span>&amp; t : tokens) {
-        <span class="k">if</span> (t == <span class="s">"+"</span> || t == <span class="s">"-"</span> || t == <span class="s">"*"</span>) {
-            <span class="k">auto</span> [b, sb] = st.<span class="f">back</span>(); st.<span class="f">pop_back</span>();  <span class="c">// правый операнд лежит выше</span>
-            <span class="k">auto</span> [a, sa] = st.<span class="f">back</span>(); st.<span class="f">pop_back</span>();
-            <span class="k">long</span> <span class="k">long</span> v = t == <span class="s">"+"</span> ? a + b : t == <span class="s">"-"</span> ? a - b : a * b;
-            st.<span class="f">push_back</span>({v, <span class="f">max</span>(sa, sb) + <span class="n">1</span>});
-        } <span class="k">else</span> {
-            st.<span class="f">push_back</span>({<span class="f">stoll</span>(t), <span class="n">0</span>});
-        }
-    }
-    <span class="k">return</span> st.<span class="f">back</span>();
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция вычислить(токены):
+    стек = пустой                            // пары (значение, шаги)
+    для каждого t из токенов:
+        если t — операция:
+            (b, sb) = стек.снять()           // правый операнд лежит выше
+            (a, sa) = стек.снять()
+            v = применить(t, a, b)
+            стек.положить((v, max(sa, sb) + 1))
+        иначе:
+            стек.положить((число(t), 0))     // число из входа — 0 шагов
+    вернуть стек.вершина</code></pre></div>
 
 <h3 id="s1-10">1.10. 1.10. Задача M. Жемчужины <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h19m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:19:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h19m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:19:00</a> <strong>Условие.</strong> Дан массив жемчужин $k$ цветов. Нужно разбить как можно больше жемчужин на непересекающиеся группы так, чтобы в каждой группе были жемчужины <strong>всех $k$ цветов</strong> (по одной каждого), причём любые две позиции в группе отличаются не больше чем на $m$.</p>
@@ -1003,27 +1002,22 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <li>добавляем $i$ в очередь её цвета;</li>
 <li>если все $k$ очередей непусты — берём первую позицию из каждой, записываем группу и удаляем эти позиции из очередей.</li>
 </ol>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">int</span> <span class="f">pearls</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; a, <span class="k">int</span> k, <span class="k">int</span> m) {     <span class="c">// цвета 1..k</span>
-    <span class="t">vector</span>&lt;<span class="t">deque</span>&lt;<span class="k">int</span>&gt;&gt; <span class="f">q</span>(k + <span class="n">1</span>);
-    <span class="k">int</span> nonEmpty = <span class="n">0</span>, groups = <span class="n">0</span>;
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; (<span class="k">int</span>)a.<span class="f">size</span>(); i++) {
-        <span class="k">int</span> p = i - m - <span class="n">1</span>;                                   <span class="c">// слишком далеко от i</span>
-        <span class="k">if</span> (p &gt;= <span class="n">0</span> &amp;&amp; !q[a[p]].<span class="f">empty</span>() &amp;&amp; q[a[p]].<span class="f">front</span>() == p) {
-            q[a[p]].<span class="f">pop_front</span>();
-            <span class="k">if</span> (q[a[p]].<span class="f">empty</span>()) nonEmpty--;
-        }
-        <span class="k">if</span> (q[a[i]].<span class="f">empty</span>()) nonEmpty++;
-        q[a[i]].<span class="f">push_back</span>(i);
-        <span class="k">if</span> (nonEmpty == k) {                                 <span class="c">// можно закрыть группу</span>
-            groups++;
-            <span class="k">for</span> (<span class="k">int</span> c = <span class="n">1</span>; c &lt;= k; c++) {
-                q[c].<span class="f">pop_front</span>();
-                <span class="k">if</span> (q[c].<span class="f">empty</span>()) nonEmpty--;
-            }
-        }
-    }
-    <span class="k">return</span> groups;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция жемчужины(a[0..n-1], k, m):          // цвета 1..k
+    q[1..k] — k пустых очередей позиций
+    непустых = 0;  групп = 0
+    для i от 0 до n-1:
+        p = i - m - 1                            // слишком далеко от i
+        если p &gt;= 0 и q[a[p]] не пуста и q[a[p]].первая == p:
+            q[a[p]].убрать_первую()
+            если q[a[p]] стала пуста: непустых -= 1
+        если q[a[i]] пуста: непустых += 1
+        q[a[i]].добавить_в_конец(i)
+        если непустых == k:                      // можно закрыть группу
+            групп += 1
+            для каждого цвета c от 1 до k:
+                q[c].убрать_первую()
+                если q[c] стала пуста: непустых -= 1
+    вернуть групп</code></pre></div>
 <p>Группа, которую мы закрываем, состоит из самых левых позиций каждого цвета, находящихся не дальше $m$ от текущей, поэтому размах группы не превышает $m$. Время работы — $O(n)$: каждая позиция один раз добавляется и один раз удаляется.</p>
 <div class="own"><span class="lbl">Важное дополнение</span><br>Почему выгодно закрывать группу сразу же, как только все очереди непусты, и брать самые левые позиции: более левые жемчужины раньше других выходят из допустимого окна и пропадают, поэтому использовать их в группе сейчас — самый «дешёвый» способ; оставлять их на потом — рисковать потерять. Это жадный выбор; на мелких случайных тестах он совпал с полным перебором.</div>
 <h2 id="s2">2. Контест «Линейные алгоритмы» <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h29m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:29:00</a></h2>
@@ -1037,57 +1031,47 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <div class="formula">$$p[i][j]=a[i][j]+p[i-1][j]+p[i][j-1]-p[i-1][j-1].$$</div>
 <p>Сумма на прямоугольнике $(x_1,y_1)\ldots(x_2,y_2)$ вычисляется включением–исключением: $p[x_2][y_2]-p[x_1-1][y_2]-p[x_2][y_1-1]+p[x_1-1][y_1-1]$.</p>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h30m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:30:00</a> <strong>D. Сумма на параллелепипеде (RSQ 3D).</strong> В лекции эта часть не разбиралась, но идея та же: трёхмерные префиксные суммы и включение–исключение по восьми «углам». Подробная формула есть в шпаргалке параллели в разделе «Многомерные префиксные суммы».</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="c">// 1D: p[i] = сумма первых i элементов; сумма a[l..r] (с нуля) = p[r+1] - p[l]</span>
-<span class="c">// 3D: p[x][y][z] — сумма на параллелепипеде от (1,1,1) до (x,y,z); индексы с 1, p[0][*][*] = 0</span>
-<span class="k">struct</span> Pref3 {
-    <span class="k">int</span> X, Y, Z; <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt; p;
-    <span class="k">long</span> <span class="k">long</span>&amp; <span class="f">at</span>(<span class="k">int</span> x, <span class="k">int</span> y, <span class="k">int</span> z) { <span class="k">return</span> p[((<span class="t">size_t</span>)x * (Y + <span class="n">1</span>) + y) * (Z + <span class="n">1</span>) + z]; }
-    <span class="f">Pref3</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="t">vector</span>&lt;<span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&gt;&gt;&amp; a, <span class="k">int</span> X, <span class="k">int</span> Y, <span class="k">int</span> Z)
-        : <span class="f">X</span>(X), <span class="f">Y</span>(Y), <span class="f">Z</span>(Z), <span class="f">p</span>((<span class="t">size_t</span>)(X + <span class="n">1</span>) * (Y + <span class="n">1</span>) * (Z + <span class="n">1</span>), <span class="n">0</span>) {
-        <span class="k">for</span> (<span class="k">int</span> x = <span class="n">1</span>; x &lt;= X; x++) <span class="k">for</span> (<span class="k">int</span> y = <span class="n">1</span>; y &lt;= Y; y++) <span class="k">for</span> (<span class="k">int</span> z = <span class="n">1</span>; z &lt;= Z; z++)
-            <span class="f">at</span>(x, y, z) = a[x-<span class="n">1</span>][y-<span class="n">1</span>][z-<span class="n">1</span>]
-                        + <span class="f">at</span>(x-<span class="n">1</span>, y, z) + <span class="f">at</span>(x, y-<span class="n">1</span>, z) + <span class="f">at</span>(x, y, z-<span class="n">1</span>)
-                        - <span class="f">at</span>(x-<span class="n">1</span>, y-<span class="n">1</span>, z) - <span class="f">at</span>(x-<span class="n">1</span>, y, z-<span class="n">1</span>) - <span class="f">at</span>(x, y-<span class="n">1</span>, z-<span class="n">1</span>)
-                        + <span class="f">at</span>(x-<span class="n">1</span>, y-<span class="n">1</span>, z-<span class="n">1</span>);
-    }
-    <span class="k">long</span> <span class="k">long</span> <span class="f">sum</span>(<span class="k">int</span> x1, <span class="k">int</span> y1, <span class="k">int</span> z1, <span class="k">int</span> x2, <span class="k">int</span> y2, <span class="k">int</span> z2) {   <span class="c">// границы включительно</span>
-        <span class="k">return</span> <span class="f">at</span>(x2, y2, z2)
-             - <span class="f">at</span>(x1-<span class="n">1</span>, y2, z2) - <span class="f">at</span>(x2, y1-<span class="n">1</span>, z2) - <span class="f">at</span>(x2, y2, z1-<span class="n">1</span>)
-             + <span class="f">at</span>(x1-<span class="n">1</span>, y1-<span class="n">1</span>, z2) + <span class="f">at</span>(x1-<span class="n">1</span>, y2, z1-<span class="n">1</span>) + <span class="f">at</span>(x2, y1-<span class="n">1</span>, z1-<span class="n">1</span>)
-             - <span class="f">at</span>(x1-<span class="n">1</span>, y1-<span class="n">1</span>, z1-<span class="n">1</span>);
-    }
-};</code></pre></div>
-<div class="own"><span class="lbl">Важное дополнение</span><br>Знаки в формуле параллелепипеда чередуются по числу «срезанных» измерений: ноль срезов — плюс (полный объём), один — минус, два — плюс, три — минус. Для суммы по параллелепипеду на 1D, 2D и 3D работает один и тот же принцип включения–исключения; код выше проверен случайными тестами против прямого суммирования.</div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>// одномерные: p[0] = 0;  p[i+1] = p[i] + a[i];   сумма a[l..r] = p[r+1] - p[l]
+
+// трёхмерные: p[x][y][z] — сумма на параллелепипеде от (1,1,1) до (x,y,z), p[0][*][*] = 0
+для x, y, z по порядку возрастания:
+    p[x][y][z] = a[x][y][z]
+               + p[x-1][y][z] + p[x][y-1][z] + p[x][y][z-1]
+               - p[x-1][y-1][z] - p[x-1][y][z-1] - p[x][y-1][z-1]
+               + p[x-1][y-1][z-1]
+
+функция сумма(x1,y1,z1, x2,y2,z2):               // границы включительно
+    вернуть  p[x2][y2][z2]
+           - p[x1-1][y2][z2] - p[x2][y1-1][z2] - p[x2][y2][z1-1]
+           + p[x1-1][y1-1][z2] + p[x1-1][y2][z1-1] + p[x2][y1-1][z1-1]
+           - p[x1-1][y1-1][z1-1]</code></pre></div>
+<div class="own"><span class="lbl">Важное дополнение</span><br>Знаки в формуле параллелепипеда чередуются по числу «срезанных» измерений: ноль срезов — плюс (полный объём), один — минус, два — плюс, три — минус. Для суммы по параллелепипеду на 1D, 2D и 3D работает один и тот же принцип включения–исключения; формулы проверены случайными тестами против прямого суммирования.</div>
 
 <h3 id="s2-2">2.2. 2.2. Задача E. Отрезок с максимальной суммой <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h31m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:31:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h31m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:31:00</a> <strong>Условие.</strong> Найти подотрезок с максимальной суммой (числа могут быть отрицательными).</p>
 <p><strong>Идея.</strong> Сумма подотрезка $[l,r]$ равна $p_{r+1}-p_l$. Зафиксируем правую границу: чтобы сумма была максимальной, нужно вычесть <strong>наименьший</strong> из префиксов $p_0,\dots,p_r$. Поэтому идём по массиву слева направо, поддерживая текущую префиксную сумму и минимум из префиксных сумм, которые уже встречались (включая $p_0=0$).</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">maxSubarray</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; a) {      <span class="c">// непустой подотрезок</span>
-    <span class="k">long</span> <span class="k">long</span> pre = <span class="n">0</span>, minPre = <span class="n">0</span>, ans = LLONG_MIN;
-    <span class="k">for</span> (<span class="k">long</span> <span class="k">long</span> x : a) {
-        pre += x;                                     <span class="c">// p[r+1]</span>
-        ans = <span class="f">max</span>(ans, pre - minPre);                 <span class="c">// лучшая левая граница — с минимальным p[l]</span>
-        minPre = <span class="f">min</span>(minPre, pre);                    <span class="c">// p[r+1] может стать левой границей для следующих</span>
-    }
-    <span class="k">return</span> ans;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция максимальныйПодотрезок(a[1..n]):       // непустой
+    pre = 0;  minPre = 0;  ответ = -∞
+    для каждого x из a:
+        pre += x                                 // p[r+1]
+        ответ = max(ответ, pre - minPre)         // лучшая левая граница — с минимальным p[l]
+        minPre = min(minPre, pre)                // p[r+1] станет левой границей для следующих
+    вернуть ответ</code></pre></div>
 <p>Время $O(n)$, память $O(1)$. Порядок строк внутри цикла важен: сначала используем минимум, <em>потом</em> обновляем его, иначе получим пустой подотрезок. Если массив состоит только из отрицательных чисел, ответ — наибольший (наименее отрицательный) элемент, а не 0 — поэтому <code>ans</code> нельзя инициализировать нулём.</p>
 
 <h3 id="s2-3">2.3. 2.3. Задача F. Объединение квадратов и кубов <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h32m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:32:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h32m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:32:00</a> <strong>Условие.</strong> Есть последовательности квадратов $1,4,9,16,\dots$ и кубов $1,8,27,64,\dots$. Их сливают в одну неубывающую последовательность $1,1,4,8,9,16,25,27,\dots$. Нужно вывести элемент на позиции $x$, где $x$ до $10^7$.</p>
 <p><strong>Идея.</strong> Это та же операция, что слияние двух отсортированных массивов в сортировке слиянием, только массивы заданы формулами. Два указателя $i$ и $j$ (какой квадрат и какой куб рассматриваем), и $x$ раз выбираем меньшее из $i^2$ и $j^3$ и сдвигаем соответствующий указатель.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">kthMerged</span>(<span class="k">int</span> x) {
-    <span class="k">long</span> <span class="k">long</span> last = <span class="n">0</span>, i = <span class="n">1</span>, j = <span class="n">1</span>;                 <span class="c">// long long, иначе i*i переполнится</span>
-    <span class="k">for</span> (<span class="k">int</span> t = <span class="n">0</span>; t &lt; x; t++) {
-        <span class="k">if</span> (i * i &lt;= j * j * j) { last = i * i; i++; }
-        <span class="k">else</span>                  { last = j * j * j; j++; }
-    }
-    <span class="k">return</span> last;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция кМерджа(x):                            // 64-битные числа: i*i может переполнить int
+    i = 1;  j = 1;  последнее = 0
+    повторить x раз:
+        если i*i &lt;= j*j*j:  последнее = i*i;      i += 1
+        иначе:              последнее = j*j*j;    j += 1
+    вернуть последнее</code></pre></div>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h36m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:36:00</a> <strong>Вопрос о повторяющихся числах.</strong> В таком виде число, которое является одновременно квадратом и кубом (1, 64, 729, …), входит в последовательность <em>дважды</em>. Если по условию совпадающие числа нужно учитывать один раз, добавляют отдельный случай: при $i^2=j^3$ берём число и сдвигаем <em>оба</em> указателя, а в остальных ветках сравнение делается строго:</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">if</span> (i * i == j * j * j)       { last = i * i; i++; j++; }
-<span class="k">else</span> <span class="k">if</span> (i * i &lt; j * j * j)   { last = i * i; i++; }
-<span class="k">else</span>                          { last = j * j * j; j++; }</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>если i*i == j*j*j:    последнее = i*i;   i += 1;  j += 1      // общее число берём один раз
+иначе если i*i &lt; j*j*j: последнее = i*i;   i += 1
+иначе:                  последнее = j*j*j; j += 1</code></pre></div>
 
 <h3 id="s2-4">2.4. 2.4. Задача G. Стильная одежда <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h37m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:37:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h37m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:37:00</a> <strong>Условие.</strong> Есть четыре вида одежды (например, шапка, куртка, брюки, обувь), у каждого — набор вариантов с числовыми характеристиками. Нужно выбрать по одному варианту каждого вида так, чтобы разность $\max-\min$ среди выбранных чисел была как можно меньше.</p>
@@ -1099,22 +1083,17 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <li>единственный способ уменьшить разность — поднять <strong>минимум</strong>. Значит, каждый раз двигаем указатель, который сейчас указывает на минимальное из четырёх чисел.</li>
 </ul>
 <p>После каждого сдвига обновляем ответ $\max-\min$. Останавливаемся, когда указатель, которому надо шагнуть, выходит за границу своего набора: меньшего минимума в таком случае уже не получить.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">int</span> <span class="f">stylish</span>(<span class="t">vector</span>&lt;<span class="t">vector</span>&lt;<span class="k">int</span>&gt;&gt; g) {            <span class="c">// g[0..3] — наборы</span>
-    <span class="k">for</span> (<span class="k">auto</span>&amp; v : g) <span class="f">sort</span>(v.<span class="f">begin</span>(), v.<span class="f">end</span>());
-    <span class="t">vector</span>&lt;<span class="k">int</span>&gt; <span class="f">p</span>(g.<span class="f">size</span>(), <span class="n">0</span>);                  <span class="c">// указатели</span>
-    <span class="k">int</span> ans = INT_MAX;
-    <span class="k">for</span> (;;) {
-        <span class="k">int</span> mn = INT_MAX, mx = INT_MIN, who = -<span class="n">1</span>;
-        <span class="k">for</span> (<span class="t">size_t</span> i = <span class="n">0</span>; i &lt; g.<span class="f">size</span>(); i++) {
-            <span class="k">int</span> v = g[i][p[i]];
-            <span class="k">if</span> (v &lt; mn) { mn = v; who = i; }
-            mx = <span class="f">max</span>(mx, v);
-        }
-        ans = <span class="f">min</span>(ans, mx - mn);
-        <span class="k">if</span> (++p[who] == (<span class="k">int</span>)g[who].<span class="f">size</span>()) <span class="k">break</span>;  <span class="c">// у набора с минимумом варианты кончились</span>
-    }
-    <span class="k">return</span> ans;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция стильнаяОдежда(g[1..4]):                // g[i] — варианты i-го вида
+    отсортировать каждый g[i]
+    p[i] = 0 для всех i                           // указатели
+    ответ = ∞
+    повторять:
+        значения v[i] = g[i][p[i]]
+        mn = минимум v;  mx = максимум v;  who = индекс минимума
+        ответ = min(ответ, mx - mn)
+        p[who] += 1
+        если p[who] вышел за границу g[who]: прервать
+    вернуть ответ</code></pre></div>
 <p>Время — $O(S\cdot k)$ для $S$ вариантов всего и $k=4$ видов (поиск минимума среди четырёх — константа). Для большого числа видов минимум удобно поддерживать в приоритетной очереди.</p>
 
 <h3 id="s2-5">2.5. 2.5. Задача H. Пары точек на большом расстоянии <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h42m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:42:00</a></h3>
@@ -1122,30 +1101,26 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p>Пример: точки $1,3,5,8$, $d=4$. Подходят пары $(1,8)$ с расстоянием 7 и $(3,8)$ с расстоянием 5; пара $(1,5)$ имеет расстояние ровно 4 и <em>не</em> подходит. Ответ 2.</p>
 <div class="fix"><span class="lbl">Уточнение</span><br>На записи условие сначала произнесено как «больше либо равно», а при разборе примера лектор исправился: «здесь не больше либо равно, а строго больше». Пример (ответ 2) согласуется именно со строгим неравенством; если бы подходили пары с расстоянием ровно $d$, ответ был бы 3.</div>
 <p><strong>Идея.</strong> Для каждой левой точки $i$ ищем указатель $j$ — первую точку, которая находится от неё дальше чем на $d$. Все точки правее $j$ ещё дальше, поэтому они тоже подходят — это $n-j$ пар. При переходе к следующему $i$ точка $x_i$ сдвигается вправо, значит, указатель $j$ не нужно возвращать назад — он только растёт. Это и есть два указателя.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">farPairs</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; x, <span class="k">int</span> d) {     <span class="c">// x отсортирован</span>
-    <span class="k">int</span> n = x.<span class="f">size</span>(), j = <span class="n">0</span>;
-    <span class="k">long</span> <span class="k">long</span> ans = <span class="n">0</span>;                                <span class="c">// пар может быть порядка n^2 — long long!</span>
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; n; i++) {
-        <span class="k">while</span> (j &lt; n &amp;&amp; x[j] - x[i] &lt;= d) j++;     <span class="c">// пропускаем ближние точки</span>
-        ans += n - j;                                 <span class="c">// все точки с индексом &gt;= j подходят</span>
-    }
-    <span class="k">return</span> ans;
-}</code></pre></div>
-<p>Время $O(n)$. Ответ нужно хранить в <code>long long</code>: при $n=3\cdot10^5$ количество пар достигает десятков миллиардов.</p>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция дальниеПары(x[1..n], d):                // x отсортирован
+    j = 1;  ответ = 0                             // ответ — в 64-битном типе
+    для i от 1 до n:
+        пока j &lt;= n и x[j] - x[i] &lt;= d:
+            j += 1                                // пропускаем ближние точки
+        ответ += n - j + 1                        // все точки с индексом &gt;= j подходят
+    вернуть ответ</code></pre></div>
+<p>Время $O(n)$. Ответ нужно хранить в 64-битном типе: при $n=3\cdot10^5$ количество пар достигает десятков миллиардов.</p>
 
 <h3 id="s2-6">2.6. 2.6. Задача I. Префикс и суффикс с близкими суммами <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h46m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:46:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=1h46m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">1:46:00</a> <strong>Условие.</strong> Дан массив неотрицательных чисел. Нужно выбрать позиции $l<r$ так, чтобы модуль разности суммы префикса $a_1+\dots+a_l$ и суммы суффикса $a_r+\dots+a_n$ был минимальным. Для массива $1,2,3,4$: префикс $1+2=3$ и суффикс $4$ дают разность 1.</p>
 <p><strong>Идея.</strong> Два указателя навстречу друг другу: $l$ — конец префикса, $r$ — начало суффикса, и две суммы $A$ (сумма префикса) и $B$ (сумма суффикса). Изначально префикс — это только $a_1$, суффикс — только $a_n$. Дальше сдвигаем тот указатель, у которого сумма <strong>меньше</strong>: расширение меньшей суммы приближает её к большей, а расширение большей только увеличит разность. После каждого шага обновляем ответ $|A-B|$ и продолжаем, пока указатели не встретятся.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">balance</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; x) {         <span class="c">// n &gt;= 2, числа неотрицательны</span>
-    <span class="k">int</span> n = x.<span class="f">size</span>(), l = <span class="n">0</span>, r = n - <span class="n">1</span>;
-    <span class="k">long</span> <span class="k">long</span> A = x[<span class="n">0</span>], B = x[n - <span class="n">1</span>], ans = <span class="f">llabs</span>(A - B);
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) {                               <span class="c">// между указателями ещё есть место</span>
-        <span class="k">if</span> (A &lt; B) A += x[++l];                      <span class="c">// расширяем меньшую сумму</span>
-        <span class="k">else</span>       B += x[--r];
-        ans = <span class="f">min</span>(ans, <span class="f">llabs</span>(A - B));
-    }
-    <span class="k">return</span> ans;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция баланс(x[1..n]):                        // n &gt;= 2, числа неотрицательны
+    l = 1;  r = n
+    A = x[1];  B = x[n];  ответ = |A - B|
+    пока l + 1 &lt; r:
+        если A &lt; B: l += 1;  A += x[l]            // расширяем меньшую сумму
+        иначе:      r -= 1;  B += x[r]
+        ответ = min(ответ, |A - B|)
+    вернуть ответ</code></pre></div>
 <div class="warn"><span class="lbl">Условие применимости</span><br>Жадный выбор «двигать меньшую сумму» верен только для <strong>неотрицательных</strong> чисел: именно поэтому на записи отмечено, что отрицательных чисел нет. Если числа могут быть отрицательными, расширение суммы может её и уменьшить, и тогда двигать нужно иначе.</div>
 <p>В условии оригинальной задачи просят вывести индексы $l$ и $r$, а в коде выше считается только значение. Как лектор оставил слушателю, нужно дополнительно запоминать $l$ и $r$ в момент, когда ответ улучшается. Время $O(n)$.</p>
 
@@ -1158,23 +1133,20 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 </ol>
 <p>Пример с записи: операции $(1,2,1)$, $(1,3,2)$, $(2,3,4)$ и супероперации $(1,2)$, $(1,3)$, $(2,3)$. Счётчики: первая операция входит в две супероперации (2 раза), вторая — во все три (3 раза), третья — в две (2 раза). Эффективные добавки: $1\cdot2=2$, $2\cdot3=6$, $4\cdot2=8$. К элементам массива прибавится: на позиции 1 — $2+6=8$, на позиции 2 — $2+6+8=16$, на позиции 3 — $6+8=14$.</p>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h1m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:01:00</a> <strong>Вопрос зачем умножать.</strong> Операция «прибавить 4», вызванная дважды, добавляет $4\cdot2=8$ — это то же самое, что вызвать операцию «прибавить 8» один раз. Умножение на счётчик просто собирает все её вызовы в один.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt; <span class="f">superOps</span>(<span class="k">int</span> n, <span class="k">const</span> <span class="t">vector</span>&lt;<span class="t">array</span>&lt;<span class="k">long</span> <span class="k">long</span>, <span class="n">3</span>&gt;&gt;&amp; ops,     <span class="c">// (l, r, d), позиции с 1</span>
-                           <span class="k">const</span> <span class="t">vector</span>&lt;<span class="t">pair</span>&lt;<span class="k">int</span>, <span class="k">int</span>&gt;&gt;&amp; sup, <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt; a) {
-    <span class="k">int</span> m = ops.<span class="f">size</span>();
-    <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt; <span class="f">cnt</span>(m + <span class="n">2</span>, <span class="n">0</span>);                  <span class="c">// разностный массив по номерам операций</span>
-    <span class="k">for</span> (<span class="k">auto</span> [x, y] : sup) { cnt[x - <span class="n">1</span>]++; cnt[y]--; }
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">1</span>; i &lt; m; i++) cnt[i] += cnt[i - <span class="n">1</span>];  <span class="c">// cnt[i] — сколько раз выполнится операция i</span>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>// шаг 1: сколько раз выполнится каждая операция
+cnt[1..m] = 0
+для каждой супероперации (a, b):
+    cnt[a] += 1;  cnt[b+1] -= 1                   // разностный массив по номерам операций
+cnt[i] += cnt[i-1] для i = 2..m                   // восстанавливаем счётчики
 
-    <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt; <span class="f">diff</span>(n + <span class="n">2</span>, <span class="n">0</span>);                 <span class="c">// разностный массив по элементам</span>
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; m; i++) {
-        <span class="k">auto</span> [l, r, d] = ops[i];
-        diff[l - <span class="n">1</span>] += d * cnt[i];
-        diff[r]     -= d * cnt[i];
-    }
-    <span class="k">long</span> <span class="k">long</span> cur = <span class="n">0</span>;
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; n; i++) { cur += diff[i]; a[i] += cur; }
-    <span class="k">return</span> a;
-}</code></pre></div>
+// шаг 2: применяем операции с d * cnt[i]
+diff[1..n+1] = 0
+для i от 1 до m, операция (l, r, d):
+    diff[l]   += d * cnt[i]
+    diff[r+1] -= d * cnt[i]
+cur = 0
+для i от 1 до n:
+    cur += diff[i];  a[i] += cur</code></pre></div>
 <p>Время $O(n+m+q)$, где $q$ — число супероопераций.</p>
 
 <h3 id="s2-8">2.8. 2.8. Задача K. Прибавление на прямоугольнике <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h0m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:00:00</a></h3>
@@ -1183,38 +1155,33 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <div class="formula">$$t[l_x][l_y]\mathrel{+}=d,\quad t[l_x][r_y+1]\mathrel{-}=d,\quad t[r_x+1][l_y]\mathrel{-}=d,\quad t[r_x+1][r_y+1]\mathrel{+}=d.$$</div>
 <figure class="viz"><svg viewBox="0 0 760 380" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="380" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Прибавление на прямоугольнике: меняем только 4 клетки</text><rect x="40" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="92" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="144" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="196" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="248" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="300" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="352" y="50" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="40" y="102" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="92" y="102" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="144" y="102" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="196" y="102" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="248" y="102" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="300" y="102" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="352" y="102" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="40" y="154" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="92" y="154" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="144" y="154" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="196" y="154" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="248" y="154" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="300" y="154" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="352" y="154" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="40" y="206" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="92" y="206" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="144" y="206" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="196" y="206" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="248" y="206" width="48" height="48" rx="4" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><rect x="300" y="206" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="352" y="206" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="40" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="92" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="144" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="196" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="248" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="300" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="352" y="258" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="40" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="92" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="144" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="196" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="248" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="300" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><rect x="352" y="310" width="48" height="48" rx="4" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="168.0" y="132.0" text-anchor="middle" font-size="16" font-weight="700" fill="#83c167">+d</text><text x="324.0" y="132.0" text-anchor="middle" font-size="16" font-weight="700" fill="#fc6255">−d</text><text x="168.0" y="288.0" text-anchor="middle" font-size="16" font-weight="700" fill="#fc6255">−d</text><text x="324.0" y="288.0" text-anchor="middle" font-size="16" font-weight="700" fill="#83c167">+d</text><text x="560" y="150" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">затем два прохода:</text><text x="560" y="178" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">1) по столбцам сверху вниз:</text><text x="560" y="198" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">t[i][j] += t[i-1][j]</text><text x="560" y="232" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">2) по строкам слева направо:</text><text x="560" y="252" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">t[i][j] += t[i][j-1]</text></svg><figcaption>Синий — прямоугольник запроса. Ставим +d в левый верхний угол, −d справа и снизу от прямоугольника, +d в правый нижний угол. Два прохода восстанавливают настоящие значения.</figcaption></figure>
 <p>После всех запросов восстанавливаем таблицу <strong>двумя проходами</strong>: сначала по столбцам сверху вниз (<code>t[i][j] += t[i-1][j]</code>), затем по строкам слева направо (<code>t[i][j] += t[i][j-1]</code>). Проходы делаются один раз в самом конце.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="t">vector</span>&lt;<span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&gt; <span class="f">rectAdd</span>(<span class="k">int</span> n, <span class="k">int</span> m, <span class="k">const</span> <span class="t">vector</span>&lt;<span class="t">array</span>&lt;<span class="k">long</span> <span class="k">long</span>, <span class="n">5</span>&gt;&gt;&amp; qs) {   <span class="c">// (x1, y1, x2, y2, d)</span>
-    <span class="t">vector</span>&lt;<span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&gt; <span class="f">t</span>(n + <span class="n">2</span>, <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;(m + <span class="n">2</span>, <span class="n">0</span>));         <span class="c">// индексы с 1</span>
-    <span class="k">for</span> (<span class="k">auto</span> [x1, y1, x2, y2, d] : qs) {
-        t[x1][y1]         += d;
-        t[x1][y2 + <span class="n">1</span>]     -= d;
-        t[x2 + <span class="n">1</span>][y1]     -= d;
-        t[x2 + <span class="n">1</span>][y2 + <span class="n">1</span>] += d;
-    }
-    <span class="k">for</span> (<span class="k">int</span> j = <span class="n">1</span>; j &lt;= m; j++) <span class="k">for</span> (<span class="k">int</span> i = <span class="n">1</span>; i &lt;= n; i++) t[i][j] += t[i - <span class="n">1</span>][j];   <span class="c">// по столбцам</span>
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">1</span>; i &lt;= n; i++) <span class="k">for</span> (<span class="k">int</span> j = <span class="n">1</span>; j &lt;= m; j++) t[i][j] += t[i][j - <span class="n">1</span>];   <span class="c">// по строкам</span>
-    <span class="k">return</span> t;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>для каждого запроса (x1, y1, x2, y2, d):
+    t[x1][y1]     += d
+    t[x1][y2+1]   -= d
+    t[x2+1][y1]   -= d
+    t[x2+1][y2+1] += d
+
+для каждого столбца j, сверху вниз:   t[i][j] += t[i-1][j]    // первый проход
+для каждой строки i, слева направо:   t[i][j] += t[i][j-1]    // второй проход
+// таблица t размера (n+2) x (m+2), индексы с 1</code></pre></div>
 <p>Общее время — $O(k+nm)$ для $k$ запросов: 4 операции на запрос и два прохода по таблице в конце (на записи это названо «$2nm$ плюс константа на запрос»). Таблицу заводим размера $(n+2)\times(m+2)$, чтобы индексы $r+1$ не выходили за границы.</p>
 <h2 id="s3">3. Контест «Бинарный поиск» <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h13m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:13:00</a></h2>
 <p>Бинарный поиск применим не только к поиску числа в массиве, но и к <strong>поиску ответа</strong>: если есть проверка «подходит ли значение $x$?», которая для всех значений до некоторого порога даёт «да», а после — «нет» (или наоборот), то границу можно найти за $O(\log)$ проверок. Во всех задачах ниже используется один шаблон: $l$ — значение, которое точно подходит, $r$ — значение, которое точно не подходит, и пока $l+1\ne r$ проверяем середину.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="c">// l — точно подходит, r — точно не подходит</span>
-<span class="k">while</span> (l + <span class="n">1</span> != r) {
-    <span class="k">long</span> <span class="k">long</span> m = (l + r) / <span class="n">2</span>;
-    <span class="k">if</span> (<span class="f">ok</span>(m)) l = m; <span class="k">else</span> r = m;     <span class="c">// если подходят большие значения, ветки меняются местами</span>
-}
-<span class="c">// ответ — l (наибольшее подходящее)</span></code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>// l — точно подходит, r — точно не подходит
+пока l + 1 != r:
+    m = (l + r) / 2
+    если подходит(m): l = m  иначе: r = m     // если подходят большие значения, ветки меняются
+// ответ — l (наибольшее подходящее)</code></pre></div>
 
 <h3 id="s3-1">3.1. 3.1. Задачи A и B. Поиск числа и ближайшего числа <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h13m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:13:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h13m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:13:00</a> <strong>A.</strong> Проверить, есть ли число $x$ в отсортированном массиве, — обычный бинарный поиск (<code>binary_search</code> или <code>lower_bound</code> и проверка найденного элемента).</p>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h14m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:14:00</a> <strong>B. Ближайшее число.</strong> Найти в массиве число, ближайшее по модулю разности к заданному $x$. Находим <code>lower_bound</code> — позицию <code>pos</code> первого элемента, не меньшего $x$. Ближайшее число — либо <code>a[pos]</code>, либо предыдущее <code>a[pos-1]</code>: предыдущее тоже может оказаться ближе. Например, для массива $2, 5$ и $x=3$ <code>lower_bound</code> указывает на 5, но ближайшее число — 2.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">closest</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; a, <span class="k">long</span> <span class="k">long</span> x) {      <span class="c">// a отсортирован, не пуст</span>
-    <span class="k">int</span> pos = <span class="f">lower_bound</span>(a.<span class="f">begin</span>(), a.<span class="f">end</span>(), x) - a.<span class="f">begin</span>();
-    <span class="k">long</span> <span class="k">long</span> best = LLONG_MAX, v = <span class="n">0</span>;
-    <span class="k">if</span> (pos &lt; (<span class="k">int</span>)a.<span class="f">size</span>() &amp;&amp; <span class="f">llabs</span>(a[pos] - x) &lt; best) { best = <span class="f">llabs</span>(a[pos] - x); v = a[pos]; }
-    <span class="k">if</span> (pos &gt; <span class="n">0</span> &amp;&amp; <span class="f">llabs</span>(a[pos - <span class="n">1</span>] - x) &lt;= best)          { best = <span class="f">llabs</span>(a[pos - <span class="n">1</span>] - x); v = a[pos - <span class="n">1</span>]; }
-    <span class="k">return</span> v;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция ближайшее(a[1..n], x):                 // a отсортирован
+    pos = первая позиция, где a[pos] &gt;= x         // lower_bound
+    лучший = ничего
+    если pos &lt;= n:  кандидат a[pos]
+    если pos &gt; 1:   кандидат a[pos-1]              // предыдущее тоже может быть ближе
+    вернуть кандидата с наименьшим |a - x|</code></pre></div>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h17m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:17:00</a> <strong>Вопрос из чата: почему именно <code>lower_bound</code>, а не <code>upper_bound</code>?</strong> <code>lower_bound</code> — первый элемент, <em>не меньший</em> $x$ (больше или равный), <code>upper_bound</code> — первый <em>строго больший</em>. Если число $x$ есть в массиве, <code>lower_bound</code> попадает ровно на него, и расстояние равно 0 — это сразу правильный ответ.</p>
 <div class="warn"><span class="lbl">Граничные случаи</span><br>Позиция <code>pos</code> может оказаться равной $n$ (все элементы меньше $x$) или 0 (все элементы не меньше $x$) — обе проверки в коде выше защищены условиями на границы.</div>
 
@@ -1222,55 +1189,55 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h15m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:15:00</a> <strong>Условие.</strong> Нужно сделать $n$ копий документа. Первый аппарат делает копию за $x$ секунд, второй — за $y$. Ловушка: в начале есть только оригинал, поэтому первую копию нужно сделать на более быстром аппарате (он освободится за $m=\min(x,y)$ секунд); после этого копировать можно на обоих.</p>
 <p><strong>Функция проверки.</strong> Для момента $t$: если $t<m$, не успели ни одной копии — «нет». Иначе первая копия сделана за $m$ секунд, а за оставшиеся $t-m$ секунд каждый аппарат делает $\lfloor\frac{t-m}{x}\rfloor$ и $\lfloor\frac{t-m}{y}\rfloor$ копий. Затем бинарный поиск по минимальному $t$, при котором проверка выполняется.</p>
 <div class="fix"><span class="lbl">Уточнение</span><br>На записи проверка произнесена как «$\lfloor\frac{t-m}{x}\rfloor+\lfloor\frac{t-m}{y}\rfloor\ge n$». Если первая копия, сделанная за $m$ секунд, входит в число $n$ (так в классической постановке этой задачи), то её нужно учесть: $1+\lfloor\frac{t-m}{x}\rfloor+\lfloor\frac{t-m}{y}\rfloor\ge n$, то есть остальные $n-1$ копий делаются двумя аппаратами за оставшееся время. Версия без единицы даёт другие ответы (на малых значениях они расходятся в большинстве случаев), поэтому сверьтесь с точной формулировкой условия задачи.</div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">copies</span>(<span class="k">long</span> <span class="k">long</span> n, <span class="k">long</span> <span class="k">long</span> x, <span class="k">long</span> <span class="k">long</span> y) {
-    <span class="k">long</span> <span class="k">long</span> m = <span class="f">min</span>(x, y);
-    <span class="k">auto</span> ok = [&amp;](<span class="k">long</span> <span class="k">long</span> t) { <span class="k">return</span> t &gt;= m &amp;&amp; <span class="n">1</span> + (t - m) / x + (t - m) / y &gt;= n; };
-    <span class="k">long</span> <span class="k">long</span> l = m - <span class="n">1</span>, r = m + n * <span class="f">max</span>(x, y);       <span class="c">// l — не успели, r — точно успели</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">long</span> <span class="k">long</span> t = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">ok</span>(t)) r = t; <span class="k">else</span> l = t; }
-    <span class="k">return</span> r;                                          <span class="c">// наименьшее подходящее время</span>
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция копии(n, x, y):
+    m = min(x, y)
+    подходит(t):  вернуть t &gt;= m и 1 + (t-m)/x + (t-m)/y &gt;= n     // деление целое
+    l = m - 1;  r = m + n * max(x, y)              // l — не успели, r — точно успели
+    пока l + 1 &lt; r:
+        t = (l + r) / 2
+        если подходит(t): r = t  иначе: l = t
+    вернуть r                                      // наименьшее подходящее время</code></pre></div>
 
 <h3 id="s3-3">3.3. 3.3. Задача D. Вещественный бинарный поиск <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h17m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:17:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h17m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:17:00</a> <strong>Условие.</strong> Найти решение уравнения $x^2+\sqrt{x}=c$. Разбиралась на лекции: функция $f(x)=x^2+\sqrt{x}$ возрастает при $x\ge0$, поэтому корень находится бинарным поиском по вещественным числам с фиксированным числом итераций.</p>
 <div class="own"><span class="lbl">Развёрнутое объяснение</span><br>Левая граница 0 (там $f=0\le c$), правая — $\max(1,c)$: при $c\ge1$ имеем $f(c)=c^2+\sqrt{c}\ge c$, а при $c<1$ значение $f(1)=2>c$. Дальше 100 итераций сжимают отрезок до предела точности <code>double</code>. Проверка условия «подходит» здесь — $f(m)&lt;c$ (значит, корень правее).</div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">double</span> <span class="f">solve</span>(<span class="k">double</span> c) {
-    <span class="k">double</span> l = <span class="n">0</span>, r = <span class="f">max</span>(<span class="n">1.0</span>, c);
-    <span class="k">for</span> (<span class="k">int</span> it = <span class="n">0</span>; it &lt; <span class="n">100</span>; it++) {                 <span class="c">// вместо while (r - l &gt; eps): число итераций надёжнее</span>
-        <span class="k">double</span> m = (l + r) / <span class="n">2</span>;
-        <span class="k">if</span> (m * m + <span class="f">sqrt</span>(m) &lt; c) l = m; <span class="k">else</span> r = m;
-    }
-    <span class="k">return</span> (l + r) / <span class="n">2</span>;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция уравнение(c):                          // x² + √x = c
+    l = 0;  r = max(1, c)
+    повторить 100 раз:                             // число итераций надёжнее, чем сравнение с ε
+        m = (l + r) / 2
+        если m*m + √m &lt; c: l = m  иначе: r = m
+    вернуть (l + r) / 2</code></pre></div>
 
 <h3 id="s3-4">3.4. 3.4. Задача E. Космическое поселение <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h18m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:18:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h18m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:18:00</a> <strong>Условие.</strong> Есть прямоугольное поле размером $V\times H$ и нужно разместить $n$ модулей размера $a\times b$. Вокруг каждого модуля с каждой стороны нужна защитная зона шириной $d$, то есть каждому модулю нужен прямоугольник $(a+2d)\times(b+2d)$. Нужно найти <strong>максимальное</strong> $d$, при котором все $n$ модулей помещаются; модули можно поворачивать на 90°. Гарантируется, что при $d=0$ они помещаются.</p>
 <p><strong>Монотонность.</strong> Если модули помещаются при каком-то $d$, то при меньшем $d$ они тем более поместятся; если не помещаются — при большем тоже не поместятся. Значит, можно бинарить $d$.</p>
 <p><strong>Проверка.</strong> В поле вдоль стороны $V$ помещается $\lfloor V/(a+2d)\rfloor$ модулей, вдоль $H$ — $\lfloor H/(b+2d)\rfloor$; всего их произведение. Для повёрнутого модуля — $\lfloor H/(a+2d)\rfloor\cdot\lfloor V/(b+2d)\rfloor$. Подходит, если хотя бы одно произведение не меньше $n$.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">bool</span> <span class="f">fits</span>(<span class="k">long</span> <span class="k">long</span> V, <span class="k">long</span> <span class="k">long</span> H, <span class="k">long</span> <span class="k">long</span> a, <span class="k">long</span> <span class="k">long</span> b, <span class="k">long</span> <span class="k">long</span> n, <span class="k">long</span> <span class="k">long</span> d) {
-    <span class="k">return</span> (V / (a + <span class="n">2</span>*d)) * (H / (b + <span class="n">2</span>*d)) &gt;= n
-        || (H / (a + <span class="n">2</span>*d)) * (V / (b + <span class="n">2</span>*d)) &gt;= n;
-}
-<span class="k">long</span> <span class="k">long</span> <span class="f">maxProtection</span>(<span class="k">long</span> <span class="k">long</span> V, <span class="k">long</span> <span class="k">long</span> H, <span class="k">long</span> <span class="k">long</span> a, <span class="k">long</span> <span class="k">long</span> b, <span class="k">long</span> <span class="k">long</span> n) {
-    <span class="k">long</span> <span class="k">long</span> l = <span class="n">0</span>, r = <span class="f">max</span>(V, H) + <span class="n">1</span>;               <span class="c">// l = 0 подходит, r заведомо нет</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">long</span> <span class="k">long</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">fits</span>(V, H, a, b, n, m)) l = m; <span class="k">else</span> r = m; }
-    <span class="k">return</span> l;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция влезает(V, H, a, b, n, d):
+    вернуть  (V/(a+2d)) * (H/(b+2d)) &gt;= n
+          или (H/(a+2d)) * (V/(b+2d)) &gt;= n         // с поворотом на 90°
+
+l = 0;  r = max(V, H) + 1                          // l подходит, r заведомо нет
+пока l + 1 &lt; r:
+    m = (l + r) / 2
+    если влезает(..., m): l = m  иначе: r = m
+вернуть l</code></pre></div>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=3h12m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">3:12:00</a> <strong>Вопрос: почему сравнивать площади нельзя.</strong> Проверка «суммарная площадь модулей не больше площади поля» неверна: при очень узком поле прямоугольники по площади «помещаются», а на деле нет. Нужно считать, <em>сколько прямоугольников укладывается по каждой стороне</em>, и перемножать. Пример: поле $4\times5$ и модули $2\times2$. По площади $\frac{4\cdot5}{2\cdot2}=5$ модулей, но по сторонам помещается $\lfloor4/2\rfloor\cdot\lfloor5/2\rfloor=2\cdot2=4$ — пятый уже никуда не встанет.</p>
 
 <h3 id="s3-5">3.5. 3.5. Задача F. Дипломы <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h23m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:23:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h23m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:23:00</a> <strong>Условие.</strong> У Пети $n$ дипломов размера $V\times H$. Найти наименьшее $c$, при котором на квадратную доску $c\times c$ можно разместить все дипломы (поворачивать нельзя).</p>
 <p><strong>Проверка.</strong> На доске $c\times c$ помещается $\lfloor c/H\rfloor$ рядов, в каждом из них $\lfloor c/V\rfloor$ дипломов. Подходит, если $\lfloor c/H\rfloor\cdot\lfloor c/V\rfloor\ge n$. Бинарный поиск: $l=0$ точно не подходит (дипломов нет), $r=n\cdot\max(V,H)$ точно подходит.</p>
 <div class="warn"><span class="lbl">Переполнение</span><br>При $c$ порядка $10^{18}$ произведение двух больших чисел $\lfloor c/H\rfloor\cdot\lfloor c/V\rfloor$ выходит за <code>long long</code>. Чтобы этого избежать, умножение заменяют делением с округлением вверх: пусть <code>rows = c / H</code>. Условие «в каждом ряду достаточно места» записывается как <code>perRow >= ceil(n / rows)</code>, то есть <code>c / V >= (n + rows - 1) / rows</code>. Деление переполнения не вызывает. Если <code>rows == 0</code>, ответ «не подходит» (иначе деление на 0).</div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">bool</span> <span class="f">fitsDiplomas</span>(<span class="k">long</span> <span class="k">long</span> c, <span class="k">long</span> <span class="k">long</span> V, <span class="k">long</span> <span class="k">long</span> H, <span class="k">long</span> <span class="k">long</span> n) {
-    <span class="k">long</span> <span class="k">long</span> rows = c / H, perRow = c / V;           <span class="c">// сколько рядов и сколько дипломов в ряду</span>
-    <span class="k">if</span> (rows == <span class="n">0</span> || perRow == <span class="n">0</span>) <span class="k">return</span> <span class="k">false</span>;
-    <span class="k">return</span> perRow &gt;= (n + rows - <span class="n">1</span>) / rows;           <span class="c">// без умножения — переполнения нет</span>
-}
-<span class="k">long</span> <span class="k">long</span> <span class="f">minBoard</span>(<span class="k">long</span> <span class="k">long</span> V, <span class="k">long</span> <span class="k">long</span> H, <span class="k">long</span> <span class="k">long</span> n) {
-    <span class="k">long</span> <span class="k">long</span> l = <span class="n">0</span>, r = n * <span class="f">max</span>(V, H);               <span class="c">// l не подходит, r подходит</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">long</span> <span class="k">long</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">fitsDiplomas</span>(m, V, H, n)) r = m; <span class="k">else</span> l = m; }
-    <span class="k">return</span> r;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция влезают(c, V, H, n):
+    рядов = c / H;  вРяду = c / V                  // целочисленное деление
+    если рядов == 0 или вРяду == 0: вернуть ложь
+    вернуть вРяду &gt;= ⌈n / рядов⌉                   // без умножения — переполнения нет
+                                                   // ⌈n/рядов⌉ = (n + рядов - 1) / рядов
+
+l = 0;  r = n * max(V, H)                          // l не подходит, r подходит
+пока l + 1 &lt; r:
+    m = (l + r) / 2
+    если влезают(m): r = m  иначе: l = m
+вернуть r</code></pre></div>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h29m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:29:00</a> <strong>Вопрос про сложность задач.</strong> Задачи в контестах <em>не отсортированы</em> по сложности: учебные стараются ставить в начало, но общего правила нет. Поэтому стоит просматривать не только первые, но и средние и последние задачи — среди них может оказаться простая.</p>
 
 <h3 id="s3-6">3.6. 3.6. Задача G. Корень кубического уравнения <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h29m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:29:00</a></h3>
@@ -1278,28 +1245,27 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><strong>Идея.</strong> Кубическая функция непрерывна и уходит в $\pm\infty$ на концах, поэтому на достаточно широком отрезке $[l,r]$ знаки значений на концах противоположны и корень найдётся бинарным поиском по вещественным числам. Ловушка: при $a>0$ график идёт «снизу вверх» ($f(l)<0<f(r)$), а при $a<0$ — «сверху вниз» ($f(l)>0>f(r)$). Поэтому условие «слева значение отрицательно, справа положительно» верно только при $a>0$.</p>
 <p><strong>Простое решение:</strong> если $a<0$, умножить все четыре коэффициента на $-1$. Корни уравнения от этого не меняются, а $a$ становится положительным.</p>
 <div class="own"><span class="lbl">Важное дополнение</span><br>Границы поиска нужно брать достаточно широкими: любой корень по модулю не превосходит $R=1+\max\bigl(|b/a|,|c/a|,|d/a|\bigr)$ (оценка Коши). Отрезок $[-R,R]$ гарантированно содержит все корни, и на нём знаки на концах разные.</div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">double</span> <span class="f">cubicRoot</span>(<span class="k">double</span> a, <span class="k">double</span> b, <span class="k">double</span> c, <span class="k">double</span> d) {
-    <span class="k">if</span> (a &lt; <span class="n">0</span>) { a = -a; b = -b; c = -c; d = -d; }     <span class="c">// чтобы слева f &lt; 0, справа f &gt; 0</span>
-    <span class="k">double</span> R = <span class="n">1</span> + <span class="f">max</span>({<span class="f">fabs</span>(b / a), <span class="f">fabs</span>(c / a), <span class="f">fabs</span>(d / a)});
-    <span class="k">double</span> l = -R, r = R;
-    <span class="k">for</span> (<span class="k">int</span> it = <span class="n">0</span>; it &lt; <span class="n">200</span>; it++) {
-        <span class="k">double</span> m = (l + r) / <span class="n">2</span>;
-        <span class="k">double</span> f = ((a * m + b) * m + c) * m + d;     <span class="c">// схема Горнера</span>
-        <span class="k">if</span> (f &gt; <span class="n">0</span>) r = m; <span class="k">else</span> l = m;
-    }
-    <span class="k">return</span> l;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция кубическийКорень(a, b, c, d):
+    если a &lt; 0: умножить a, b, c, d на -1          // слева f &lt; 0, справа f &gt; 0
+    R = 1 + max(|b/a|, |c/a|, |d/a|)               // граница Коши
+    l = -R;  r = R
+    повторить 200 раз:
+        m = (l + r) / 2
+        f = ((a*m + b)*m + c)*m + d                // схема Горнера
+        если f &gt; 0: r = m  иначе: l = m
+    вернуть l</code></pre></div>
 
 <h3 id="s3-7">3.7. 3.7. Задача H. Провода <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h33m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:33:00</a></h3>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h33m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:33:00</a> <strong>Условие.</strong> Даны $n$ отрезков проводов длин $L_i$. Нужно получить $k$ одинаковых отрезков целой длины $x$, причём $x$ как можно больше (резать можно как угодно, остатки выбрасываются). Пример: длины $802, 743, 457, 539$, $k=11$ — ответ 200: получается $4+3+2+2=11$ отрезков.</p>
 <p><strong>Почему нельзя просто сложить всё и поделить на $k$:</strong> остатки у каждого провода пропадают, поэтому нужно считать целые части отдельно для каждого провода.</p>
 <p><strong>Монотонность.</strong> Если можно получить $k$ отрезков длины $x$, то и меньшей длины тоже (от каждого отрезка отрежем лишнее). Если нельзя для $x$, то для большей длины тем более нельзя. Проверка: $\sum_i\lfloor L_i/x\rfloor\ge k$.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">wires</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; L, <span class="k">long</span> <span class="k">long</span> k) {
-    <span class="k">auto</span> ok = [&amp;](<span class="k">long</span> <span class="k">long</span> x) { <span class="k">long</span> <span class="k">long</span> s = <span class="n">0</span>; <span class="k">for</span> (<span class="k">long</span> <span class="k">long</span> v : L) s += v / x; <span class="k">return</span> s &gt;= k; };
-    <span class="k">long</span> <span class="k">long</span> l = <span class="n">0</span>, r = <span class="n">1000000001LL</span>;                <span class="c">// l = 0 «подходит»; 1e9 заведомо не подходит (длины до 1e7)</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">long</span> <span class="k">long</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">ok</span>(m)) l = m; <span class="k">else</span> r = m; }
-    <span class="k">return</span> l;                                          <span class="c">// 0, если не получить даже длину 1</span>
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция провода(L[1..n], k):
+    подходит(x):  вернуть сумма по i от (L[i] / x) &gt;= k    // целое деление
+    l = 0;  r = 10^9 + 1                           // l «подходит», 10^9 — заведомо нет
+    пока l + 1 &lt; r:
+        m = (l + r) / 2
+        если подходит(m): l = m  иначе: r = m
+    вернуть l                                      // 0, если даже длина 1 не получается</code></pre></div>
 <p>Отдельно обрабатывать «ответ 0» не нужно: если даже длины 1 не хватает, $l$ так и остаётся нулём. Время $O(n\log C)$, где $C$ — максимальная длина.</p>
 
 <h3 id="s3-8">3.8. 3.8. Задача I. Коровы в стойлах <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h39m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:39:00</a></h3>
@@ -1307,17 +1273,17 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <p><strong>Монотонность.</strong> Если расстояние $x$ обеспечить можно, то и любое меньшее; если нельзя, то большее тем более.</p>
 <p><strong>Проверка для расстояния $d$ — жадность.</strong> Первую корову ставим в первое стойло; каждую следующую — в ближайшее стойло, отстоящее от предыдущей коровы не меньше чем на $d$. Считаем, сколько коров поместилось; подходит, если не меньше $k$.</p>
 <figure class="viz"><svg viewBox="0 0 760 190" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="190" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Коровы: стойла 2 5 7 11 15 20, нужно расставить 3, расстояние d = 9</text><line x1="40" y1="110" x2="740" y2="110" stroke="#7c8aa0" stroke-width="2"/><circle cx="50" cy="110" r="13" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="50" y="114.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">2</text><circle cx="158" cy="110" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="158" y="114.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">5</text><circle cx="230" cy="110" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="230" y="114.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">7</text><circle cx="374" cy="110" r="13" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="374" y="114.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">11</text><circle cx="518" cy="110" r="13" fill="#1E2836" stroke="#3b4a63" stroke-width="2"/><text x="518" y="114.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">15</text><circle cx="698" cy="110" r="13" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="698" y="114.2" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">20</text><line x1="50" y1="74" x2="374" y2="74" stroke="#ffff00" stroke-width="2"/><text x="212.0" y="64" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">9</text><line x1="374" y1="74" x2="698" y2="74" stroke="#ffff00" stroke-width="2"/><text x="536.0" y="64" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">9</text><text x="380" y="170" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">жадно: первое стойло занимаем, дальше — ближайшее, отстоящее не меньше чем на d</text></svg><figcaption>Для d = 9 жадность ставит коров в 2, 11, 20 — три штуки. Для d = 10 уже не получится, значит ответ 9.</figcaption></figure>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">cows</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; x, <span class="k">int</span> k) {      <span class="c">// x отсортирован</span>
-    <span class="k">auto</span> ok = [&amp;](<span class="k">long</span> <span class="k">long</span> d) {
-        <span class="k">int</span> s = <span class="n">1</span>; <span class="k">long</span> <span class="k">long</span> last = x[<span class="n">0</span>];
-        <span class="k">for</span> (<span class="t">size_t</span> i = <span class="n">1</span>; i &lt; x.<span class="f">size</span>(); i++)
-            <span class="k">if</span> (x[i] - last &gt;= d) { s++; last = x[i]; }   <span class="c">// ставим корову в ближайшее подходящее стойло</span>
-        <span class="k">return</span> s &gt;= k;
-    };
-    <span class="k">long</span> <span class="k">long</span> l = <span class="n">1</span>, r = <span class="n">1000000001LL</span>;                 <span class="c">// l = 1 подходит (k ≤ n, координаты различны), r — нет</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">long</span> <span class="k">long</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">ok</span>(m)) l = m; <span class="k">else</span> r = m; }
-    <span class="k">return</span> l;                                          <span class="c">// выводим левую границу</span>
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция коровы(x[1..n], k):                     // x отсортирован
+    подходит(d):
+        s = 1;  последняя = x[1]
+        для i от 2 до n:
+            если x[i] - последняя &gt;= d: s += 1;  последняя = x[i]
+        вернуть s &gt;= k
+    l = 1;  r = 10^9 + 1                           // l подходит, r — нет
+    пока l + 1 &lt; r:
+        m = (l + r) / 2
+        если подходит(m): l = m  иначе: r = m
+    вернуть l                                      // левая граница</code></pre></div>
 <p>На записи лектор спрашивает, какую границу выводить в конце, — левую: она соответствует наибольшему $d$, для которого проверка «да».</p>
 
 <h3 id="s3-9">3.9. 3.9. Задача J. Лист бумаги и два текста <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h45m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:45:00</a></h3>
@@ -1330,28 +1296,27 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 <li>разрез существует, если $A+B\le W$.</li>
 </ul>
 <p>Наименьшая ширина для заданного текста тоже монотонна (больше ширина — легче), поэтому её ищет вложенный бинарный поиск: $l$ — ширина, в которую точно не помещается (например, длина самого длинного слова минус 1), $r=W$ — помещается по гарантии. Для проверки конкретной ширины слова записываются жадно: пишем, пока слово влезает, иначе начинаем новую строку, и считаем число строк.</p>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">int</span> <span class="f">rowsNeeded</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; w, <span class="k">int</span> width) {         <span class="c">// сколько строк нужно при данной ширине</span>
-    <span class="k">int</span> rows = <span class="n">1</span>, cur = -<span class="n">1</span>;                           <span class="c">// cur — занято в строке (-1: строка пуста)</span>
-    <span class="k">for</span> (<span class="k">int</span> len : w) {
-        <span class="k">if</span> (cur == -<span class="n">1</span>) cur = len;
-        <span class="k">else</span> <span class="k">if</span> (cur + <span class="n">1</span> + len &lt;= width) cur += <span class="n">1</span> + len;   <span class="c">// слово влезло через пробел</span>
-        <span class="k">else</span> { rows++; cur = len; }                   <span class="c">// переносим слово на новую строку</span>
-    }
-    <span class="k">return</span> rows;
-}
-<span class="k">int</span> <span class="f">minWidth</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; w, <span class="k">int</span> H, <span class="k">int</span> W) {      <span class="c">// наименьшая ширина при высоте H</span>
-    <span class="k">int</span> l = *<span class="f">max_element</span>(w.<span class="f">begin</span>(), w.<span class="f">end</span>()) - <span class="n">1</span>, r = W;
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">int</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">rowsNeeded</span>(w, m) &lt;= H) r = m; <span class="k">else</span> l = m; }
-    <span class="k">return</span> r;
-}
-<span class="k">int</span> <span class="f">minHeight</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; A, <span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">int</span>&gt;&amp; B, <span class="k">int</span> W) {
-    <span class="k">int</span> l = <span class="n">0</span>, r = A.<span class="f">size</span>() + B.<span class="f">size</span>();               <span class="c">// l — не хватает, r — хватит точно</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) {
-        <span class="k">int</span> h = (l + r) / <span class="n">2</span>;
-        <span class="k">if</span> (<span class="f">minWidth</span>(A, h, W) + <span class="f">minWidth</span>(B, h, W) &lt;= W) r = h; <span class="k">else</span> l = h;
-    }
-    <span class="k">return</span> r;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция сколькоСтрок(w[1..N], ширина):
+    строк = 1;  занято = пусто
+    для каждой длины len из w:
+        если занято пусто:                          занято = len
+        иначе если занято + 1 + len &lt;= ширина:      занято += 1 + len    // через пробел
+        иначе:                                      строк += 1;  занято = len
+    вернуть строк
+
+функция минШирина(w, H, W):
+    l = max(w) - 1;  r = W                          // l не помещается, r помещается
+    пока l + 1 &lt; r:
+        m = (l + r) / 2
+        если сколькоСтрок(w, m) &lt;= H: r = m  иначе: l = m
+    вернуть r
+
+функция минВысота(A, B, W):
+    l = 0;  r = |A| + |B|                           // l не хватает, r хватит точно
+    пока l + 1 &lt; r:
+        h = (l + r) / 2
+        если минШирина(A, h, W) + минШирина(B, h, W) &lt;= W: r = h  иначе: l = h
+    вернуть r</code></pre></div>
 <div class="fix"><span class="lbl">Исправление</span><br>В ходе разбора лектор дважды поправил себя по условию (сначала знак в неравенстве про ширину, затем асимптотику). Итог: условие существования разреза — $A+B\le W$ (сумма ширин <em>не больше</em> ширины листа). Сложность: внешний поиск делает $O(\log(N+M))$ шагов, на каждом — два вложенных поиска по $O(\log W)$ шагов, и на каждом такой шаг проход по словам за $O(N+M)$. Итого $O\bigl((N+M)\log(N+M)\log W\bigr)$ — слова проходятся не $N$ раз, а один раз за проверку.</div>
 
 <h3 id="s3-10">3.10. 3.10. Задача K. Пиццы на олимпиаде <a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=2h58m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">2:58:00</a></h3>
@@ -1366,23 +1331,17 @@ html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br
 </ul>
 <p>Точки $x$ и $y$ находятся бинарным поиском по префиксным суммам (то есть получается три бинарных поиска: внешний по времени и два вложенных; вложенные не зависят друг от друга).</p>
 <div class="fix"><span class="lbl">Уточнение</span><br>На записи условие позиции формулировалось как «сумма всех пицц <em>до</em> точки хотя бы $t$» и приводился пример про 12 секунд для точек с 2, 4, 6 пиццами. Строгая формулировка такая: в секунду $t$ участник находится в точке $i$ тогда и только тогда, когда $P_i&lt;t\le P_{i+1}$, где $P_i=a_0+\dots+a_{i-1}$. Для точек с 2, 4, 6 пиццами секунды 1–2 участник у первой точки, 3–6 — у второй, 7–12 — у третьей. Именно с включительной суммой код ниже совпал с прямым моделированием на случайных малых тестах.</div>
-<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code><span class="k">long</span> <span class="k">long</span> <span class="f">pizza</span>(<span class="k">const</span> <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; a, <span class="k">long</span> <span class="k">long</span> k) {
-    <span class="k">int</span> n = a.<span class="f">size</span>();
-    <span class="t">vector</span>&lt;<span class="k">long</span> <span class="k">long</span>&gt; <span class="f">p</span>(n + <span class="n">1</span>, <span class="n">0</span>);                    <span class="c">// p[i] = a[0] + ... + a[i-1]</span>
-    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; n; i++) p[i + <span class="n">1</span>] = p[i] + a[i];
-    <span class="k">auto</span> ok = [&amp;](<span class="k">long</span> <span class="k">long</span> t) {                       <span class="c">// разговор уже начался к секунде t?</span>
-        <span class="k">int</span> l = -<span class="n">1</span>, r = n - <span class="n">1</span>;                        <span class="c">// x: первая точка, где префикс (включительно) &gt;= t</span>
-        <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">int</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (p[m + <span class="n">1</span>] &gt;= t) r = m; <span class="k">else</span> l = m; }
-        <span class="k">int</span> x = r;
-        <span class="k">int</span> lo = -<span class="n">1</span>, hi = n - <span class="n">1</span>;                      <span class="c">// y: симметрично справа</span>
-        <span class="k">while</span> (lo + <span class="n">1</span> &lt; hi) { <span class="k">int</span> m = (lo + hi) / <span class="n">2</span>; <span class="k">if</span> (p[n] - p[n - <span class="n">1</span> - m] &gt;= t) hi = m; <span class="k">else</span> lo = m; }
-        <span class="k">int</span> y = n - <span class="n">1</span> - hi;
-        <span class="k">return</span> y - x &lt;= k;
-    };
-    <span class="k">long</span> <span class="k">long</span> l = <span class="n">0</span>, r = p[n];                        <span class="c">// l — разговора ещё нет, r — точно уже есть</span>
-    <span class="k">while</span> (l + <span class="n">1</span> &lt; r) { <span class="k">long</span> <span class="k">long</span> m = (l + r) / <span class="n">2</span>; <span class="k">if</span> (<span class="f">ok</span>(m)) r = m; <span class="k">else</span> l = m; }
-    <span class="k">return</span> r;
-}</code></pre></div>
+<div class="code"><div class="code-head"><span>псевдокод</span><button class="copy" type="button">копировать</button></div><pre class="hl"><code>функция пиццы(a[0..n-1], k):
+    p[0] = 0;  p[i+1] = p[i] + a[i]                 // префиксные суммы
+    подходит(t):                                     // разговор начался к секунде t?
+        x = первая точка, где p[x+1] &gt;= t            // бинпоиск слева
+        y = последняя точка, где a[y] + ... + a[n-1] &gt;= t   // бинпоиск справа
+        вернуть y - x &lt;= k
+    l = 0;  r = p[n]                                 // l — разговора нет, r — точно есть
+    пока l + 1 &lt; r:
+        m = (l + r) / 2
+        если подходит(m): r = m  иначе: l = m
+    вернуть r</code></pre></div>
 <p><a class="ts" href="https://vkvideo.ru/video-232575486_456239903?t=3h10m0s" target="_blank" rel="noopener" title="Смотреть лекцию с этого момента">3:10:00</a> <strong>Вариант проще.</strong> Позиции $x$ и $y$ для заданного $t$ можно искать и обычным линейным проходом по массиву — это даёт $O(n\log C)$ вместо $O(\log C\cdot\log n)$, но тоже проходит. В чате спросили, нельзя ли получить позицию «формулой»: нет, это функция от конкретных чисел массива, поэтому нужен либо поиск по префиксным суммам, либо проход.</p>
 
 <h2 id="s4">4. Общие приёмы разобранных задач</h2>

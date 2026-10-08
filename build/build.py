@@ -73,7 +73,7 @@ def wrap_code(body: str) -> str:
         if lang in ("cpp", "c++"):
             return (f'<div class="code"><div class="code-head"><span>C++</span><button class="copy" type="button">копировать</button></div>'
                     f'<pre class="hl"><code>{hl_cpp(raw)}</code></pre></div>')
-        label = "шаблон" if lang == "template" else "текст"
+        label = {"template": "шаблон", "pseudo": "псевдокод"}.get(lang, "текст")
         return (f'<div class="code"><div class="code-head"><span>{label}</span><button class="copy" type="button">копировать</button></div>'
                 f'<pre class="hl"><code>{html.escape(raw, quote=False)}</code></pre></div>')
     return re.sub(r'<pre class="([\w+]+)">(.*?)</pre>', rep, body, flags=re.S)
