@@ -3,7 +3,7 @@ import json, re, pathlib
 from parallel_x_zan3 import FIGS, algos_js
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-meta = {"title": "Введение в потоки", "parallel": "parallel-x", "pname": "Параллель X", "porder": 3, "n": 3,
+meta = {"title": "Введение в потоки", "parallel": "parallel-x", "pname": "Параллель X", "porder": 1, "n": 3,
         "video": "video-232575486_456239901",
         "subtitle": "Разбор задач на суффиксный массив и лекция про потоки: максимальный поток и минимальный разрез, алгоритмы Форда—Фалкерсона, Эдмонса—Карпа и Диница, паросочетания, гаджеты для разрезов.",
         "chips": ["Разбор + лекция", "≈ 2 ч 40 мин", "Язык кода: C++ (в разборе — псевдокод)"]}

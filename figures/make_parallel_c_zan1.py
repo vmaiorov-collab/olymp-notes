@@ -3,7 +3,7 @@ import json, re, pathlib
 from parallel_c_zan1 import FIGS, algos_js
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-meta = {"title": "Контейнеры", "parallel": "parallel-c", "pname": "Параллель C", "porder": 1, "n": 1,
+meta = {"title": "Контейнеры", "parallel": "parallel-c", "pname": "Параллель C", "porder": 5, "n": 1,
         "video": "video-232575486_456239861",
         "subtitle": "Организация курса и оценка, повторение асимптотики, стек, очередь и дек; стек и очередь с минимумом, проверка скобочной последовательности, постфиксная запись.",
         "chips": ["Лекция", "≈ 2 ч 10 мин", "Язык кода: C++"]}

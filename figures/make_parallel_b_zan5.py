@@ -3,7 +3,7 @@ import json, re, pathlib
 from parallel_b_zan5 import FIGS, algos_js
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-meta = {"title": "Дерево отрезков и разбор динамики", "parallel": "parallel-b", "pname": "Параллель B", "porder": 2, "n": 5,
+meta = {"title": "Дерево отрезков и разбор динамики", "parallel": "parallel-b", "pname": "Параллель B", "porder": 3, "n": 5,
         "video": "video-232575486_456239902",
         "subtitle": "Разбор контеста по динамике (деревья, строки, отрезки, подарки по циклам) и лекция про дерево отрезков с массовыми операциями, деревья Фенвика, неявные деревья и приём с потенциалом.",
         "chips": ["Разбор контеста + лекция", "≈ 3 ч 40 мин", "Язык кода: C++ (в разборе — псевдокод)"]}
