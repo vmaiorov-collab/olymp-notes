@@ -1,0 +1,1 @@
+(function(){try{var l=localStorage.getItem("olympLook")||"book";document.documentElement.setAttribute("data-look",l)}catch(e){document.documentElement.setAttribute("data-look","book")}})();

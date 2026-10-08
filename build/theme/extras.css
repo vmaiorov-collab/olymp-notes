@@ -1,0 +1,15 @@
+/* добавочные блоки нового сайта в духе книжного вида: исправление и собственные вставки */
+html[data-theme] .fix, html[data-theme] .own{border-left:2px solid var(--accent); padding:12px 18px; margin:1.1em 0; font-family:var(--serif); font-size:1.04rem}
+html[data-theme] .fix{background:#fbe9e8; border-left-color:#a1313a}
+html[data-theme] .own{background:#eeeaf8; border-left-color:#5a3aa6}
+html[data-theme="dark"] .fix{background:#2c1719; border-left-color:#ff9ca5}
+html[data-theme="dark"] .own{background:#1f1a33; border-left-color:#c6b3ff}
+html[data-theme] .fix .lbl{color:#a1313a} html[data-theme] .own .lbl{color:#5a3aa6}
+html[data-theme="dark"] .fix .lbl{color:#ff9ca5} html[data-theme="dark"] .own .lbl{color:#c6b3ff}
+html[data-look="book"] .fix, html[data-look="book"] .own{background:none; padding:0 0 0 18px; margin:26px 0; font-style:italic}
+html[data-look="book"] .wrap > .fix, html[data-look="book"] .wrap > .own{max-width:66ch}
+html[data-look="book"] .fix > br:first-of-type, html[data-look="book"] .own > br:first-of-type{display:none}
+/* общий плеер кадров (data-frames) */
+.algo .fsvg{width:100%;height:auto;display:block;border-radius:4px}
+.algo .fcap{font-family:var(--mono);font-size:.76rem;color:var(--muted);letter-spacing:.04em;margin-bottom:6px;text-transform:uppercase}
+.algo .fmsg{min-height:2.6em;font-size:.92rem;color:var(--muted);margin-top:6px}

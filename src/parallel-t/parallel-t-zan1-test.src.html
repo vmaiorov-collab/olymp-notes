@@ -1,0 +1,18 @@
+<!--meta {"title":"Проверка шаблона","subtitle":"Образец оформления: формулы, код, блоки, схема и плеер.","parallel":"parallel-t","pname":"Параллель T","porder":99,"n":1,"video":"video-232575486_456239903","chips":["Образец","Язык кода: C++"]}-->
+<h2 data-tc="0:09">Формулы и блоки</h2>
+<h3 data-tc="0:52">Определения</h3>
+<p><ts t="2:13"/> Сумма: $\sum_{i=1}^n i = \frac{n(n+1)}{2}$. Подотрезок — элементы <strong>подряд</strong>.</p>
+<div class="good"><span class="lbl">Интуиция</span><br>Двигаем обе границы только вправо, и каждая проходит массив один раз.</div>
+<div class="note"><span class="lbl">Замечание</span><br>Здесь используется <code>map</code>, поэтому $O(n\log n)$.</div>
+<div class="warn"><span class="lbl">Именно while, а не if</span><br>С <code>if</code> левая граница сдвинется не более чем на единицу.</div>
+<div class="fix"><span class="lbl">Исправление</span><br>Тестовое исправление неточности.</div>
+<div class="own"><span class="lbl">Собственный пример</span><br>Тестовая собственная вставка.</div>
+<div class="formula">$$ \gcd(a,b)=\gcd(b,\ a \bmod b) $$</div>
+<h2 data-tc="1:02:30">Код, схема, плеер</h2>
+<pre class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+int main() { int n; cin >> n; // читаем
+  vector&lt;int&gt; a(n); cout << max(1, n) * 2 << "\n"; }</pre>
+<figure class="viz"><svg viewBox="0 0 400 110" role="img" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="400" height="110" rx="14" fill="#141a24"/><rect x="40" y="35" width="60" height="40" rx="6" fill="#1E2836" stroke="#58c4dd" stroke-width="2"/><text x="70" y="61" text-anchor="middle" font-size="16" fill="#dfe7f1">a[0]</text><circle cx="200" cy="55" r="22" fill="#83c167"/><text x="200" y="60" text-anchor="middle" font-size="14" fill="#141a24">r</text><circle cx="300" cy="55" r="22" fill="#ffff00"/></svg><figcaption>Схема в палитре 3B1B: цвета подстраиваются под тему.</figcaption></figure>
+<div class="algo" data-algo="sort" data-kind="bubble" data-arr="5,2,8,1,9,3"></div>
+<div class="algo" data-frames="demo"></div>

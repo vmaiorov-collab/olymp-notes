@@ -1,0 +1,7 @@
+
+  .back{display:inline-flex; align-items:center; gap:6px; margin:0 0 14px; padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--muted); font-size:.85rem; font-weight:600; text-decoration:none}
+  .back:hover{color:var(--accent); border-color:var(--accent); text-decoration:none}
+  a.ts{text-decoration:none; cursor:pointer; transition:filter .15s, transform .1s}
+  a.ts::before{content:"▶\00a0"; font-size:.8em}
+  a.ts:hover{filter:brightness(.9); text-decoration:none; transform:translateY(-1px)}
+  @media print{.back{display:none} a.ts::before{content:""}}
