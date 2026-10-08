@@ -3,7 +3,7 @@
   function apply(t){root.setAttribute('data-theme',t);if(btn)btn.textContent=t==='dark'?'светлая тема':'тёмная тема'}
   if(btn){
     var saved=null;try{saved=localStorage.getItem('olympTheme')}catch(e){}
-    apply(saved||root.getAttribute('data-theme')||'dark');
+    apply(saved||root.getAttribute('data-theme')||'light');
     btn.addEventListener('click',function(){
       root.classList.add('theme-anim');setTimeout(function(){root.classList.remove('theme-anim')},350);
       var next=root.getAttribute('data-theme')==='dark'?'light':'dark';apply(next);

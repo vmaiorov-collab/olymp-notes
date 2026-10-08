@@ -16,15 +16,15 @@ CHROME = os.environ.get('CHROME', '/Applications/Google Chrome.app/Contents/MacO
 ORDER = ['c', 'bs', 'b', 'xs', 'x']
 TAG = {'c': 'начальный', 'x': 'продвинутый'}
 URL = 'vmaiorov-collab.github.io/olymp-notes'
-YELLOW, BG, INK, MUTED = '#ffdd2d', '#17181c', '#ececf0', '#a3a6b0'
+YELLOW, BG, INK, MUTED = '#ffdd2d', '#f3f4f1', '#111111', '#6c6d69'
 esc = html.escape
 
 BASE = f'''<!doctype html><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 *{{box-sizing:border-box}}html,body{{margin:0}}
-body{{width:1200px;height:630px;background:#0d0e11;font-family:"Onest",Helvetica,Arial,sans-serif;color:{INK};padding:28px}}
-.panel{{position:relative;width:100%;height:100%;border-radius:36px;padding:52px 60px;overflow:hidden;background:{BG};border:2px solid #2c2e35}}
+body{{width:1200px;height:630px;background:#ffffff;font-family:"Onest",Helvetica,Arial,sans-serif;color:{INK};padding:28px}}
+.panel{{position:relative;width:100%;height:100%;border-radius:36px;padding:52px 60px;overflow:hidden;background:{BG}}}
 .chip{{display:inline-block;padding:9px 20px;border-radius:12px;background:{YELLOW};color:#111;font-size:25px;font-weight:700}}
 h1{{margin:26px 0 0;font-weight:800;letter-spacing:-.045em;line-height:.98;font-size:112px;white-space:nowrap}}
 .hi{{background:linear-gradient(transparent 62%,{YELLOW} 62%,{YELLOW} 94%,transparent 94%);color:{INK};padding:0 .05em}}
