@@ -99,6 +99,7 @@ def tail(prefix, extra=''):
 def footer(prefix):
     return ('<footer class="foot"><a href="https://education.tbank.ru/school/generation/algo/">'
             'education.tbank.ru/school/generation/algo</a>'
+            '<a href="https://vmaiorov-collab.github.io/">все проекты</a>'
             '<a href="https://vmaiorov.goatcounter.com/" target="_blank" rel="noopener">статистика посещений</a></footer>')
 
 
@@ -148,7 +149,7 @@ for i, k in enumerate(ORDER):
            if i < len(ORDER) - 1 else '')
     page = head(f'Параллель {k.upper()} — Олимп-конспекты', DESC[k], f'{BASE}parallel-{k}/', '../') + f'''<body>
 <div class="wrap">
-<div class="top">{SITE}<a class="back" href="../index.html">← Все параллели</a>{TOGGLE}</div>
+<div class="top"><a class="sitelink" data-up href="../index.html">← Все параллели</a>{TOGGLE}</div>
 <header class="phead"><div class="tagrow"><span class="lk">{k.upper()}</span>{tag}<span>{word(len(ls))}</span></div>
 <h1>Параллель {k.upper()}</h1><p class="lead">{esc(DESC[k])}</p></header>
 <div class="grid" style="margin-top:22px">{cards}</div>
