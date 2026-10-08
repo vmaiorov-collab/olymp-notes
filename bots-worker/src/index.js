@@ -197,31 +197,42 @@ async function reportParallels(env, days) {
 
 const VIEWS = [["stats", "📊 Сводка"], ["top", "🏆 Топ"], ["par", "🧩 Параллели"]];
 
-function keyboard(view, days, env) {
-  const views = VIEWS.map(([v, label]) => ({ text: v === view ? `● ${label}` : label, callback_data: `${v}:${days}` }));
+const SITES = [["o", "🧩 Олимп-конспекты", "SITE_URL"], ["c", "📚 Конспекты", null]];
+const CONSPECTUS_URL = "https://vmaiorov-collab.github.io/conspectus/";
+const CONSPECTUS_WORKER = "https://conspectus-bots.d6544559.workers.dev/report";
+
+function keyboard(view, days, env, site = "o") {
+  const cb = (v, d, st = site) => `${v}:${d}:${st}`;
+  const sites = SITES.map(([k, label]) => ({ text: k === site ? `● ${label}` : label, callback_data: cb(view, days, k) }));
+  const views = VIEWS.map(([v, label]) => ({ text: v === view ? `● ${label}` : label, callback_data: cb(v, days) }));
   const periods = PERIODS.map((d) => {
     const name = d === 1 ? "Сегодня" : `${d} дн.`;
-    return { text: d === days ? `● ${name}` : name, callback_data: `${view}:${d}` };
+    return { text: d === days ? `● ${name}` : name, callback_data: cb(view, d) };
   });
-  return { inline_keyboard: [views, periods, [{ text: "🔄 Обновить", callback_data: `${view}:${days}` }, { text: "🌐 Открыть сайт", url: env.SITE_URL }]] };
+  return { inline_keyboard: [sites, views, periods, [{ text: "🔄 Обновить", callback_data: cb(view, days) }, { text: "🌐 Открыть сайт", url: site === "c" ? CONSPECTUS_URL : env.SITE_URL }]] };
 }
 
 // постоянная клавиатура под полем ввода: команды набирать не нужно
 const REPLY_KB = {
-  keyboard: [[{ text: "📊 Сводка" }, { text: "☀️ Сегодня" }], [{ text: "🏆 Топ" }, { text: "🧩 Параллели" }]],
+  keyboard: [[{ text: "📊 Сводка" }, { text: "☀️ Сегодня" }], [{ text: "🏆 Топ" }, { text: "🧩 Параллели" }], [{ text: "📚 Конспекты" }]],
   resize_keyboard: true,
   is_persistent: true,
   input_field_placeholder: "Выберите раздел…",
 };
-const BUTTON_CMD = { "📊 Сводка": "/stats", "☀️ Сегодня": "/today", "🏆 Топ": "/top", "🧩 Параллели": "/parallels" };
+const BUTTON_CMD = { "📊 Сводка": "/stats", "☀️ Сегодня": "/today", "🏆 Топ": "/top", "🧩 Параллели": "/parallels", "📚 Конспекты": "/conspectus" };
 
-const render = (env, view, days) => (view === "top" ? reportTop(env, days) : view === "par" ? reportParallels(env, days) : reportStats(env, days));
+async function renderConspectus(env, view, days) {
+  const r = await fetch(CONSPECTUS_WORKER, { method: "POST", headers: { "X-Report-Key": env.CONSPECTUS_KEY, "Content-Type": "application/json" }, body: JSON.stringify({ view, days }) });
+  if (!r.ok) throw new Error(`conspectus: HTTP ${r.status}`);
+  return r.text();
+}
+const render = (env, view, days, site = "o") => site === "c" ? renderConspectus(env, view, days) : (view === "top" ? reportTop(env, days) : view === "par" ? reportParallels(env, days) : reportStats(env, days));
 const clampDays = (a, def = 7) => { const n = parseInt(a, 10); return Number.isFinite(n) && n >= 1 ? Math.min(n, 365) : def; };
 
 const HELP =
-  "👋 <b>Бот статистики olymp-notes</b>\n\n" +
+  "👋 <b>Бот статистики: olymp-notes и conspectus</b>\n\n" +
   "Кнопки внизу — быстрый доступ, а под каждым отчётом можно менять раздел и период.\n\n" +
-  "Команды: /stats [дни] · /today · /top [дни] · /parallels [дни]";
+  "Переключатель сайта — в верхнем ряду кнопок.\n\nКоманды: /stats [дни] · /today · /top [дни] · /parallels [дни]";
 
 async function handleUpdate(update, env) {
   const token = env.STATS_BOT_TOKEN;
@@ -229,12 +240,12 @@ async function handleUpdate(update, env) {
   if (cq) {
     const m = cq.message;
     if (!m) return;
-    const [view, d] = (cq.data || "").split(":");
+    const [view, d, site = "o"] = (cq.data || "").split(":");
     const days = clampDays(d);
     let text;
-    try { text = await render(env, view, days); } catch (e) { text = `⚠️ Не удалось получить статистику: ${esc(e.message)}`; }
+    try { text = await render(env, view, days, site); } catch (e) { text = `⚠️ Не удалось получить статистику: ${esc(e.message)}`; }
     try {
-      await tg(token, "editMessageText", { chat_id: m.chat.id, message_id: m.message_id, text, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: keyboard(view, days, env) });
+      await tg(token, "editMessageText", { chat_id: m.chat.id, message_id: m.message_id, text, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: keyboard(view, days, env, site) });
       await tg(token, "answerCallbackQuery", { callback_query_id: cq.id });
     } catch (e) {
       await tg(token, "answerCallbackQuery", { callback_query_id: cq.id, text: String(e.message).includes("not modified") ? "Уже актуально ✅" : "Ошибка обновления" }).catch(() => {});
@@ -247,8 +258,9 @@ async function handleUpdate(update, env) {
   if (!raw.startsWith("/")) return;
   const parts = raw.trim().split(/\s+/);
   const cmd = parts[0].split("@")[0].toLowerCase();
-  let text, view = "stats", days = 7;
+  let text, view = "stats", days = 7, site = "o";
   try {
+    if (cmd === "/conspectus") { site = "c"; text = await renderConspectus(env, "stats", 7); } else
     if (cmd === "/start" || cmd === "/help") {
       await tg(token, "sendMessage", { chat_id: String(msg.chat.id), text: HELP, parse_mode: "HTML", reply_markup: REPLY_KB });
       text = await reportStats(env, 7);
@@ -258,7 +270,7 @@ async function handleUpdate(update, env) {
     else if (cmd === "/top") { view = "top"; days = clampDays(parts[1]); text = await reportTop(env, days); }
     else if (cmd === "/parallels") { view = "par"; days = clampDays(parts[1]); text = await reportParallels(env, days); }
   } catch (e) { text = `⚠️ Не удалось получить статистику: ${esc(e.message)}`; }
-  if (text) await tg(token, "sendMessage", { chat_id: String(msg.chat.id), text, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: keyboard(view, days, env) });
+  if (text) await tg(token, "sendMessage", { chat_id: String(msg.chat.id), text, parse_mode: "HTML", disable_web_page_preview: true, reply_markup: keyboard(view, days, env, site) });
 }
 
 export default {
