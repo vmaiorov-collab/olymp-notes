@@ -12,6 +12,14 @@
   }
   var top=document.getElementById('topBtn');
   if(top){addEventListener('scroll',function(){top.classList.toggle('show',scrollY>600)});top.onclick=function(){scrollTo({top:0,behavior:'smooth'})}}
+  // «← Все параллели» ведёт назад по истории, если пришли с главной; иначе обычная ссылка
+  var back=document.querySelector('.top .back');
+  if(back&&back.getAttribute('href')==='../index.html'){
+    back.addEventListener('click',function(e){
+      var home=new URL('../',location.href).href,r=document.referrer;
+      if(history.length>1&&r&&r.indexOf(home)===0&&r.indexOf('/parallel-')<0){e.preventDefault();history.back()}
+    });
+  }
   var q=document.getElementById('q'),h=document.getElementById('hits');
   if(q&&window.D){q.addEventListener('input',function(){var v=q.value.trim().toLowerCase();
     h.innerHTML=v?D.filter(function(x){return (x.t+' '+x.s).toLowerCase().indexOf(v)>=0}).map(function(x){return '<p><a href="'+x.h+'">'+x.t+'</a></p>'}).join('')||'<p>Ничего не найдено</p>':''})}
