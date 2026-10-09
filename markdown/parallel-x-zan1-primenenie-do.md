@@ -52,8 +52,6 @@
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -147,8 +145,6 @@ $$\operatorname{mex}(l,r)=\min\{\,x:\ \text{last}[x]<l\,\}.$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -194,8 +190,6 @@ struct MinTree {                                          // дерево на m
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -257,8 +251,6 @@ $$c_{u\to v}(x)=c_u(x)+c_v(x)-2\,c_w(x).$$
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -329,8 +321,6 @@ struct DST {                                              // сумма; для 
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

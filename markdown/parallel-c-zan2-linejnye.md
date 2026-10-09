@@ -24,8 +24,6 @@
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -56,8 +54,6 @@ $$a_L+\dots+a_R=P_R-P_{L-1}.$$
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -124,8 +120,6 @@ $$\max_{L\le R}\bigl(P_R-P_{L-1}\bigr)=P_R-\min_{L\le R}P_{L-1}.$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -190,8 +184,6 @@ $$S=P_{R,Y}-P_{L-1,Y}-P_{R,X-1}+P_{L-1,X-1}.$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -224,8 +216,6 @@ long long s = P[r][y] - P[l - 1][y] - P[r][x - 1] + P[l - 1][x - 1];
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -261,8 +251,6 @@ $$D_L \mathrel{+}= X,\qquad D_{R+1} \mathrel{-}= X.$$
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -308,8 +296,6 @@ for (int i = 1; i <= n; i++) { cur += D[i]; cout << cur << " "; }   // преф�
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -336,8 +322,6 @@ while (i < n && j < m) {                   // пока оба указателя
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -381,8 +365,6 @@ while (i < n && j < m) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -421,8 +403,6 @@ while (j < m) c[p++] = b[j++];                    // остаток b
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

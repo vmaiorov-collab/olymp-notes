@@ -24,8 +24,6 @@ $$I(B)-I(A)=\#\{u\in S_A:\ u<B\}-\#\{v\in S_B:\ v<A\}.$$
 
 псевдокод
 
-копировать
-
 </div>
 
     ans[root] = Σ по w: count(tin[w]..tout[w], меньше w)
@@ -53,8 +51,6 @@ $$I(B)-I(A)=\#\{u\in S_A:\ u<B\}-\#\{v\in S_B:\ v<A\}.$$
 
 псевдокод
 
-копировать
-
 </div>
 
     merge((m1, c1), (m2, c2)):
@@ -78,8 +74,6 @@ $$I(B)-I(A)=\#\{u\in S_A:\ u<B\}-\#\{v\in S_B:\ v<A\}.$$
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -131,8 +125,6 @@ $$I(B)-I(A)=\#\{u\in S_A:\ u<B\}-\#\{v\in S_B:\ v<A\}.$$
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -230,8 +222,6 @@ $$I(B)-I(A)=\#\{u\in S_A:\ u<B\}-\#\{v\in S_B:\ v<A\}.$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -319,8 +309,6 @@ vector<Row> eucTable(long long a, long long b) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -350,8 +338,6 @@ void go(int a, int b, int c, int d, int n, vector<pair<int,int>>& out) {  // м�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -429,8 +415,6 @@ pair<ll,ll> minDenominator(ll a, ll b, ll c, ll d) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -482,8 +466,6 @@ bool ratRecon(ll a, ll m, ll P, ll Q, ll& p, ll& q) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -555,8 +537,6 @@ ll floorSum(ll n, ll m, ll a, ll b) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -586,8 +566,6 @@ for (ll p = 2; p * p <= n; p++)
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -624,8 +602,6 @@ void sieve() {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -683,8 +659,6 @@ $$\sum_{k=n^{1/4}}^{n^{1/2}}\frac{n}{k^2}\ \lesssim\ n\sum\left(\frac1{k-1}-\fra
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -756,8 +730,6 @@ ll countPrimes(ll n) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -832,8 +804,6 @@ $$\#\{(i,j):\gcd(i,j)=1\}=2\sum_{i=1}^{n}\varphi(i)-1.$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -880,8 +850,6 @@ void down(vector<ll>& f) { int M = f.size() - 1;
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

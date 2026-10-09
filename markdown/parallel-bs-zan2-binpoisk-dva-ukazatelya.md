@@ -54,8 +54,6 @@
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -131,8 +129,6 @@ int countEqual(const vector<int>& a, int x) {  // сколько раз x вст
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -183,8 +179,6 @@ int maxMinDist(const vector<int>& x, int k) {           // нужно 2 <= k <= 
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -237,8 +231,6 @@ double cbrtBS(double a) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -295,8 +287,6 @@ double ternaryMax(F f, double l, double r) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -375,8 +365,6 @@ pair<int,int> segmentWithSum(const vector<long long>& a, long long S) {
 
 псевдокод
 
-копировать
-
 </div>
 
     lower(x) = первый индекс i с a[i] ≥ x
@@ -430,8 +418,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 
 псевдокод
 
-копировать
-
 </div>
 
     covered(R):
@@ -471,8 +457,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 
 псевдокод
 
-копировать
-
 </div>
 
     l = 0, r = n − 1                        // инвариант: пик в [l, r]
@@ -509,8 +493,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 
 псевдокод
 
-копировать
-
 </div>
 
     W(M): для каждого i найти справа бинпоиском последнюю j с a[j] − a[i] ≤ M
@@ -539,8 +521,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -580,8 +560,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 
 псевдокод
 
-копировать
-
 </div>
 
     best = ∞;  w = 1
@@ -620,8 +598,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 
 псевдокод
 
-копировать
-
 </div>
 
     все числа 0..n лежат в set «отсутствуют»; cnt[v] = 0
@@ -650,8 +626,6 @@ $$T(y)=\frac{\sqrt{r^2+y^2}}{v_1}+\frac{\sqrt{(1-r)^2+(1-y)^2}}{v_2},\qquad y\in
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 

@@ -36,8 +36,6 @@ $$\sum_{i=l}^{r}a_i=\mathit{pref}_{r+1}-\mathit{pref}_{l}.$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -85,8 +83,6 @@ long long maxSubarray(const vector<long long>& a) {      // непустой о�
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -130,8 +126,6 @@ $$p[i][j]=a[i][j]+p[i-1][j]+p[i][j-1]-p[i-1][j-1]$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -172,8 +166,6 @@ $$\sum_{i}\max\bigl(0,\ a_i-a_{i-1}\bigr)\qquad(a_{-1}=0).$$
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -219,8 +211,6 @@ long long opsToZero(const vector<long long>& a) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -261,8 +251,6 @@ long long unionLength(vector<pair<int, int>> seg) {         // отрезки [l
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -298,8 +286,6 @@ vector<int> coverCount(const vector<pair<int, int>>& seg, const vector<int>& q) 
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -340,8 +326,6 @@ int secondMax(const vector<int>& a) {                // второй по вел
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -371,8 +355,6 @@ void rotateLeft(vector<int>& a, int x) {                // циклически�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -420,8 +402,6 @@ $$\sum_{l\le r}\min(a_l..a_r)=\sum_{i}a_i\cdot(i-L_i)\cdot(R_i-i).$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -461,8 +441,6 @@ long long sumOfMinimums(const vector<long long>& a) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -504,8 +482,6 @@ vector<int> nextSmaller(const vector<int>& a) {          // индекс бли�
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -530,8 +506,6 @@ long long largestRectangle(const vector<int>& h) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -569,8 +543,6 @@ long long largestOnesRectangle(const vector<vector<int>>& M) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -593,8 +565,6 @@ long long waterArrays(const vector<int>& h) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

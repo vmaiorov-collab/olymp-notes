@@ -46,8 +46,6 @@
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -101,8 +99,6 @@ while (l + 1 < r) {                    // пока между границами
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -146,8 +142,6 @@ int firstGE(const vector<int>& a, int x) {     // позиция первого 
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -197,8 +191,6 @@ int cnt(const vector<int>& a, int x) { return firstGT(a, x) - firstGE(a, x); }
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -240,8 +232,6 @@ double solve() {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -287,8 +277,6 @@ cout << solve() << "\n";
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

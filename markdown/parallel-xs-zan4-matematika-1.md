@@ -26,8 +26,6 @@
 
 псевдокод
 
-копировать
-
 </div>
 
     Z1 = Z-функция(P # T);      pre[i] = Z1[m + 1 + i]
@@ -57,8 +55,6 @@
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -108,8 +104,6 @@
 
 псевдокод
 
-копировать
-
 </div>
 
     prevT[j], prevS[i] — расстояние до предыдущей такой же буквы (0, если нет)
@@ -143,8 +137,6 @@
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -191,8 +183,6 @@
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -251,8 +241,6 @@
 
 псевдокод
 
-копировать
-
 </div>
 
     solve(v, бит):                         // v — вершина бора, бит — текущий уровень
@@ -299,8 +287,6 @@ $$ j\le i+2m_i,\qquad i\ge j-2m_j,\qquad i\lt j. $$
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -423,8 +409,6 @@ $$ j\le i+2m_i,\qquad i\ge j-2m_j,\qquad i\lt j. $$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -456,8 +440,6 @@ void sieve_simple() {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -540,8 +522,6 @@ $\varphi(n)$ — количество чисел от 1 до $n$, взаимно
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -610,8 +590,6 @@ $$ a\,y_1+b\,\bigl(x_1-\lfloor a/b\rfloor\,y_1\bigr)=g, $$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -653,8 +631,6 @@ ll inv(ll a, ll m) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -704,8 +680,6 @@ $$ \Bigl|\bigcup_{i=1}^{n}M_i\Bigr|=\sum_i|M_i|-\sum_{i\lt j}|M_i\cap M_j|+\sum_
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -780,8 +754,6 @@ $$ \text{ответ}=\binom{n+m-4}{n-2}^{2}-\binom{n+m-4}{n-1}\binom{n+m-4}{n-3}
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

@@ -21,8 +21,6 @@
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -73,8 +71,6 @@ int lca2(int u, int v) {                         // способ 2: выровн
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -134,8 +130,6 @@ int pathMin(int v, int k) {                      // минимум на k рёб
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -173,8 +167,6 @@ int query(int l, int r) {                        // минимум на [l, r] �
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -230,8 +222,6 @@ struct Sparse2D {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -285,8 +275,6 @@ int lca(int u, int v) {                          // O(1): вершина мин�
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -309,8 +297,6 @@ struct Fenwick {                                 // сумма на префик
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -360,8 +346,6 @@ long long valueAt(int u) { return sub.get(u); }
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -415,8 +399,6 @@ void dfs(int v, int p) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -464,8 +446,6 @@ void solve(int n) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -542,8 +522,6 @@ int lca(int u, int v) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -577,8 +555,6 @@ vector<pair<int, int>> virtualTree(vector<int> vs, vector<int>& nodes) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -636,8 +612,6 @@ vector<pair<int, int>> virtualSorted(const vector<int>& vs, int& root) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -688,8 +662,6 @@ long long solveColors(int n, int colors) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -747,8 +719,6 @@ int cutVertices(vector<int> vs) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -804,8 +774,6 @@ long long subtreeSum(int v) {                    // поддерево — от�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -873,8 +841,6 @@ int kth(int v, int k) {                          // предок на k выше
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -968,8 +934,6 @@ struct RmqPm1 {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

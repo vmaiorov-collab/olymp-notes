@@ -46,8 +46,6 @@
 
 псевдокод
 
-копировать
-
 </div>
 
     функция рефрен(s):
@@ -148,8 +146,6 @@ $$|f|=\sum_{u\in S,\ v\in T}f(u,v).$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -218,8 +214,6 @@ struct Network {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -283,8 +277,6 @@ C++
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -372,8 +364,6 @@ C++
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -424,8 +414,6 @@ $$\max\#1=\min_{0\le k\le n}\Bigl(\sum_{i=1}^{n-k}a_{(i)}+\sum_{j=1}^{m}\min(b_j
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -472,8 +460,6 @@ long long maxOnes(vector<long long> a, const vector<long long>& b) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -546,8 +532,6 @@ struct RingBanks {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

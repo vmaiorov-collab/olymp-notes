@@ -131,8 +131,6 @@ $$O_\text{полугодие}=0{,}7\,O_\text{контесты}+0{,}3\,O_\text{э
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -192,8 +190,6 @@ if (v.empty()) { /* стек пуст */ }
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -237,8 +233,6 @@ struct MinStack {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -292,8 +286,6 @@ bool isBalanced(const string& s) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -354,8 +346,6 @@ long long evalPostfix(const vector<string>& tokens) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -396,8 +386,6 @@ struct Queue2 {                                       // очередь на д�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

@@ -30,8 +30,6 @@
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -59,8 +57,6 @@ vector<int> b = {5, 5, 5, 5, 5};      // список значений — по�
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -79,8 +75,6 @@ for (auto p : v) cout << p.first << ' ' << p.second << '\n';
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -123,8 +117,6 @@ void print(const vector<int>& v) {      // ссылка: копирования 
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -152,8 +144,6 @@ v.clear();
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -175,8 +165,6 @@ cout << it - v.begin() << '\n';       // 2 — индекс элемента
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -209,8 +197,6 @@ sort(v.begin(), v.end(), cmpDesc);                // по убыванию
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -230,8 +216,6 @@ sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -262,8 +246,6 @@ int cnt3 = hi - lo;                             // сколько троек: 2
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -297,8 +279,6 @@ for (int& x : a)
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -318,8 +298,6 @@ do { /* обработать p */ } while (next_permutation(p.begin(), p.end()))
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -360,8 +338,6 @@ a.assign(7, -1);                                // семь элементов, 
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -385,8 +361,6 @@ if (it != s.end()) cout << *it << '\n';
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -412,8 +386,6 @@ bool a2 = s.find(5) != s.end();             // 0
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -442,8 +414,6 @@ ms.erase(2);               // удалили ВСЕ двойки: {1, 3}
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -468,8 +438,6 @@ for (auto it = s.begin(); it != s.end(); ++it) cout << *it << ' ';
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -492,8 +460,6 @@ for (auto it = s.begin(); it != s.end(); ) {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -514,8 +480,6 @@ if (--cnt[5] == 0) cnt.erase(5);           // удалить одно вхожд
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -545,8 +509,6 @@ int head = q.front(); q.pop();             // взяли и убрали из н
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -578,8 +540,6 @@ cin.tie(0);                    // не сбрасывать cout перед ка
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -602,8 +562,6 @@ cout << 2.0 << '\n';                       // 2.000000
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -651,8 +609,6 @@ if (auto it = s.find(5); it != s.end()) {    // C++17: it виден тольк�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -712,8 +668,6 @@ int minBoxes(vector<int> a) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -789,8 +743,6 @@ int examSchedule(vector<Exam> e) {                           // последни
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -823,8 +775,6 @@ long long mergeCostMultiset(const vector<long long>& a) {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -885,8 +835,6 @@ long long mergeCostTwoQueues(vector<long long> a) {       // a отсортир�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 

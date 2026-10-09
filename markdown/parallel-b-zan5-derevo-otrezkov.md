@@ -26,8 +26,6 @@ $$dp[v][1]=a_v+\sum_{u}dp[u][0],\qquad dp[v][0]=\sum_{u}\max\bigl(dp[u][0],dp[u]
 
 псевдокод
 
-копировать
-
 </div>
 
     функция независимоеМножество(дерево, a, корень):
@@ -73,8 +71,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -132,8 +128,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 
 псевдокод
 
-копировать
-
 </div>
 
     // P[i] = a[1] + ... + a[i]
@@ -172,8 +166,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 
 псевдокод
 
-копировать
-
 </div>
 
     g[0] = истина
@@ -207,8 +199,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 
 псевдокод
 
-копировать
-
 </div>
 
     для внутренней вершины v с детьми l и r:
@@ -240,8 +230,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -298,8 +286,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 
 псевдокод
 
-копировать
-
 </div>
 
     для l от n до 1, для r от l до n:
@@ -329,8 +315,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -373,8 +357,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 
 псевдокод
 
-копировать
-
 </div>
 
     // циклы: длины ℓ1, ℓ2, …
@@ -408,8 +390,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -449,8 +429,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 <div class="code-head">
 
 псевдокод
-
-копировать
 
 </div>
 
@@ -513,8 +491,6 @@ $$ans[u]=ans[p]-w\cdot sz[u]+w\cdot\bigl(n-sz[u]\bigr)=ans[p]+w\cdot\bigl(n-2\,s
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -557,8 +533,6 @@ struct SegAddMax {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -618,8 +592,6 @@ struct SegPush {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -689,8 +661,6 @@ long long unionArea(const vector<array<int,4>>& rs, int W) {   // прямоуг
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -743,8 +713,6 @@ struct SegAP {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -817,8 +785,6 @@ struct ImplicitSeg {                                     // сумма с += н�
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -857,8 +823,6 @@ $$S(x)=x\cdot F_2(x)+F_1(x),$$
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -894,8 +858,6 @@ struct RangeFenwick {                                   // += на [l, r) и с�
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -939,8 +901,6 @@ struct Fenwick2D {
 
 C++
 
-копировать
-
 </div>
 
 ``` cpp
@@ -975,8 +935,6 @@ struct FenwickMin {
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
@@ -1017,8 +975,6 @@ using ordered_set = tree<T, null_type, less<T>, rb_tree_tag, tree_order_statisti
 <div class="code-head">
 
 C++
-
-копировать
 
 </div>
 
