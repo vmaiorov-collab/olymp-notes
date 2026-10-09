@@ -100,8 +100,8 @@ def fig_rect_sweep():
     for j, c in enumerate(cnt):
         b += cell(400, oy + j * s, 56, s - 4, str(c), GREEN if c == 0 else (ORANGE if c == 2 else BLUE), 16)
     b += text(428, oy - 8, "в дереве по y", 12, MUTED)
-    b += text(560, oy + 70, "считаем клетки с нулём:", 14) + text(560, oy + 95, "минимум и сколько раз он встречается", 13, MUTED)
-    b += text(560, oy + 140, "занято = всего − нулей", 14, YELLOW)
+    b += text(470, oy + 70, "считаем клетки с нулём:", 14, anchor="start") + text(470, oy + 95, "минимум и сколько раз он встречается", 13, MUTED, anchor="start")
+    b += text(470, oy + 140, "занято = всего − нулей", 14, YELLOW, anchor="start")
     return figure(svg(760, 360, b), "Прямоугольник открывается событием «+1 на [y1, y2)», закрывается событием «−1 на [y1, y2)». Клетка занята, если в ней число больше нуля.")
 
 
