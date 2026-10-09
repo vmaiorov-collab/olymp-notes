@@ -9,7 +9,19 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Занятие 3. Параллель B — Динамическое программирование 1">
 <meta property="og:locale" content="ru_RU">
-<script>(function(){try{var t=localStorage.getItem("olympTheme")||"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","dark")}})();</script>
+<meta property="og:site_name" content="Олимп-конспекты">
+<meta property="og:description" content="Разбор контеста по DFS, обзор приёмов динамики (подотрезки, поддеревья, комбинаторные ДП, экономия памяти) и семинар: НВП, рюкзак на bitset, подотрезки, переподвешивание, динамика по цифрам, телефоны.">
+<meta property="og:image" content="https://vmaiorov-collab.github.io/olymp-notes/og-parallel-b.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://vmaiorov-collab.github.io/olymp-notes/parallel-b/parallel-b-zan3-dinamicheskoe-programmirovanie-1.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Занятие 3. Параллель B — Динамическое программирование 1">
+<meta name="twitter:description" content="Разбор контеста по DFS, обзор приёмов динамики (подотрезки, поддеревья, комбинаторные ДП, экономия памяти) и семинар: НВП, рюкзак на bitset, подотрезки, переподвешивание, динамика по цифрам, телефоны.">
+<meta name="twitter:image" content="https://vmaiorov-collab.github.io/olymp-notes/og-parallel-b.png">
+<link rel="apple-touch-icon" href="https://vmaiorov-collab.github.io/olymp-notes/apple-touch-icon.png">
+
+<script>(function(){try{var t=localStorage.getItem("olympTheme")||"light";document.documentElement.setAttribute("data-theme",t)}catch(e){document.documentElement.setAttribute("data-theme","light")}})();</script>
 <script>document.documentElement.setAttribute("data-look","book");</script>
 <style>
   :root{
@@ -532,12 +544,7 @@ html[data-look="book"][data-theme="dark"]{
    растрировать по ней два градиента браузер вынужден заново при
    прокрутке. Это и подлагивало. */
 html[data-look="book"]{background:var(--desk)}
-html[data-look="book"] body::before{
-  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
-  background-image:
-    repeating-linear-gradient(to right, var(--sheet-grid) 0 1px, transparent 1px 26px),
-    repeating-linear-gradient(to bottom, var(--sheet-grid) 0 1px, transparent 1px 26px);
-}
+html[data-look="book"] body::before{display:none}
 html[data-look="book"] body{
   background:none;
   font-family:var(--serif); font-size:18px; line-height:1.72;
@@ -821,15 +828,20 @@ html[data-look="book"]:not([data-theme="dark"]) .note .lbl{color:var(--muted)}
 html[data-look="book"] .good,html[data-look="book"] .warn{border-left-width:4px}
 html[data-look="book"] .pager a{border-top-width:4px}
 </style>
+<style>
+/* скруглённые кнопки в конспектах */
+.sitelink,.theme-toggle,.look-toggle,.toplink,.code .copy{border-radius:999px!important}
+.top .sitelink,.top .theme-toggle,.top .look-toggle{padding:5px 14px!important}
+</style>
 </head>
 <body>
 <div class="wrap">
-<div class="top"><a class="sitelink" href="https://vmaiorov-collab.github.io/">← На главный сайт</a><a class="back" href="../index.html">← Все конспекты</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button></div>
+<div class="top"><a class="sitelink" href="index.html">← Параллель B</a><a class="back" href="../index.html">Все параллели</a><button type="button" id="theme-toggle" class="theme-toggle" aria-label="Переключить тему">тёмная тема</button></div>
 
 <header class="hero">
   <h1>Занятие 3. Параллель B — Динамическое программирование 1</h1>
   <div class="sub">Разбор контеста по DFS, обзор приёмов динамики (подотрезки, поддеревья, комбинаторные ДП, экономия памяти) и семинар: НВП, рюкзак на bitset, подотрезки, переподвешивание, динамика по цифрам, телефоны.</div>
-  <div class="meta"><span class="chip">Разбор + лекция + семинар</span><span class="chip">≈ 5 ч</span><span class="chip">Язык кода: C++</span></div>
+  <div class="meta"><span class="chip">Разбор + лекция + семинар</span><span class="chip">≈ 5 ч</span><span class="chip">Язык кода: C++</span><span class="chip"><a href="https://youtu.be/Q4NXJzLE50I" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">▶ Смотреть на YouTube</a></span></div>
   <div class="tgen">Лекции из Т-поколения</div>
 </header>
 
@@ -1700,5 +1712,6 @@ window.ALGOS.lis=function(){return {"title": "НВП за O(n log n): масси
 </script>
 <script>try{if(location.protocol.indexOf('http')===0&&navigator.sendBeacon)navigator.sendBeacon('https://olymp-notes-bots.d6544559.workers.dev/hit?p='+encodeURIComponent(location.pathname))}catch(e){}</script>
 <script data-goatcounter="https://vmaiorov.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<footer style="text-align:center;padding:24px 16px 32px;font-size:14px;opacity:.75"><a href="https://education.tbank.ru/school/generation/algo/" style="color:inherit">education.tbank.ru/school/generation/algo</a> · <a href="https://t.me/t_conspectus_ideas_bot" target="_blank" rel="noopener" style="color:inherit">нашли ошибку? напишите в бот</a></footer>
 </body>
 </html>
