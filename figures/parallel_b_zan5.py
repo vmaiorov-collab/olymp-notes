@@ -134,8 +134,12 @@ def fig_fence():
 def fig_gifts():
     b = text(380, 24, "Подарки: каждый дарит следующему по циклу; «не принёс» ломает двоих", 15)
     import math
-    def cyc(cx, cy, n, nobring, title):
-        out = text(cx, cy - 78, title, 13, MUTED)
+    def cyc(cx, cy, n, nobring, title_lines):
+        if isinstance(title_lines, str):
+            title_lines = [title_lines]
+        out = ""
+        for i, line_s in enumerate(title_lines):
+            out += text(cx, cy - 90 + i * 14, line_s, 11, MUTED)
         pts = [(cx + 52 * math.cos(2 * math.pi * i / n - math.pi / 2), cy + 52 * math.sin(2 * math.pi * i / n - math.pi / 2)) for i in range(n)]
         for i in range(n):
             x1, y1 = pts[i]; x2, y2 = pts[(i + 1) % n]
@@ -146,9 +150,9 @@ def fig_gifts():
             col = RED if i in nobring else (ORANGE if lost else GREEN)
             out += circle(x, y, 16, str(i + 1), col, 13)
         return out
-    b += cyc(170, 160, 4, {0, 2}, "чётный цикл: через одного — теряются все 4")
-    b += cyc(380, 160, 5, {0, 2}, "нечётный: 2 не принесли — теряются 4 из 5")
-    b += cyc(590, 160, 3, {0, 1, 2}, "весь цикл: теряются только 3")
+    b += cyc(170, 160, 4, {0, 2}, ["чётный цикл: через одного —", "теряются все 4"])
+    b += cyc(380, 160, 5, {0, 2}, ["нечётный: 2 не принесли —", "теряются 4 из 5"])
+    b += cyc(590, 160, 3, {0, 1, 2}, ["весь цикл:", "теряются только 3"])
     b += text(380, 275, "красный — не принёс, оранжевый — не получил из-за соседа, зелёный — получил", 13, MUTED)
     return figure(svg(760, 295, b), "Максимум потерь — расставить не принёсших через одного; минимум — брать циклы целиком.")
 
