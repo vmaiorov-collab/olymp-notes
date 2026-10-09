@@ -56,7 +56,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Статический пул вершин; ссылки — индексы (так быстрее, чем new и указатели)
 const int MAXN = 4000000;
 int Lc[MAXN], Rc[MAXN], Cnt[MAXN], tot = 0;              // сыновья и счётчик
@@ -151,7 +151,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct MinTree {                                          // дерево на min по last[0..n]
     int n; vector<int> t;
     MinTree(int n) : n(n), t(4 * n, -1) {}
@@ -199,7 +199,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int kth(int a, int b, int lo, int hi, int k) {            // a = версия l-1, b = версия r
     if (hi - lo == 1) return lo;                         // лист — значение
     int mid = (lo + hi) / 2, c = Cnt[Lc[b]] - Cnt[Lc[a]];   // сколько чисел в левой половине значений
@@ -262,7 +262,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct DST {                                              // сумма; для другой операции меняется только "+"
     int n, LOG; vector<vector<long long>> t; vector<long long> base;
     DST(const vector<long long>& a) {
@@ -334,7 +334,7 @@ C++
 
 </div>
 
-```
+``` cpp
 void add(int v, int l, int r, int ql, int qr, long long x) {        // [l, r), [ql, qr)
     if (qr <= l || r <= ql) return;
     if (ql <= l && r <= qr) { mn[v] += x; mod[v] += x; return; }

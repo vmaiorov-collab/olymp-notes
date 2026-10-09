@@ -28,7 +28,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int n; cin >> n;
 vector<int> a(n + 1);
 for (int i = 1; i <= n; i++) cin >> a[i];
@@ -61,7 +61,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int q; cin >> q;
 while (q--) {
     int l, r; cin >> l >> r;
@@ -128,7 +128,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // P[0] = 0, P[i] — префиксные суммы. Пустой отрезок разрешён (ответ >= 0).
 long long ans = 0, t = 0;                       // t = min(P[0..R-1])
 for (int r = 1; r <= n; r++) {
@@ -194,7 +194,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<vector<long long>> P(n + 1, vector<long long>(m + 1, 0));   // нулевая строка и столбец
 for (int i = 1; i <= n; i++)
     for (int j = 1; j <= m; j++)
@@ -229,7 +229,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<long long> D(n + 2, 0);
 for (int i = 1; i <= n; i++) D[i] = a[i] - a[i - 1];    // a[0] = 0
 // восстановление: a[i] = a[i-1] + D[i]   (префиксные суммы от D)
@@ -266,7 +266,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<long long> D(n + 2, 0);
 for (int i = 1; i <= n; i++) D[i] = a[i] - a[i - 1];
 while (q--) {
@@ -312,7 +312,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int i = 0, j = 0, ans = 0;
 while (i < n && j < m) {                   // пока оба указателя в границах
     if (a[i] == b[j]) { ans++; i++; j++; }
@@ -341,7 +341,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long ans = 0; int i = 0, j = 0;
 while (i < n && j < m) {
     if (a[i] < b[j]) i++;
@@ -385,7 +385,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> c(n + m);
 int i = 0, j = 0, p = 0;
 while (i < n && j < m) {
@@ -426,7 +426,7 @@ C++
 
 </div>
 
-```
+``` cpp
 sort(x.begin(), x.end());
 long long ans = 0; int r = 0;
 for (int i = 0; i < n; i++) {

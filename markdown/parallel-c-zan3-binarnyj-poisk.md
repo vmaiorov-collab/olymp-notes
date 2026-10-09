@@ -50,7 +50,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int l = 0, r = 101;                    // 0 точно не подходит, 101 точно подходит
 while (l + 1 < r) {                    // пока между границами есть число
     int m = (l + r) / 2;               // середина
@@ -105,7 +105,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int firstGE(const vector<int>& a, int x) {     // позиция первого a[i] >= x, иначе n
     int l = -1, r = a.size();                 // l — фиктивно «не подходит», r — «подходит»
     while (l + 1 < r) {
@@ -151,7 +151,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int firstGT(const vector<int>& a, int x) {     // позиция первого a[i] > x, иначе n
     int l = -1, r = a.size();
     while (l + 1 < r) {
@@ -201,7 +201,7 @@ C++
 
 </div>
 
-```
+``` cpp
 double f(double x) { return x * x + sqrt(x) - 20; }
 
 double solve() {
@@ -245,7 +245,7 @@ C++
 
 </div>
 
-```
+``` cpp
 #include <iomanip>
 // ...
 cout << fixed << setprecision(10);       // до первого вывода вещественного числа
@@ -292,7 +292,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long minTime(long long n, long long x, long long y) {
     long long l = 0, r = n * min(x, y);            // l — плохое, r — хорошее
     while (l + 1 < r) {

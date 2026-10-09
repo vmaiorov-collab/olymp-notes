@@ -34,7 +34,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> a(5, 5);                  // конструктор: размер 5, каждый элемент 5
 vector<int> b = {5, 5, 5, 5, 5};      // список значений — получится то же самое
 // vector<int> c{5, 5};              // осторожно: это два элемента (5 и 5), а не пять пятёрок
@@ -63,7 +63,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<pair<int, int>> v = {{1, 2}, {3, 4}};
 for (auto p : v) cout << p.first << ' ' << p.second << '\n';
 ```
@@ -84,7 +84,7 @@ C++
 
 </div>
 
-```
+``` cpp
 void print(const vector<int>& v) {      // ссылка: копирования нет
     for (int x : v) cout << x << ' ';
     cout << '\n';
@@ -127,7 +127,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<pair<int, int>> v;
 v.push_back({1, 2});
 v.emplace_back(3, 4);      // сразу аргументы конструктора пары
@@ -156,7 +156,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> v = {7, 3, 9, 5, 1};
 auto it = v.begin() + 2;
 cout << *it << '\n';                // 9
@@ -180,7 +180,7 @@ C++
 
 </div>
 
-```
+``` cpp
 bool cmpDesc(int a, int b) { return a > b; }   // по убыванию
 sort(v.begin(), v.end());                         // по возрастанию
 sort(v.begin(), v.end(), cmpDesc);                // по убыванию
@@ -213,7 +213,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int x = 7;
 sort(v.begin(), v.end(), [&](int a, int b) { return a % x < b % x; });
 sort(v.begin(), v.end(), [](int a, int b) { return a > b; });
@@ -235,7 +235,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> v = {1, 3, 3, 5, 8};
 auto lo = lower_bound(v.begin(), v.end(), 3);   // указывает на v[1]: первый элемент ≥ 3
 auto hi = upper_bound(v.begin(), v.end(), 3);   // указывает на v[3]: первый элемент > 3
@@ -267,7 +267,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> sorted_a = a;
 sort(sorted_a.begin(), sorted_a.end());
 sorted_a.erase(unique(sorted_a.begin(), sorted_a.end()), sorted_a.end());   // оставили уникальные
@@ -301,7 +301,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> p = {1, 2, 6, 4};
 next_permutation(p.begin(), p.end());      // p = {1, 4, 2, 6}
 // перебор всех перестановок:
@@ -323,7 +323,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> a(5);
 iota(a.begin(), a.end(), 0);                    // 0 1 2 3 4
 mt19937 rng(12345);
@@ -364,7 +364,7 @@ C++
 
 </div>
 
-```
+``` cpp
 set<int> s = {1, 4, 6, 9};
 auto it = s.lower_bound(5);                // O(log n): итератор на 6
 if (it != s.end()) cout << *it << '\n';
@@ -390,7 +390,7 @@ C++
 
 </div>
 
-```
+``` cpp
 set<int> s = {1, 4, 6};
 bool a1 = s.count(4);                       // 1
 bool a2 = s.find(5) != s.end();             // 0
@@ -417,7 +417,7 @@ C++
 
 </div>
 
-```
+``` cpp
 multiset<int> ms = {1, 2, 2, 3};
 ms.erase(ms.find(2));      // удалили ОДНО вхождение двойки: теперь {1, 2, 3}
 ms.erase(2);               // удалили ВСЕ двойки: {1, 3}
@@ -446,7 +446,7 @@ C++
 
 </div>
 
-```
+``` cpp
 for (int x : s) cout << x << ' ';
 for (auto it = s.begin(); it != s.end(); ++it) cout << *it << ' ';
 ```
@@ -472,7 +472,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // удалить из множества все чётные числа за один проход
 for (auto it = s.begin(); it != s.end(); ) {
     if (*it % 2 == 0) it = s.erase(it);     // erase возвращает итератор на следующий элемент
@@ -496,7 +496,7 @@ C++
 
 </div>
 
-```
+``` cpp
 map<int, int> cnt;                         // значение → сколько раз встречается
 cnt[5]++;                                  // добавить 5
 if (--cnt[5] == 0) cnt.erase(5);           // удалить одно вхождение пятёрки
@@ -519,7 +519,7 @@ C++
 
 </div>
 
-```
+``` cpp
 deque<int> d;
 d.push_back(1); d.push_front(2);           // [2, 1]
 int f = d.front(), b = d.back();           // 2, 1
@@ -550,7 +550,7 @@ C++
 
 </div>
 
-```
+``` cpp
 ios::sync_with_stdio(false);   // отвязать C++-потоки от C-потоков (stdio)
 cin.tie(0);                    // не сбрасывать cout перед каждым вводом из cin
 ```
@@ -582,7 +582,7 @@ C++
 
 </div>
 
-```
+``` cpp
 #include <iomanip>
 cout << fixed << setprecision(6);          // один раз перед выводом
 cout << 3.14159265 << '\n';                // 3.141593
@@ -607,7 +607,7 @@ C++
 
 </div>
 
-```
+``` cpp
 if (auto it = s.find(5); it != s.end()) {    // C++17: it виден только внутри if/else
     cout << "нашли " << *it << '\n';
 }
@@ -656,7 +656,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int minBoxes(vector<int> a) {
     sort(a.begin(), a.end());
     int best = 0, run = 0;                       // run — длина текущей группы равных
@@ -717,7 +717,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Exam { int a, b; };                                   // основная и запасная даты
 
 int examSchedule(vector<Exam> e) {                           // последний день сдачи или -1, если невозможно
@@ -793,7 +793,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long mergeCostMultiset(const vector<long long>& a) {
     multiset<long long> s(a.begin(), a.end());
     long long ans = 0;
@@ -828,7 +828,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long mergeCostTwoQueues(vector<long long> a) {       // a отсортирован по неубыванию
     int n = a.size(), i = 0;                                // i — первый необработанный элемент a
     deque<long long> q;                                     // очередь сумм: тоже по возрастанию
@@ -890,7 +890,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // возвращает подходящую s или пустую строку, если такой нет
 string restore(const string& v, int k) {
     int n = v.size();

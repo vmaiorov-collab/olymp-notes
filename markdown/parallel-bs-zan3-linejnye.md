@@ -40,7 +40,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long maxSubarray(const vector<long long>& a) {      // непустой отрезок
     long long p = 0, minP = 0, ans = LLONG_MIN;
     for (long long x : a) {
@@ -89,7 +89,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // запросы (l, r, a, d): на [l, r] прибавить a, a + d, a + 2d, ...; индексы с нуля
 vector<long long> addProgressions(int n, const vector<array<long long, 4>>& qs) {
     vector<long long> d2(n + 3, 0);
@@ -134,7 +134,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Prefix2D {
     vector<vector<long long>> p;                      // p[i][j] — сумма на [1..i] x [1..j]
     Prefix2D(const vector<vector<long long>>& a) : p(a.size() + 1, vector<long long>(a[0].size() + 1, 0)) {
@@ -177,7 +177,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long opsToZero(const vector<long long>& a) {
     long long prev = 0, s = 0;
     for (long long x : a) { s += max(0LL, x - prev); prev = x; }   // сумма положительных «ступенек»
@@ -223,7 +223,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long unionLength(vector<pair<int, int>> seg) {         // отрезки [l, r)
     sort(seg.begin(), seg.end());                        // по левой границе
     long long ans = 0; int R = INT_MIN;                  // R — самая правая обработанная граница
@@ -265,7 +265,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> coverCount(const vector<pair<int, int>>& seg, const vector<int>& q) {   // отрезки [l, r] включительно
     vector<array<int, 3>> ev;                          // (координата, тип, номер): 0 — начало, 1 — запрос, 2 — конец
     for (auto [l, r] : seg) { ev.push_back({l, 0, 0}); ev.push_back({r, 2, 0}); }
@@ -303,7 +303,7 @@ C++
 
 </div>
 
-```
+``` cpp
 int secondMax(const vector<int>& a) {                // второй по величине элемент с учётом повторов: [5, 5, 3] -> 5
     int m1 = INT_MIN, m2 = INT_MIN;
     for (int x : a) {
@@ -344,7 +344,7 @@ C++
 
 </div>
 
-```
+``` cpp
 void rotateLeft(vector<int>& a, int x) {                // циклический сдвиг влево на x
     int n = a.size(); x %= n;
     reverse(a.begin(), a.begin() + x);                   // [a0 .. a(x-1)] -> развёрнут
@@ -376,7 +376,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> nextGreater(const vector<int>& a) {           // b[i] — ближайший справа строго больший, иначе n
     int n = a.size(); vector<int> b(n, n);
     for (int i = n - 2; i >= 0; i--) {
@@ -424,7 +424,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long sumOfMinimums(const vector<long long>& a) {
     int n = a.size(); vector<int> L(n), R(n), st;
     for (int i = 0; i < n; i++) {                        // L[i]: ближайший слева элемент <= a[i], иначе -1
@@ -466,7 +466,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> prevSmaller(const vector<int>& a) {          // индекс ближайшего слева элемента строго меньше, иначе -1
     vector<int> res(a.size()), st;
     for (int i = 0; i < (int)a.size(); i++) {
@@ -508,7 +508,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long largestRectangle(const vector<int>& h) {
     auto L = prevSmaller(h), R = nextSmaller(h); long long best = 0;
     for (int i = 0; i < (int)h.size(); i++)
@@ -535,7 +535,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long largestOnesRectangle(const vector<vector<int>>& M) {
     int m = M[0].size(); vector<int> h(m, 0); long long best = 0;
     for (auto& row : M) {
@@ -573,7 +573,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long waterArrays(const vector<int>& h) {
     int n = h.size(); vector<int> pm(n), sm(n);
     for (int i = 0; i < n; i++) pm[i] = max(h[i], i ? pm[i-1] : 0);               // максимум слева, включая i
@@ -598,7 +598,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long waterTwoPointers(const vector<int>& h) {      // O(1) дополнительной памяти
     int l = 0, r = (int)h.size() - 1, mx1 = 0, mx2 = 0; long long tot = 0;
     while (l <= r) {

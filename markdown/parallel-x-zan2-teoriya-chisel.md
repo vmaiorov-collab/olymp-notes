@@ -28,12 +28,10 @@ $$I(B)-I(A)=\#\{u\in S_A:\ u<B\}-\#\{v\in S_B:\ v<A\}.$$
 
 </div>
 
-```
-ans[root] = Σ по w: count(tin[w]..tout[w], меньше w)
-для каждого ребра A→B при обходе дерева:
-    SA, SB = (дополнение поддерева B, поддерево B), если B — сын A; иначе наоборот
-    ans[B] = ans[A] + count(SA, меньше B) − count(SB, меньше A)
-```
+    ans[root] = Σ по w: count(tin[w]..tout[w], меньше w)
+    для каждого ребра A→B при обходе дерева:
+        SA, SB = (дополнение поддерева B, поддерево B), если B — сын A; иначе наоборот
+        ans[B] = ans[A] + count(SA, меньше B) − count(SB, меньше A)
 
 </div>
 
@@ -59,13 +57,11 @@ ans[root] = Σ по w: count(tin[w]..tout[w], меньше w)
 
 </div>
 
-```
-merge((m1, c1), (m2, c2)):
-    если m1 < m2: вернуть (m1, c1)
-    если m2 < m1: вернуть (m2, c2)
-    вернуть (m1, c1 + c2)
-предподсчёт — disjoint sparse table, O(n log n); запрос — O(1)
-```
+    merge((m1, c1), (m2, c2)):
+        если m1 < m2: вернуть (m1, c1)
+        если m2 < m1: вернуть (m2, c2)
+        вернуть (m1, c1 + c2)
+    предподсчёт — disjoint sparse table, O(n log n); запрос — O(1)
 
 </div>
 
@@ -87,12 +83,10 @@ merge((m1, c1), (m2, c2)):
 
 </div>
 
-```
-присвоить строке i значение x:  T[i] = текущее время; X[i] = x
-добавить x на столбцах [l, r]:   новая версия ДО = add(последняя, l, r, x)
-значение (i, j):                  X[i] + get(последняя версия, j) − get(версия T[i], j)
-все запросы — O(log m)
-```
+    присвоить строке i значение x:  T[i] = текущее время; X[i] = x
+    добавить x на столбцах [l, r]:   новая версия ДО = add(последняя, l, r, x)
+    значение (i, j):                  X[i] + get(последняя версия, j) − get(версия T[i], j)
+    все запросы — O(log m)
 
 </div>
 
@@ -142,12 +136,10 @@ merge((m1, c1), (m2, c2)):
 
 </div>
 
-```
-добавить тройку (a, b, c) к dp:
-    new[r] = max(dp[(r − a) mod D] + a, dp[(r − b) mod D] + b, dp[(r − c) mod D] + c)
-запрос [l, r]: найти уровень DST, взять dp левой и правой частей
-    ответ = max по x: dpЛ[x] + dpП[(D − x) mod D]   (недостижимые — −∞)
-```
+    добавить тройку (a, b, c) к dp:
+        new[r] = max(dp[(r − a) mod D] + a, dp[(r − b) mod D] + b, dp[(r − c) mod D] + c)
+    запрос [l, r]: найти уровень DST, взять dp левой и правой частей
+        ответ = max по x: dpЛ[x] + dpП[(D − x) mod D]   (недостижимые — −∞)
 
 </div>
 
@@ -242,7 +234,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Row { long long s, x, y; };                 // s = a*x + b*y
 // строки таблицы: последняя имеет s = 0, предпоследняя — НОД
 vector<Row> eucTable(long long a, long long b) {
@@ -331,7 +323,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // выписывает несократимые дроби p/q, 1 <= p,q <= n, в порядке возрастания
 void go(int a, int b, int c, int d, int n, vector<pair<int,int>>& out) {  // между a/b и c/d
     int p = a + c, q = b + d;                    // медианта
@@ -363,7 +355,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // минимальный знаменатель p/q в [a/b, c/d], a/b < c/d, a > 0
 pair<ll,ll> minDenominator(ll a, ll b, ll c, ll d) {
     ll la = 0, lb = 1, ra = 1, rb = 0;           // границы 0/1 и 1/0
@@ -441,7 +433,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // ищем p/q ≡ a (mod m), |p| <= P, 0 < q <= Q
 bool ratRecon(ll a, ll m, ll P, ll Q, ll& p, ll& q) {
     ll r0 = m, r1 = a % m, t0 = 0, t1 = 1;        // всегда r_i ≡ a * t_i (mod m)
@@ -495,7 +487,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // sum_{i=0}^{n-1} floor((a*i + b) / m),  a, b >= 0, m > 0
 ll floorSum(ll n, ll m, ll a, ll b) {
     ll ans = 0;
@@ -567,7 +559,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<char> comp(n + 1);                      // comp[i] = 1, если i составное
 for (ll p = 2; p * p <= n; p++)
     if (!comp[p])
@@ -599,7 +591,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 10000000;
 int lp[N + 1]; vector<int> pr;
 void sieve() {
@@ -637,7 +629,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // простые на [L, R]; smallPrimes(n) возвращает простые до n
 vector<char> segSieve(ll L, ll R) {
     vector<char> isPrime(R - L + 1, 1);
@@ -696,7 +688,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // pi(n): количество простых <= n, O(n^{3/4})
 ll countPrimes(ll n) {
     if (n < 2) return 0;
@@ -769,7 +761,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // phi, tau, sigma для всех n <= N за O(N); деления нет
 int lp[N + 1], pw[N + 1], rest[N + 1]; vector<int> pr;
 long long phi[N + 1], tau[N + 1], sig[N + 1];
@@ -844,7 +836,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // сумма по кратным (на месте): f[x] = sum f[y] по y, кратным x
 void up(vector<ll>& f) { int M = f.size() - 1;
     for (int x = 1; x <= M; x++) for (int y = 2 * x; y <= M; y += x) f[x] += f[y]; }
@@ -893,7 +885,7 @@ C++
 
 </div>
 
-```
+``` cpp
 void upFast(vector<ll>& f, const vector<int>& primes) {          // O(N log log N)
     int M = f.size() - 1;
     for (int p : primes) { if (p > M) break; for (int i = M / p; i >= 1; i--) f[i] += f[i * p]; }

@@ -25,7 +25,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 200000, LG = 18;
 vector<int> g[N];
 int up[LG][N];                                   // up[j][v] — предок на 2^j выше; у корня это он сам
@@ -78,7 +78,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int INF = 1e9;
 int w[N];                                        // w[v] — вес ребра (v, родитель); у корня INF
 int mn[LG][N];                                   // mn[j][v] — минимум на 2^j рёбрах вверх от v
@@ -138,7 +138,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 1 << 17, LG = 18;
 int lg[N + 1], sp[LG][N];
 void build(const vector<int>& a) {               // O(n log n) по времени и памяти
@@ -178,7 +178,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Sparse2D {
     int n, m; vector<int> lg;
     vector<vector<vector<vector<int>>>> t;       // t[k][l][i][j] — минимум в прямоугольнике 2^k × 2^l с углом (i, j)
@@ -234,7 +234,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 100000, LG = 18;
 vector<int> g[N];
 int h[N], firstPos[N], lg[2 * N + 1];
@@ -289,7 +289,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Fenwick {                                 // сумма на префиксе, добавление в точке; индексы с 0
     int n; vector<long long> t;
     Fenwick(int n = 0) : n(n), t(n + 1, 0) {}
@@ -314,7 +314,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // tin, tout (времена из [0, 2n)), lca1 — из «binup»; Fenwick — из «fenwick»
 struct RootSum {
     Fenwick fw;
@@ -365,7 +365,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 200000;
 vector<int> g[N];
 vector<pair<int, int>> qs[N];                    // qs[v] — пары (другой конец, номер запроса)
@@ -419,7 +419,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 200000;
 int a[N], dsu[N], ans[N];
 vector<pair<int, int>> byR[N];                   // byR[r] — пары (l, номер запроса)
@@ -469,7 +469,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 200000;
 int par[N], jmp[N], h[N];                        // корень: par = jmp = он сам, h = 0
 void addLeaf(int v, int p) {                     // p уже обработана
@@ -546,7 +546,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Способ 1: отсортировать, добавить LCA соседей, отсортировать ещё раз и пройти стеком.
 vector<pair<int, int>> virtualTree(vector<int> vs, vector<int>& nodes) {
     auto byTin = [&](int a, int b) { return tin[a] < tin[b]; };
@@ -582,7 +582,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // tin, h, anc, lca — из «binup». vs — вершины, УЖЕ отсортированные по tin, без повторов.
 // Возвращает рёбра (родитель, ребёнок) сжатого дерева; корень — LCA всех вершин.
 vector<pair<int, int>> virtualSorted(const vector<int>& vs, int& root) {
@@ -640,7 +640,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Дерево с цветами рёбер. Найти сумму по всем парам вершин (u, v) числа цветов,
 // которые встречаются на пути u–v ровно один раз. Нужны tin, tout, anc из «binup».
 vector<int> byColor[N];                          // byColor[c] — нижние концы рёбер цвета c
@@ -693,7 +693,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Выделены вершины sel[]. Какое наименьшее число НЕвыделенных вершин удалить,
 // чтобы никакие две выделенные не были связаны? -1, если невозможно.
 // virtualSorted — из «virtual_sorted».
@@ -751,7 +751,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Два массива: порядок входа (pre) и порядок выхода (post). Fenwick — из «fenwick»
 const int N = 200000;
 vector<int> g[N];  int pre[N], post[N], leftCnt[N], sz[N], cp, cq;
@@ -809,7 +809,7 @@ C++
 
 </div>
 
-```
+``` cpp
 const int N = 200000, LG = 18;
 vector<int> g[N];
 int up[LG][N], h[N], len[N], son[N], lg[N + 1];
@@ -878,7 +878,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Массив a, соседние элементы которого отличаются ровно на 1. Возвращает позицию минимума на [l, r].
 struct RmqPm1 {
     int n, B, nb;
@@ -973,7 +973,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // Декартово дерево по минимуму (x — индекс, y — значение a[i]); строится за O(n) стеком.
 vector<int> cartesian(const vector<int>& a, vector<int>& par) {
     int n = a.size();

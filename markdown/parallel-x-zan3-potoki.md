@@ -50,20 +50,18 @@
 
 </div>
 
-```
-функция рефрен(s):
-    sa = суффиксный массив s;   h[1..n-1] = LCP соседних суффиксов
-    ответ = длина(s)                          // подстрока без повторов: вся строка
-    стек = пустой                              // (левая граница, высота), высоты возрастают
-    для i от 1 до n (h[n] = 0 — сторож):
-        нач = i
-        пока стек не пуст и высота(вершина) >= h[i]:
-            (лев, выс) = стек.снять()
-            ответ = max(ответ, (i - лев + 1) * выс)    // выс × (число столбцов + 1)
-            нач = лев
-        стек.положить((нач, h[i]))
-    вернуть ответ
-```
+    функция рефрен(s):
+        sa = суффиксный массив s;   h[1..n-1] = LCP соседних суффиксов
+        ответ = длина(s)                          // подстрока без повторов: вся строка
+        стек = пустой                              // (левая граница, высота), высоты возрастают
+        для i от 1 до n (h[n] = 0 — сторож):
+            нач = i
+            пока стек не пуст и высота(вершина) >= h[i]:
+                (лев, выс) = стек.снять()
+                ответ = max(ответ, (i - лев + 1) * выс)    // выс × (число столбцов + 1)
+                нач = лев
+            стек.положить((нач, h[i]))
+        вернуть ответ
 
 </div>
 
@@ -154,7 +152,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Network {
     struct Edge { int to; long long flow, cap; int next; };
     int n; vector<Edge> edges; vector<int> head;
@@ -224,7 +222,7 @@ C++
 
 </div>
 
-```
+``` cpp
     // продолжение struct Network: вершины, достижимые из s по рёбрам остаточной сети, — это S-часть минимального разреза
     vector<char> reachable(int s) {
         vector<char> seen(n, 0); vector<int> st{s}; seen[s] = 1;
@@ -290,7 +288,7 @@ C++
 
 </div>
 
-```
+``` cpp
     // продолжение struct Network: алгоритм Диница
     vector<int> dist, ptr;
     bool bfs(int s, int t) {
@@ -378,7 +376,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // L вершин слева (0..L-1), R справа (L..L+R-1); s = L + R, t = L + R + 1
 Network g(L + R + 2);
 for (int i = 0; i < L; i++) g.addEdge(s, i, 1);
@@ -430,7 +428,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // a, b — ограничения строк и столбцов; ответ — максимальное число единиц
 long long maxOnes(vector<long long> a, const vector<long long>& b) {
     int n = a.size(); sort(a.begin(), a.end());
@@ -479,7 +477,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct RingBanks {
     int n; vector<long long> a, b, c;                       // c[i] — канал i -> (i+1) % n
     struct M { long long v[2][2]; };                         // v[x][y]: первая вершина отрезка в S(0)/T(1), последняя — y
@@ -553,7 +551,7 @@ C++
 
 </div>
 
-```
+``` cpp
 // cells — число клеток; fixedColor[v] ∈ {0 (A, часть S), 1 (B, часть T), -1 (свободна)}; rects — (клетки прямоугольника, штраф x)
 long long minPenalty(int cells, const vector<int>& fixedColor, const vector<pair<vector<int>, long long>>& rects) {
     const long long INF = 1e12;

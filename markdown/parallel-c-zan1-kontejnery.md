@@ -135,7 +135,7 @@ C++
 
 </div>
 
-```
+``` cpp
 vector<int> v;                    // стек целых
 v.push_back(3);                   // положили 3
 v.push_back(5);                   // положили 5
@@ -196,7 +196,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct MinStack {
     vector<int> val, mn;                  // основной стек и стек минимумов
     bool empty() const { return val.empty(); }
@@ -242,7 +242,7 @@ C++
 
 </div>
 
-```
+``` cpp
 bool isBalanced(const string& s) {
     vector<char> st;                                   // открытые, но не закрытые
     for (char c : s) {
@@ -297,7 +297,7 @@ C++
 
 </div>
 
-```
+``` cpp
 long long evalPostfix(const vector<string>& tokens) {
     vector<long long> st;
     for (const string& t : tokens) {
@@ -358,7 +358,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct Queue2 {                                       // очередь на двух стеках
     vector<int> in, out;
     void balance() {                                  // перекладываем, только если out пуст
@@ -401,7 +401,7 @@ C++
 
 </div>
 
-```
+``` cpp
 struct MinQueue {
     MinStack in, out;                                  // два стека с минимумом (см. 4.1)
     void balance() {
