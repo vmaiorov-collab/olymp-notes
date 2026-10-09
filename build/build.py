@@ -136,6 +136,9 @@ def page(meta, body, prev, nxt):
         + (f'<span class="tt">{i[4]}</span>' if i[4] else "") + "</li>" for i in items)
     title = f'Занятие {meta["n"]}. {meta["pname"]} — {meta["title"]}'
     chips = "".join(f'<span class="chip">{c}</span>' for c in meta.get("chips", []))
+    if meta.get("youtube"):
+        chips += (f'<span class="chip"><a href="{meta["youtube"]}" target="_blank" rel="noopener" '
+                  f'style="color:inherit;text-decoration:none">▶ Смотреть на YouTube</a></span>')
     pg = f'<a class="prev" href="../{prev["href"]}"><small>← занятие {prev["n"]}</small><b>{html.escape(prev["title"])}</b></a>' if prev else ""
     pg += (f'<a class="next" href="../{nxt["href"]}"><small>занятие {nxt["n"]} →</small><b>{html.escape(nxt["title"])}</b></a>' if nxt
            else '<a class="next" href="../index.html"><small>дальше</small><b>Все конспекты</b></a>')
