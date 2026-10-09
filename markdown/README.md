@@ -1,6 +1,6 @@
 # Олимп-конспекты — markdown-копии
 
-> Автоматически собранные markdown-версии HTML-конспектов [olymp-notes](https://vmaiorov-collab.github.io/olymp-notes/). Иллюстрации (интерактивный SVG) не включены — они есть только в оригинальных HTML-файлах на сайте.
+> Автоматически собранные markdown-версии HTML-конспектов [olymp-notes](https://vmaiorov-collab.github.io/olymp-notes/). Иллюстрации — статичные SVG (без интерактивности/анимации оригинала), лежат в `images/`.
 
 ## Лекции
 
