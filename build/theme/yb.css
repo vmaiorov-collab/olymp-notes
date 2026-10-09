@@ -1,22 +1,22 @@
 /* жёлто-чёрная палитра */
-html[data-look="book"]{--acc-l:#8a6500; --acc-d:#ffdd2d}
+html[data-look="book"]{--acc-l:#ffdd2d; --acc-d:#ffdd2d}
 html[data-look="book"]{
-  --desk:#f3e9b8; --sheet-grid:rgba(120,90,0,.07);
-  --bg:#fffdf2; --card:#fffdf2;
-  --ink:#141100; --muted:#52491f; --faint:#7a7035;
-  --line:#ece2ad; --rule-hard:#d8c978;
-  --tag:#f5ecbb;
-  --code-bg:#f8f1c8; --code-paper:#f8f1c8; --code-line:#e0d28a; --code-ink:#141100; --code-text:#141100;
-  --hl-c:#7a7035; --hl-k:#141100; --hl-t:#6b4b00; --hl-s:#5b6b00; --hl-n:#a14a00; --hl-f:#3d3500; --hl-p:#9c3322;
+  --desk:#efefef; --sheet-grid:transparent;
+  --bg:#ffffff; --card:#ffffff;
+  --ink:#111111; --muted:#5f6368; --faint:#8a8d92;
+  --line:#e6e7ea; --rule-hard:#d0d2d6;
+  --tag:#f1f2f4;
+  --code-bg:#f4f5f7; --code-paper:#f4f5f7; --code-line:#e0e2e6; --code-ink:#111111; --code-text:#111111;
+  --hl-c:#7b8088; --hl-k:#111111; --hl-t:#8a5a00; --hl-s:#3f7d00; --hl-n:#b4531a; --hl-f:#333333; --hl-p:#b3342a;
 }
 html[data-look="book"][data-theme="dark"]{
-  --desk:#000; --sheet-grid:rgba(255,221,45,.05);
-  --bg:#0b0a00; --card:#0b0a00;
-  --ink:#f5f0d0; --muted:#c2b66a; --faint:#8a7f3c;
-  --line:#2b2600; --rule-hard:#4a4000;
-  --tag:#2b2600;
-  --code-bg:#15120a; --code-paper:#15120a; --code-line:#3a3200; --code-ink:#f5f0d0; --code-text:#f5f0d0;
-  --hl-c:#8a7f3c; --hl-k:#ffdd2d; --hl-t:#ffe985; --hl-s:#d8e58a; --hl-n:#ffab40; --hl-f:#f5f0d0; --hl-p:#ff8a65;
+  --desk:#0d0e11; --sheet-grid:transparent;
+  --bg:#17181c; --card:#1d1e23;
+  --ink:#ececf0; --muted:#a3a6b0; --faint:#6f727c;
+  --line:#2c2e35; --rule-hard:#3d4048;
+  --tag:#272930;
+  --code-bg:#121317; --code-paper:#121317; --code-line:#2c2e35; --code-ink:#ececf0; --code-text:#ececf0;
+  --hl-c:#7b7f8b; --hl-k:#ffdd2d; --hl-t:#ffe27a; --hl-s:#a8d58f; --hl-n:#ffab40; --hl-f:#ececf0; --hl-p:#ff8a65;
 }
 html[data-look="book"] header.hero{background:none!important;color:var(--ink)}
 html[data-look="book"] ::selection{background:#ffdd2d;color:#333}
@@ -29,3 +29,13 @@ html[data-look="book"] ::selection{background:#ffdd2d;color:#333}
 .sitelink:hover{background:#333;color:#ffdd2d!important;border-color:#333}
 html[data-look="book"] .toc li.on>a, html[data-look="book"] mark{background:#ffdd2d;color:#333}
 .tgen{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:8px;background:#ffdd2d;color:#333;font-weight:700;font-size:.85rem}
+/* Т-Банк: жёлтый #ffdd2d — для линий и меток, текст остаётся графитовым */
+html[data-look="book"]:not([data-theme="dark"]) a,
+html[data-look="book"]:not([data-theme="dark"]) .lbl,
+html[data-look="book"]:not([data-theme="dark"]) h2[id] .ts:hover,
+html[data-look="book"]:not([data-theme="dark"]) .toc a:hover,
+html[data-look="book"]:not([data-theme="dark"]) .secpanel a.on,
+html[data-look="book"]:not([data-theme="dark"]) .back:hover{color:#333}
+html[data-look="book"]:not([data-theme="dark"]) .note .lbl{color:var(--muted)}
+html[data-look="book"] .good,html[data-look="book"] .warn{border-left-width:4px}
+html[data-look="book"] .pager a{border-top-width:4px}

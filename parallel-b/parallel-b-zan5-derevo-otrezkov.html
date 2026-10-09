@@ -787,7 +787,7 @@ nav.toc a{color:var(--ink)}
 @media(max-width:680px){nav.toc ol{columns:1}}
 </style>
 <style>/* жёлто-чёрная палитра */
-html[data-look="book"]{--acc-l:#8a6500; --acc-d:#ffdd2d}
+html[data-look="book"]{--acc-l:#ffdd2d; --acc-d:#ffdd2d}
 html[data-look="book"]{
   --desk:#efefef; --sheet-grid:transparent;
   --bg:#ffffff; --card:#ffffff;
@@ -817,6 +817,16 @@ html[data-look="book"] ::selection{background:#ffdd2d;color:#333}
 .sitelink:hover{background:#333;color:#ffdd2d!important;border-color:#333}
 html[data-look="book"] .toc li.on>a, html[data-look="book"] mark{background:#ffdd2d;color:#333}
 .tgen{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:8px;background:#ffdd2d;color:#333;font-weight:700;font-size:.85rem}
+/* Т-Банк: жёлтый #ffdd2d — для линий и меток, текст остаётся графитовым */
+html[data-look="book"]:not([data-theme="dark"]) a,
+html[data-look="book"]:not([data-theme="dark"]) .lbl,
+html[data-look="book"]:not([data-theme="dark"]) h2[id] .ts:hover,
+html[data-look="book"]:not([data-theme="dark"]) .toc a:hover,
+html[data-look="book"]:not([data-theme="dark"]) .secpanel a.on,
+html[data-look="book"]:not([data-theme="dark"]) .back:hover{color:#333}
+html[data-look="book"]:not([data-theme="dark"]) .note .lbl{color:var(--muted)}
+html[data-look="book"] .good,html[data-look="book"] .warn{border-left-width:4px}
+html[data-look="book"] .pager a{border-top-width:4px}
 </style>
 <style>
 /* скруглённые кнопки в конспектах */
