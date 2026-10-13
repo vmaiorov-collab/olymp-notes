@@ -1,0 +1,397 @@
+<!--meta {"title": "Динамическое программирование 1", "parallel": "parallel-bs", "pname": "Параллель BS", "porder": 4, "n": 4, "video": null, "subtitle": "Четыре пункта ДП, строки без двух единиц подряд, наибольшая возрастающая подпоследовательность за n² и n log n с доказательством и восстановлением, наибольшая общая подпоследовательность; семинар: шахты, неубывающие массивы с суммой, пловцы.", "chips": ["Лекция", "≈ 4 ч 35 мин", "Язык кода: C++"], "youtube": "https://youtu.be/PkH2esyWW5I"}-->
+<h2 data-tc="0:06:19">Что такое динамическое программирование</h2>
+<h3 data-tc="0:06:36">Идея на одной задаче и четыре обязательных пункта</h3>
+<p><ts t="0:06:36"/> Динамическое программирование (ДП) лекция вводит не определением, а на примере. Сначала задача, а метод вырастает из неё.</p>
+<div class="formula"><b>Задача.</b> Дано число $N$. Нужно посчитать количество двоичных последовательностей (из нулей и единиц) длины $N$, в которых <em>нет двух единиц подряд</em>.</div>
+<p><ts t="0:6:58" /> Переборное мышление подсказывает: «на каждой позиции два варианта». Но последовательностей $2^N$, и перебирать их по одной нельзя. ДП заменяет перебор вычислением: ответ собирается из ответов на меньшие задачи.</p>
+<p><ts t="0:07:35"/> Любое решение динамикой нужно описать четырьмя пунктами. Именно их лектор просит проговаривать каждый раз, и в этом конспекте они выделены в каждой задаче:</p>
+<ol>
+<li><strong>Определение</strong> — что именно хранится в ячейке массива <code>dp</code>. Без точного определения остальное невозможно проверить.</li>
+<li><strong>База</strong> — значения для самых маленьких параметров, которые не выражаются через другие.</li>
+<li><strong>Формула пересчёта (переход)</strong> — как значение ячейки получается через уже известные ячейки.</li>
+<li><strong>Ответ</strong> — в какой ячейке (или как по нескольким ячейкам) лежит ответ на исходную задачу.</li>
+</ol>
+<p><ts t="0:08:01"/> В записи звучит замечание, что порядок «база — переход» можно менять местами: часто сначала записывают формулу, смотрят, к каким ячейкам она обращается, и только затем понимают, какие из них нужно заполнить в базе.</p>
+
+<h3 data-tc="0:08:54">Первая попытка: одного индекса не хватает</h3>
+<p><ts t="0:08:54"/> Естественное определение: $dp_i$ — количество подходящих последовательностей длины $i$. База: $dp_0 = 1$ (пустая последовательность одна), $dp_1 = 2$ (<code>0</code> и <code>1</code>). Теперь переход: хотим получить последовательность длины $i$ из последовательности длины $i-1$, дописав символ.</p>
+<p><ts t="0:10:20"/> И тут обнаруживается проблема. Дописывать можно <code>0</code> всегда, а <code>1</code> — только если предыдущий символ <code>0</code>. Но в $dp_{i-1}$ лежат вместе последовательности, заканчивающиеся и на <code>0</code>, и на <code>1</code>, и по одному числу мы их не различаем. Вывод лектора: значения $dp_i$ недостаточно, нужно хранить ещё <strong>последний символ</strong>.</p>
+<div class="fix"><b>Важное дополнение: общее правило выбора состояния.</b> Если для перехода нужна информация, которой нет в текущем определении <code>dp</code>, эту информацию добавляют в состояние как ещё один параметр. Здесь это «на что заканчивается строка». Дальше в лекции этот приём встретится снова: в наибольшей возрастающей подпоследовательности «на чём заканчивается» тоже входит в состояние.</div>
+
+<h3 data-tc="0:10:41">Состояние $dp_{i,c}$, база, переход и ответ</h3>
+<figure class="viz"><svg viewBox="0 0 760 326" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="326" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Переходы dp[i][c]: c — на что заканчивается строка</text><text x="200" y="62" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">длина i − 1</text><text x="570" y="62" text-anchor="middle" font-size="14" font-weight="400" fill="#9aa4b2">длина i</text><rect x="150" y="90" width="100" height="56" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="200.0" y="123.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">на 0</text><rect x="520" y="90" width="100" height="56" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="570.0" y="123.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">на 0</text><rect x="150" y="190" width="100" height="56" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="200.0" y="223.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">на 1</text><rect x="520" y="190" width="100" height="56" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="570.0" y="223.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">на 1</text><line x1="252" y1="118" x2="518" y2="118" stroke="#58c4dd" stroke-width="3" marker-end="url(#ar)"/><line x1="252" y1="128" x2="518" y2="208" stroke="#58c4dd" stroke-width="3" marker-end="url(#ar)"/><line x1="252" y1="208" x2="518" y2="134" stroke="#58c4dd" stroke-width="3" marker-end="url(#ar)"/><line x1="252" y1="218" x2="518" y2="218" stroke="#fc6255" stroke-width="2" stroke-dasharray="6 5"/><text x="385" y="214" text-anchor="middle" font-size="13" font-weight="400" fill="#fc6255">✕ «11» нельзя</text><text x="385" y="110" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">ставим 0</text><text x="380" y="280" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">dp[i][0] = dp[i−1][0] + dp[i−1][1]</text><text x="380" y="304" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">dp[i][1] = dp[i−1][0]</text></svg><figcaption>В состояние «на 0» можно прийти из любого состояния, в состояние «на 1» — только из «на 0»: две единицы подряд запрещены.</figcaption></figure>
+<ol>
+<li><p><strong>Определение.</strong> <ts t="0:10:41"/> $dp_{i,c}$ — количество подходящих последовательностей длины $i$, у которых последний символ равен $c$ ($c \in \{0, 1\}$).</p></li>
+<li><p><strong>База.</strong> <ts t="0:11:13"/> Сначала лектор хотел оставить $dp_{0,\cdot}$, но тут же заметил: последовательностей длины ноль, заканчивающихся на ноль, не существует, поэтому такую базу давать нельзя. Базу задают для длины один: $dp_{1,0} = 1$ (строка <code>0</code>), $dp_{1,1} = 1$ (строка <code>1</code>).</p></li>
+<li><p><strong>Переход.</strong> <ts t="0:11:56"/>
+$$dp_{i,1} = dp_{i-1,0}, \qquad dp_{i,0} = dp_{i-1,0} + dp_{i-1,1}.$$
+Почему так. Последовательность длины $i$, заканчивающаяся на единицу, получается из последовательности длины $i-1$ дописыванием <code>1</code>; предыдущий символ обязан быть нулём, потому что две единицы подряд запрещены, поэтому берём только $dp_{i-1,0}$. А если дописываем <code>0</code>, то никаких ограничений нет, и подходят обе группы: и заканчивающиеся на ноль, и на единицу.</p></li>
+<li><p><strong>Ответ.</strong> <ts t="0:14:22"/> $dp_{N,0} + dp_{N,1}$ — количество последовательностей длины $N$, оканчивающихся на ноль, плюс оканчивающихся на единицу.</p></li>
+</ol>
+<p><ts t="0:14:56"/> Лектор отмечает, что получилось что-то очень похожее на числа Фибоначчи. Это не совпадение: $dp_{i,1} = dp_{i-1,0}$, поэтому $dp_{i,0} = dp_{i-1,0} + dp_{i-2,0}$.</p>
+<pre class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    int n;
+    cin &gt;&gt; n;
+    // dp[i][c] — число строк длины i без «11», оканчивающихся на c
+    vector&lt;array&lt;long long, 2&gt;&gt; dp(n + 1);
+    dp[1] = {1, 1};                      // база: «0» и «1»
+    for (int i = 2; i &lt;= n; i++) {
+        dp[i][0] = dp[i - 1][0] + dp[i - 1][1];   // дописываем 0 к чему угодно
+        dp[i][1] = dp[i - 1][0];                  // дописываем 1 только после 0
+    }
+    cout &lt;&lt; dp[n][0] + dp[n][1] &lt;&lt; "\n";      // ответ
+}</pre>
+<div class="good"><b>Проверка.</b> Решение сверено с полным перебором всех $2^n$ строк для $n = 1,\dots,20$; значения для $n = 1,\dots,8$: 2, 3, 5, 8, 13, 21, 34, 55.</div>
+<div class="own"><b>Собственный пример.</b> Для $N = 3$ допустимы строки <code>000, 001, 010, 100, 101</code> — пять штук. По формуле: $dp_1 = (1,1)$; $dp_2 = (1+1,\ 1) = (2,1)$; $dp_3 = (2+1,\ 2) = (3,2)$; сумма $5$. Асимптотика: время $O(N)$, память $O(N)$ (хватило бы и двух последних слоёв, $O(1)$). Для больших $N$ ответ растёт как числа Фибоначчи и требует либо длинной арифметики, либо вывода по модулю.</div>
+
+<h3 data-tc="0:15:13">Вопросы из чата</h3>
+<div class="note"><b>Вопросы из чата.</b>
+<p><ts t="0:15:13"/> <em>Почему $dp_{i,1} = dp_{i-1,0}$, а не $dp_{i-1,0} + dp_{i-1,1}$?</em> Потому что к строке, оканчивающейся на единицу, нельзя дописать единицу.</p>
+<p><ts t="0:16:32"/> <em>Разве $dp_{i,0}$ не равно $dp_{i-1,1}$?</em> Нет: два нуля подряд разрешены, поэтому к нулю дописывать ноль можно, и подходят обе группы.</p>
+<p><ts t="0:17:28"/> <em>Метод Ричарда Беллмана создан наподобие индукции?</em> Лектор не берётся судить об истории. По существу схожесть есть: база, а затем переход от меньшего к большему, как в индукции.</p>
+<p><ts t="0:18:06"/> <em>Верно ли, что у каждой ячейки есть ровно один путь «наверх»?</em> Ячейка $dp_{i-1,1}$ учитывается ровно один раз — в $dp_{i,0}$. А $dp_{i-1,0}$ учитывается дважды: и в $dp_{i,0}$, и в $dp_{i,1}$. Это и показывает: из нуля можно перейти куда угодно, а из единицы — только в ноль.</p>
+<p><ts t="0:19:00"/> Лектор подчёркивает направление вычислений: ДП «вперёд» — для меньших $i$ всё уже посчитано, и мы переходим к большему $i$ через более старые значения.</p></div>
+
+<h2 data-tc="0:21:46">Наибольшая возрастающая подпоследовательность (НВП)</h2>
+<h3 data-tc="0:21:50">Условие и примеры</h3>
+<p><ts t="0:21:50"/> Дан массив из $n$ чисел. Нужно найти длину самой длинной <strong>строго возрастающей подпоследовательности</strong>: набора элементов массива (в исходном порядке, возможно, с пропусками), значения которых строго возрастают.</p>
+<p><ts t="0:22:17"/> Пример лектора: у массива, содержащего числа <code>3, 6, 9, 10</code> в таком порядке, подпоследовательность <code>3 6 9 10</code> возрастающая, как и <code>3 6 8</code>; а <code>3 7 6</code> не подходит, потому что семёрка больше шестёрки. Элементы можно пропускать: из <code>3 7 6 10</code> можно взять <code>3 7 10</code>.</p>
+<p><ts t="0:23:35"/> Начинаем с решения за квадрат.</p>
+
+<h3 data-tc="0:23:35">Решение за $O(n^2)$</h3>
+<ol>
+<li><p><strong>Определение.</strong> <ts t="0:23:35"/> $dp_i$ — длина наибольшей возрастающей подпоследовательности, которая <strong>заканчивается ровно в элементе $a_i$</strong>.</p>
+<p><ts t="0:24:31"/> Один из участников предложил определение «заканчивается в $i$ <em>или ранее</em>» (то есть максимум по префиксу). Лектор возражает: тогда мы не будем знать, каким числом заканчивается подпоследовательность, а значит, не сможем понять, какие числа к ней можно дописать. Поэтому «ровно в $i$».</p></li>
+<li><p><strong>База.</strong> <ts t="0:25:39"/> В одноиндексной нумерации $dp_1 = 1$: одиночный элемент — возрастающая подпоследовательность длины один. Лектор работает в одноиндексной нумерации: нулевого элемента в массиве нет, поэтому «ответ для $i = 0$» равен нулю. (В нуль-индексации то же самое записывается как $dp_0 = 1$.)</p></li>
+<li><p><strong>Переход.</strong> <ts t="0:26:31"/> Первая идея участника — сравнить $a_i$ только с предыдущим $a_{i-1}$ и при $a_i &gt; a_{i-1}$ взять $dp_{i-1} + 1$. Но это неверно: <ts t="0:27:21"/> если $a_i \le a_{i-1}$, то нельзя «обнулить» (ответ $1$): элемент мог бы продолжить более раннюю подпоследовательность. Пример из лекции: восьмёрка меньше стоящей перед ней десятки, но может продолжать подпоследовательность, заканчивающуюся на шестёрке. Правильная формула (<ts t="0:27:56"/>): перебираем <em>все</em> предыдущие $j &lt; i$ и берём из подходящих максимум.
+$$dp_i = 1 + \max_{\substack{j &lt; i \\ a_j &lt; a_i}} dp_j,$$
+а если подходящих $j$ нет, то $dp_i = 1$.</p></li>
+<li><p><strong>Ответ.</strong> <ts t="0:29:12"/> $\max_i dp_i$ — максимум по <em>всем</em> $i$: заранее неизвестно, где заканчивается самая длинная подпоследовательность.</p></li>
+</ol>
+<p><ts t="0:29:51"/> <strong>Асимптотика.</strong> Для каждого $i$ просматриваем все $j &lt; i$, итого $O(n^2)$ по времени и $O(n)$ по памяти.</p>
+<pre class="cpp">// dp[i] — длина НВП, заканчивающейся ровно в a[i]
+int lis_n2(const vector&lt;int&gt;&amp; a) {
+    int n = a.size(), ans = 0;
+    vector&lt;int&gt; dp(n, 1);                 // база: сам элемент — подпоследовательность длины 1
+    for (int i = 0; i &lt; n; i++) {
+        for (int j = 0; j &lt; i; j++)
+            if (a[j] &lt; a[i])               // a[i] можно дописать после a[j]
+                dp[i] = max(dp[i], dp[j] + 1);
+        ans = max(ans, dp[i]);             // ответ — максимум по всем i
+    }
+    return ans;
+}</pre>
+<div class="note"><b>Из чата.</b> <ts t="0:44:29"/> <em>Почему нельзя использовать дерево отрезков?</em> Можно: есть решение за $O(n \log n)$, где максимум значений $dp_j$ по $a_j &lt; a_i$ считается деревом отрезков (лектор отмечает, что ДП и деревья отрезков в курсе ещё не проходили).</div>
+
+<h3 data-tc="0:30:37">Решение за $O(n \log n)$</h3>
+<p><ts t="0:30:40"/> Один из участников предложил другое решение: идти по массиву и вести вспомогательный массив, куда числа записываются в нужную позицию бинарным поиском. Лектор оформила его как ДП с нестандартным состоянием.</p>
+<ol>
+<li><p><strong>Определение.</strong> <ts t="0:31:48"/> $d_\ell$ — <em>наименьшее число, на которое может заканчиваться возрастающая подпоследовательность длины $\ell$</em>, среди рассмотренных к этому моменту элементов. Размер массива $n+1$: длина может быть от $0$ до $n$.</p></li>
+<li><p><strong>База.</strong> <ts t="0:32:30"/> $d_0 = -\infty$, остальные $d_\ell = +\infty$. Смысл: подпоследовательность длины $0$ «заканчивается на минус бесконечность» — её можно продолжить любым числом. А $+\infty$ означает, что подпоследовательности такой длины пока не существует.</p></li>
+</ol>
+<p><ts t="0:33:39"/> Дальше обрабатываем элементы по очереди и смотрим, какие подпоследовательности каждый может продолжить. Рассмотрим массив <code>3 7 6 10 8 9</code> (восстановлен по ходу объяснения):</p>
+<figure class="viz"><svg viewBox="0 0 760 426" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="426" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Массив d[len]: наименьший конец НВП длины len. Массив 3 7 6 10 8 9</text><text x="228.0" y="48" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">len = 0</text><text x="312.0" y="48" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">len = 1</text><text x="396.0" y="48" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">len = 2</text><text x="480.0" y="48" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">len = 3</text><text x="564.0" y="48" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">len = 4</text><text x="176" y="81.0" text-anchor="end" font-size="14" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">старт</text><rect x="190" y="56" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="81.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="56" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="312.0" y="81.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="358" y="56" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="396.0" y="81.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="442" y="56" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="480.0" y="81.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="526" y="56" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="564.0" y="81.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><text x="176" y="129.0" text-anchor="end" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">+ 3</text><rect x="190" y="104" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="129.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="104" width="76" height="40" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="312.0" y="129.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="358" y="104" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="396.0" y="129.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="442" y="104" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="480.0" y="129.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="526" y="104" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="564.0" y="129.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><text x="176" y="177.0" text-anchor="end" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">+ 7</text><rect x="190" y="152" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="177.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="152" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="312.0" y="177.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="358" y="152" width="76" height="40" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="396.0" y="177.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">7</text><rect x="442" y="152" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="480.0" y="177.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="526" y="152" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="564.0" y="177.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><text x="176" y="225.0" text-anchor="end" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">+ 6</text><rect x="190" y="200" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="225.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="200" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="312.0" y="225.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="358" y="200" width="76" height="40" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="396.0" y="225.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="442" y="200" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="480.0" y="225.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><rect x="526" y="200" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="564.0" y="225.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><text x="176" y="273.0" text-anchor="end" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">+ 10</text><rect x="190" y="248" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="273.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="248" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="312.0" y="273.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="358" y="248" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="396.0" y="273.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="442" y="248" width="76" height="40" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="480.0" y="273.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">10</text><rect x="526" y="248" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="564.0" y="273.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><text x="176" y="321.0" text-anchor="end" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">+ 8</text><rect x="190" y="296" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="321.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="296" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="312.0" y="321.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="358" y="296" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="396.0" y="321.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="442" y="296" width="76" height="40" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="480.0" y="321.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><rect x="526" y="296" width="76" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="564.0" y="321.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">∞</text><text x="176" y="369.0" text-anchor="end" font-size="14" font-weight="400" fill="#ffff00" font-family="ui-monospace,Menlo,monospace">+ 9</text><rect x="190" y="344" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="228.0" y="369.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">−∞</text><rect x="274" y="344" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="312.0" y="369.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="358" y="344" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="396.0" y="369.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="442" y="344" width="76" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="480.0" y="369.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><rect x="526" y="344" width="76" height="40" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="564.0" y="369.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">9</text><text x="380" y="406" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">ответ — число ячеек, не равных ∞: здесь 4 (3, 6, 8, 9)</text></svg><figcaption>Жёлтым выделена единственная ячейка, меняющаяся при добавлении числа. Сами числа 3 6 8 9 здесь оказались настоящей НВП, но в общем случае массив d не обязан быть подпоследовательностью.</figcaption></figure>
+<ul>
+<li><ts t="0:34:36"/> <strong>3</strong> может продолжить только подпоследовательность длины $0$. Теперь длина $1$ может заканчиваться на тройку: $d_1 = 3$.</li>
+<li><ts t="0:35:10"/> <strong>7</strong> продолжает длину $0$ и длину $1$. Длину $2$ получили впервые: $d_2 = 7$. Продолжить длину $2$ семёрка не может — там ещё бесконечность.</li>
+<li><ts t="0:35:58"/> <strong>6</strong> тоже продолжает длины $0$ и $1$, но не длину $2$ (после семёрки шестёрка идти не может). Выходит второй кандидат на длину $2$: теперь есть подпоследовательность, заканчивающаяся на $6$, а была на $7$. <ts t="0:36:21"/> Какая выгоднее? Та, что на шестёрке: у неё больше шансов, что следующее число окажется больше конца. Заменяем: $d_2 = 6$.</li>
+<li><ts t="0:36:38"/> <strong>10</strong> продолжает длину $2$: $d_3 = 10$. <strong>8</strong> продолжает длину $2$ (шестёрку), поэтому $d_3$ улучшается до $8$. <strong>9</strong> продолжает длину $3$: $d_4 = 9$.</li>
+</ul>
+<p><ts t="0:37:12"/> Итог: $d = (-\infty,\,3,\,6,\,8,\,9)$. Возрастающая подпоследовательность длины $1$ может заканчиваться на $3$, длины $2$ — на $6$, длины $3$ — на $8$, длины $4$ — на $9$.</p>
+<p><strong>Ответ.</strong> <ts t="0:37:38"/> Количество значений в $d_1, d_2, \dots$, не равных $+\infty$ (то есть наибольшая длина $\ell$ с $d_\ell &lt; +\infty$).</p>
+
+<h3 data-tc="0:37:48">Как найти позицию и почему массив отсортирован</h3>
+<p><ts t="0:37:48"/> Формально: для очередного числа $x = a_i$ нужно найти позицию в $d$, куда его поставить. Участник говорит: <code>lower_bound</code>. Лектор спрашивает: почему можно применять бинарный поиск, то есть почему $d$ отсортирован?</p>
+<p><ts t="0:38:15"/> <strong>Ответ из лекции.</strong> В начале $d$ возрастает: $-\infty,\ +\infty,\dots$. Пусть число $x$ встало в позицию $p$: слева от неё все значения меньше $x$ (это длины, которые $x$ может продолжить), а справа значения больше или равны $x$. Заменив $d_p$ (которое было $\ge x$) на $x$, мы сохраняем возрастание: слева значения меньше, справа не меньше. Так массив остаётся отсортированным. <ts t="0:39:27"/> В результате $x$ продолжает любую подпоследовательность из левой части, а правую продолжить не может; и выгодно заменить именно первое значение, не меньшее $x$, чтобы подпоследовательность той же длины оканчивалась на меньшее число.</p>
+<figure class="viz"><svg viewBox="0 0 760 280" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="280" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Добавили число x: что происходит с d (строго возрастает)</text><rect x="50" y="90" width="84" height="50" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="92.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">−∞</text><text x="92.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[0]</text><rect x="142" y="90" width="84" height="50" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="184.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><text x="184.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[1]</text><rect x="234" y="90" width="84" height="50" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="276.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">5</text><text x="276.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[2]</text><rect x="326" y="90" width="84" height="50" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="368.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">7</text><text x="368.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[3]</text><rect x="418" y="90" width="84" height="50" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="460.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">9</text><text x="460.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[4]</text><rect x="510" y="90" width="84" height="50" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="552.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">12</text><text x="552.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[5]</text><rect x="602" y="90" width="84" height="50" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="644.0" y="120.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">∞</text><text x="644.0" y="160" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">d[6]</text><line x1="50" y1="76" x2="318" y2="76" stroke="#58c4dd" stroke-width="3"/><text x="184.0" y="68" text-anchor="middle" font-size="13" font-weight="400" fill="#58c4dd">d &lt; x: x им не поможет</text><rect x="326" y="84" width="84" height="62" rx="8" fill="none" stroke="#ffff00" stroke-width="2" stroke-dasharray="6 4"/><text x="368.0" y="176" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">первое d ≥ x</text><text x="368.0" y="194" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">заменяем на x = 6</text><line x1="418" y1="76" x2="686" y2="76" stroke="#c78bff" stroke-width="3"/><text x="556.0" y="68" text-anchor="middle" font-size="13" font-weight="400" fill="#c78bff">дальше: x не продолжит НВП</text><text x="380" y="250" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">lower_bound(d.begin(), d.end(), x) — это и есть позиция замены; если все d меньше x — занимаем первую ∞</text></svg><figcaption>Слева все d меньше x: их конец уже лучше, помогать нечему. Справа — слишком большие, к ним x приписать нельзя. Меняется ровно одна ячейка.</figcaption></figure>
+<p><ts t="0:40:05"/> <strong>Если число меньше всех.</strong> Например, встретилась двойка, а в $d_1$ лежит тройка. Двойка может продолжить только подпоследовательность длины $0$, то есть становится подпоследовательностью длины один, и тройку выгодно заменить на двойку.</p>
+<pre class="cpp">// d[len] — наименьшее число, на котором может заканчиваться НВП длины len
+int lis_nlogn(const vector&lt;int&gt;&amp; a) {
+    const int INF = INT_MAX, NINF = INT_MIN;
+    int n = a.size();
+    vector&lt;int&gt; d(n + 1, INF);
+    d[0] = NINF;                                     // база
+    for (int x : a) {
+        // первая позиция, где d[len] &gt;= x  (строгая НВП: равные тоже заменяем)
+        int len = lower_bound(d.begin(), d.end(), x) - d.begin();
+        d[len] = x;                                  // меняется ровно одна ячейка
+    }
+    int ans = 0;
+    while (ans + 1 &lt;= n &amp;&amp; d[ans + 1] != INF) ans++;   // сколько ячеек заполнено
+    return ans;
+}</pre>
+<p><ts t="0:46:04"/> <strong>Асимптотика.</strong> Для каждого из $n$ чисел делаем один бинарный поиск за $O(\log n)$: итого $O(n \log n)$ по времени и $O(n)$ по памяти.</p>
+<div class="fix"><b>Важное дополнение: строгая и нестрогая возрастающая.</b> Для <em>строго</em> возрастающей подпоследовательности нужен <code>lower_bound</code> (равное число вытесняет равное). Для <em>неубывающей</em> нужно заменить его на <code>upper_bound</code>: равное число тогда продолжает подпоследовательность.</div>
+
+<h3 data-tc="0:50:56">Как прийти к решению за $O(n \log n)$: вывод из двумерной динамики</h3>
+<p><ts t="0:50:56"/> В записи этот вывод рассказывают второй преподаватель в середине лекции (<ts t="0:50:56"/>, коротко) и ещё раз подробно после перерыва (<ts t="2:21:36"/>, с доказательствами). Ниже — объединённый рассказ. Идея: решение с массивом $d$ — это двумерная динамика, у которой лишний параметр убрали.</p>
+<p><ts t="0:52:00"/> <strong>Шаг 1. Типовая попытка и где она ломается.</strong> Для массива чаще всего пробуют динамику «по префиксу»: $dp_i$ — ответ на первых $i$ элементах. Но зная ответ на префиксе длины $i$, ответ для $i+1$ посчитать нельзя: мы не знаем, на каком <em>значении</em> заканчивается самая длинная подпоследовательность, а значит, не знаем, можно ли её продолжить числом $a_{i+1}$. В решении за $n^2$ эту проблему обходили определением «заканчивается ровно в $i$». <ts t="0:53:02"/> Правило: если состояния не хватает, в него добавляют ещё один параметр.</p>
+<p><ts t="0:55:38"/> <strong>Шаг 2. Кладём ответ в состояние.</strong> Добавим параметр $\ell$ — желаемую <em>длину</em> подпоследовательности — и в ячейке будем хранить то, что нужно для продолжения: наименьший возможный последний элемент.
+$$dp_{i,\ell} = \text{наименьший конец возрастающей подпоследовательности длины } \ell \text{ на первых } i \text{ элементах.}$$
+Почему наименьший: чтобы подпоследовательность можно было продолжить числом $x$, важно только соотношение её последнего элемента с $x$; из подпоследовательностей одной длины лучшая — та, у которой конец меньше, так как ей подходит больше чисел. Ответ — наибольшее $\ell$, для которого $dp_{n,\ell} &lt; +\infty$. <ts t="2:28:18"/> База: $dp_{0,0} = -\infty$, $dp_{0,\ell} = +\infty$ при $\ell &gt; 0$.</p>
+<p><ts t="0:54:15"/> <strong>Шаг 3. Слои почти одинаковы.</strong> Если выписать массивы $dp_{i,\cdot}$ по слоям $i = 0, 1, 2,\dots$, видно, что соседние слои различаются <em>не больше чем в одной ячейке</em>. Тогда не нужно хранить все слои: достаточно одного массива, в котором на каждом шаге меняется одна ячейка. Так получается массив $d$ из прошлого раздела. Остаётся доказать, что слои действительно отличаются в одной ячейке, и понять, в какой.</p>
+
+<h3 data-tc="2:37:43">Доказательство: что меняется при добавлении $a_{i+1}$</h3>
+<p><ts t="2:30:02"/> Переход от слоя $i$ к слою $i+1$ — добавление одного числа $a = a_{i+1}$. Либо мы его не используем (слой просто копируется), либо дописываем в конец какой-то подпоследовательности.</p>
+<p><ts t="2:37:43"/> <strong>Лемма (возрастание слоя).</strong> Значения $dp_{i,0}, dp_{i,1}, \dots$ строго возрастают.</p>
+<p><em>Доказательство</em> (<ts t="2:38:12"/>, от противного). Пусть $\ell_1 &lt; \ell_2$ и $x_1 = dp_{i,\ell_1} \ge x_2 = dp_{i,\ell_2}$. Возьмём подпоследовательность длины $\ell_2$, заканчивающуюся на $x_2$. Её $\ell_1$-й по счёту элемент $y$ строго меньше $x_2$ (подпоследовательность строго возрастает, а $\ell_1 &lt; \ell_2$), то есть $y &lt; x_2 \le x_1$. Начало этой подпоследовательности до $y$ — возрастающая подпоследовательность длины $\ell_1$ с концом $y &lt; x_1$. Но $x_1$ по определению наименьший возможный конец длины $\ell_1$ — противоречие. Значит, $x_1 &lt; x_2$ для любых $\ell_1 &lt; \ell_2$. $\square$</p>
+<p><ts t="2:43:34"/> <strong>Что делает число $a$.</strong> Из строгого возрастания слоя следует: найдётся позиция $p$ — первая, где $dp_{i,p} \ge a$. Разобьём слой на две части: слева значения меньше $a$, справа не меньше.</p>
+<ul>
+<li><p><strong>Левая часть ($\ell &lt; p$): не меняется.</strong> <ts t="2:33:30"/> Здесь $dp_{i,\ell} &lt; a$: у длины $\ell$ уже есть конец меньше $a$, а дописывание $a$ даёт конец $a$, то есть хуже. Помочь им нечем.</p></li>
+<li><p><strong>Позиция $p$: может измениться.</strong> <ts t="2:44:00"/> Чтобы улучшить длину $p$, надо к подпоследовательности длины $p-1$ с концом меньше $a$ приписать $a$. Такая подпоследовательность есть: $dp_{i,p-1} &lt; a$ (левая часть); причём $p \ge 1$, потому что $dp_{i,0} = -\infty$ меньше любого числа. Получаем подпоследовательность длины $p$ с концом $a$. Если $dp_{i,p} = a$, ничего не меняется; если $dp_{i,p} &gt; a$, оно заменяется на $a$.</p></li>
+<li><p><strong>Правая часть ($\ell &gt; p$): не меняется.</strong> <ts t="2:46:08"/> Чтобы улучшить длину $\ell$, надо приписать $a$ к подпоследовательности длины $\ell - 1 \ge p$, у которой конец меньше $a$. Но все концы длины $\ge p$ не меньше $a$ ($dp_{i,\ell-1} \ge dp_{i,p} \ge a$). Так что приписать $a$ нельзя.</p></li>
+</ul>
+<p><ts t="2:47:11"/> <strong>Вывод.</strong> Переход от слоя $i$ к слою $i+1$ меняет не более одной ячейки — первую, где $dp \ge a$ (находится бинарным поиском, это <code>lower_bound</code>), на значение $a$. Поэтому вместо таблицы $n \times n$ хранится один массив $d$, а каждое добавление числа стоит $O(\log n)$.</p>
+<div class="note"><b>Из чата.</b> <ts t="0:45:17"/> <em>Почему все значения $d$ остаются корректными после добавления $a_i$?</em> Меняется ровно одна ячейка — для той длины, которую новое число может улучшить. Остальные остаются верны: для каждой из них уже существовала подпоследовательность с таким концом, мы ничего не сломали, а только, возможно, добавили более выгодную.</div>
+<div class="note"><b>Из чата.</b> <ts t="0:46:33"/> <em>Почему для 11 12 13 1 2 3 4 нельзя оставить 1 2 3 4 11 12 13?</em> В $d$ хранятся не сами подпоследовательности, а концы: после трёх первых чисел $d = (-\infty, 11, 12, 13)$; единица заменяет $11$, двойка — $12$, тройка — $13$, четвёрка занимает первую бесконечность, получаем $d = (-\infty, 1, 2, 3, 4)$ и ответ $4$. <ts t="0:42:53"/> Лектор подчёркивает, что $d$ не обязано хранить саму подпоследовательность: оно хранит лишь возможные концы.</div>
+<div class="own"><b>Собственный пример.</b> На массиве <code>11 12 13 1</code> массив $d$ станет $(-\infty,\ 1,\ 12,\ 13)$, а набор $1,\ 12,\ 13$ не является подпоследовательностью массива: единица стоит <em>после</em> двенадцати и тринадцати. Длина ответа ($3$) при этом верна — её даёт, например, $11\ 12\ 13$. Поэтому для восстановления подпоследовательности нужен отдельный массив $pr$ (см. ниже).</div>
+
+<h3 data-tc="2:55:03">Восстановление самой подпоследовательности</h3>
+<p><ts t="2:55:03"/> Массив $d$ хранит лишь концы, но саму подпоследовательность восстановить можно. В каждый момент при добавлении $a_i$ мы выбираем позицию $p$ — запомним её в массиве $pr_i = p$. Это длина самой длинной подпоследовательности, оканчивающейся ровно в $a_i$ (то же, что $dp_i$ в решении за $n^2$).</p>
+<ul>
+<li><ts t="2:57:38"/> Найдём максимальное значение $L = \max_i pr_i$ — длина ответа. Выберем любую позицию $i$ с $pr_i = L$. <ts t="2:58:16"/> Если таких позиций несколько, для вывода какой-нибудь НВП подойдёт любая. Для лексикографически минимальной лектор советует брать самую правую из них (это замечание в конспекте не проверялось).</li>
+<li><ts t="3:03:43"/> Идём справа налево и ищем первый элемент с $pr = L - 1$ — это предпоследний элемент ответа; затем ближайший левее элемент с $pr = L - 2$ и так далее. Найденные числа выписываем с конца и в конце переворачиваем.</li>
+</ul>
+<div class="fix"><b>Важное дополнение: почему «ближайший слева» подходит.</b> Среди элементов с одинаковым $pr$ значения не возрастают при движении вправо: если бы $j &lt; i$, $pr_j = pr_i = \ell$ и $a_j &lt; a_i$, то $a_i$ можно было бы дописать после $a_j$, и $pr_i \ge \ell + 1$. Теперь пусть мы стоим в $i$ с $pr_i = \ell$. По определению есть какой-то $j &lt; i$ с $pr_j = \ell - 1$ и $a_j &lt; a_i$. Среди всех $j' &lt; i$ с $pr_{j'} = \ell - 1$ самое правое имеет наименьшее значение (значения не возрастают вправо), значит, оно тоже меньше $a_i$ и подходит. Поэтому жадно брать ближайший слева — корректно.</div>
+<pre class="cpp">// НВП с восстановлением ответа за O(n log n)
+vector&lt;int&gt; lis_restore(const vector&lt;int&gt;&amp; a) {
+    const int INF = INT_MAX, NINF = INT_MIN;
+    int n = a.size();
+    vector&lt;int&gt; d(n + 1, INF), pr(n);
+    d[0] = NINF;
+    for (int i = 0; i &lt; n; i++) {
+        int len = lower_bound(d.begin(), d.end(), a[i]) - d.begin();
+        d[len] = a[i];
+        pr[i] = len;                   // длина НВП, оканчивающейся в a[i]
+    }
+    int L = *max_element(pr.begin(), pr.end());
+    vector&lt;int&gt; res;
+    int need = L;
+    for (int i = n - 1; i &gt;= 0 &amp;&amp; need &gt; 0; i--)
+        if (pr[i] == need) {           // ближайший слева элемент нужной длины
+            res.push_back(a[i]);
+            need--;
+        }
+    reverse(res.begin(), res.end());
+    return res;
+}</pre>
+<div class="good"><b>Проверка.</b> Обе версии (за $n^2$ и за $n \log n$ с восстановлением) сверены с полным перебором всех подпоследовательностей на 20 000 случайных массивов длины до 10: длины совпали, а восстановленная последовательность каждый раз оказывалась возрастающей подпоследовательностью исходного массива. На <code>3 7 6 10 8 9</code> ответ <code>3 6 8 9</code>, на <code>11 12 13 1 2 3 4</code> — <code>1 2 3 4</code>.</div>
+
+<h2 data-tc="0:58:51">Наибольшая общая подпоследовательность (НОП)</h2>
+<h3 data-tc="0:58:51">Условие</h3>
+<p><ts t="0:58:51"/> Даны две строки $A$ и $B$. Нужно найти длину самой длинной строки, которая является подпоследовательностью (символы в исходном порядке, возможно, с пропусками) <em>и</em> $A$, <em>и</em> $B$.</p>
+<p><ts t="0:59:30"/> Лектор поясняет на двух строках из букв <code>A</code> и <code>B</code>: общая подпоследовательность получается, если взять символы в том же порядке из обеих строк, пропуская лишние. Порядок нарушать нельзя, пропускать символы можно. Дальше строится динамика.</p>
+
+<h3 data-tc="1:01:13">Определение, база, переход, ответ</h3>
+<ol>
+<li><p><strong>Определение.</strong> <ts t="1:00:44"/> Первое предложение участника — хранить длину подпоследовательности, которая «в первой строке заканчивается в позиции $i$, а во второй в $j$» — лектор не принимает. <ts t="1:01:13"/> Принято определение: $dp_{i,j}$ — длина наибольшей общей подпоследовательности <em>префикса $A$ длины $i$ и префикса $B$ длины $j$</em> (нумерация с единицы, чтобы удобнее было обращаться к $i-1$).</p></li>
+<li><p><strong>База.</strong> <ts t="1:02:36"/> $dp_{i,0} = dp_{0,j} = 0$: у пустого префикса с любой строкой нет общих символов.</p></li>
+<li><p><strong>Переход.</strong> <ts t="1:03:30"/> Смотрим на последние символы префиксов $A_i$ и $B_j$.</p>
+<ul>
+<li>Если $A_i = B_j$, этот символ можно поставить в конец общей подпоследовательности: к лучшему ответу на префиксах без этих символов добавляется единица.
+$$dp_{i,j} = dp_{i-1,j-1} + 1.$$</li>
+<li>Если $A_i \ne B_j$, то хотя бы один из них в общей подпоследовательности не участвует, и мы выбрасываем один из двух последних символов, оставляя другой префикс целиком:
+$$dp_{i,j} = \max(dp_{i-1,j},\ dp_{i,j-1}).$$</li>
+</ul></li>
+<li><p><strong>Ответ.</strong> <ts t="1:12:55"/> $dp_{n,m}$, где $n = |A|$, $m = |B|$.</p></li>
+</ol>
+<figure class="viz"><svg viewBox="0 0 760 380" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="380" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">dp[i][j] для A = ABCBD и B = BDCAB, ответ — 3 (BCB)</text><text x="250" y="60" text-anchor="middle" font-size="16" font-weight="700" fill="#ffff00">B</text><text x="320" y="60" text-anchor="middle" font-size="16" font-weight="700" fill="#ffff00">D</text><text x="390" y="60" text-anchor="middle" font-size="16" font-weight="700" fill="#ffff00">C</text><text x="460" y="60" text-anchor="middle" font-size="16" font-weight="700" fill="#ffff00">A</text><text x="530" y="60" text-anchor="middle" font-size="16" font-weight="700" fill="#ffff00">B</text><text x="132" y="145" text-anchor="end" font-size="16" font-weight="700" fill="#ffff00">A</text><text x="132" y="191" text-anchor="end" font-size="16" font-weight="700" fill="#ffff00">B</text><text x="132" y="237" text-anchor="end" font-size="16" font-weight="700" fill="#ffff00">C</text><text x="132" y="283" text-anchor="end" font-size="16" font-weight="700" fill="#ffff00">B</text><text x="132" y="329" text-anchor="end" font-size="16" font-weight="700" fill="#ffff00">D</text><rect x="150" y="70" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="182.0" y="95.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="220" y="70" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="252.0" y="95.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="290" y="70" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="322.0" y="95.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="360" y="70" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="392.0" y="95.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="430" y="70" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="462.0" y="95.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="500" y="70" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="532.0" y="95.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="150" y="116" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="182.0" y="141.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="220" y="116" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="252.0" y="141.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="290" y="116" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="322.0" y="141.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="360" y="116" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="392.0" y="141.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="430" y="116" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="462.0" y="141.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="500" y="116" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="532.0" y="141.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="150" y="162" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="182.0" y="187.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="220" y="162" width="64" height="40" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="252.0" y="187.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="290" y="162" width="64" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="322.0" y="187.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="360" y="162" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="392.0" y="187.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="430" y="162" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="462.0" y="187.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="500" y="162" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="532.0" y="187.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="150" y="208" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="182.0" y="233.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="220" y="208" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="252.0" y="233.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="290" y="208" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="322.0" y="233.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="360" y="208" width="64" height="40" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="392.0" y="233.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="430" y="208" width="64" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="462.0" y="233.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="500" y="208" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="532.0" y="233.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="150" y="254" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="182.0" y="279.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="220" y="254" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="252.0" y="279.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="290" y="254" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="322.0" y="279.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="360" y="254" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="392.0" y="279.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="430" y="254" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="462.0" y="279.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="500" y="254" width="64" height="40" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="532.0" y="279.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">3</text><rect x="150" y="300" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="182.0" y="325.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">0</text><rect x="220" y="300" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="252.0" y="325.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">1</text><rect x="290" y="300" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="322.0" y="325.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="360" y="300" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="392.0" y="325.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="430" y="300" width="64" height="40" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="462.0" y="325.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">2</text><rect x="500" y="300" width="64" height="40" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="532.0" y="325.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">3</text><text x="360" y="358" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">зелёные клетки — совпавшие символы при обратном ходе</text></svg><figcaption>Собственный пример. Обратный ход начинается в правом нижнем углу: при равных символах идём по диагонали и запоминаем символ, иначе — в сторону большего соседа.</figcaption></figure>
+<pre class="cpp">// dp[i][j] — НОП префиксов a[0..i) и b[0..j)
+int lcs_len(const string&amp; a, const string&amp; b) {
+    int n = a.size(), m = b.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(n + 1, vector&lt;int&gt;(m + 1, 0));   // база: нули
+    for (int i = 1; i &lt;= n; i++)
+        for (int j = 1; j &lt;= m; j++) {
+            if (a[i - 1] == b[j - 1]) dp[i][j] = dp[i - 1][j - 1] + 1;
+            else dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+        }
+    return dp[n][m];
+}</pre>
+<p><ts t="1:13:21"/> <strong>Асимптотика.</strong> Состояний $n \cdot m$, переход за $O(1)$: время и память $O(nm)$. На вопрос, можно ли быстрее (за $O(n + m)$ или $O((n+m)\log)$), лектор отвечает отрицательно.</p>
+
+<h3 data-tc="1:08:29">Почему при равных символах не нужен максимум из трёх</h3>
+<p><ts t="1:08:29"/> Участник спрашивает: при $A_i = B_j$ можно ли написать $\max$ из трёх значений — $dp_{i-1,j}$, $dp_{i,j-1}$ и $dp_{i-1,j-1}+1$? Можно, но не нужно. Лекторская версия объяснения (<ts t="1:11:26"/>): если бы выгоднее было взять $dp_{i-1,j}$, то в ответе для префикса $A_{1..i-1}$ и $B_{1..j}$ последний символ $B_j$ уже совпал с каким-то более ранним символом $A$; но его можно сопоставить с $A_i$, ничего не потеряв. При неравных символах так сделать нельзя, и приходится искать равенство глубже в префиксах.</p>
+<div class="own"><b>Развёрнутое объяснение.</b> Строго: удаление одного символа из строки уменьшает НОП не более чем на единицу, поэтому $dp_{i-1,j} \le dp_{i-1,j-1} + 1$ и $dp_{i,j-1} \le dp_{i-1,j-1} + 1$. Значит, при $A_i = B_j$ значение $dp_{i-1,j-1}+1$ не меньше двух других, и максимум из трёх всегда равен ему. В другую сторону: достижимость $dp_{i-1,j-1} + 1$ очевидна — к любой общей подпоследовательности префиксов без последних символов дописываем общий символ.</div>
+
+<h3 data-tc="1:14:04">Восстановление ответа</h3>
+<p><ts t="1:14:04"/> Пусть нужно вывести не только длину, но и саму НОП. Лекция называет два подхода (<ts t="1:17:03"/>): <strong>обратный ход</strong> по таблице и <strong>массив родителей</strong>.</p>
+<h3 data-tc="1:17:50">Обратный ход по таблице $dp$</h3>
+<p><ts t="1:17:50"/> Таблица уже содержит всю информацию о том, откуда мы пришли в клетку. Идём из $(n, m)$ к $(0,0)$:</p>
+<ul>
+<li><ts t="1:19:38"/> если $A_i = B_j$, символ входит в ответ: записываем его и переходим в $(i-1, j-1)$;</li>
+<li><ts t="1:20:06"/> иначе по формуле выбирался максимум: сравниваем $dp_{i-1,j}$ и $dp_{i,j-1}$ и переходим туда, где значение больше (в записи лектор описывает это как «в сторону большего»); в ответ ничего не добавляется;</li>
+<li>идём, пока $i&gt;0$ и $j&gt;0$. Символы набираются с конца, поэтому в конце результат разворачивается (<ts t="1:21:54"/>).</li>
+</ul>
+<p><ts t="1:22:18"/> Лектор показывает на маленьком примере, как идёт обратный ход; в этом конспекте полный пример с таблицей и выделенным путём — на рисунке выше (собственный пример: строки <code>ABCBD</code> и <code>BDCAB</code>, ответ <code>BCB</code>).</p>
+<h3 data-tc="1:25:39">Массив родителей</h3>
+<p><ts t="1:25:39"/> Второй способ: прямо в каждой клетке хранить пару индексов — откуда мы в неё пришли (<ts t="1:26:19"/>). Тогда обратный ход не нужно «угадывать» сравнением значений: достаточно идти по родителям и добавлять в ответ символ тогда, когда переход был по диагонали при равных символах. Платим дополнительной памятью.</p>
+<pre class="cpp">// НОП с восстановлением: обратный ход по таблице dp
+string lcs_restore(const string&amp; a, const string&amp; b) {
+    int n = a.size(), m = b.size();
+    vector&lt;vector&lt;int&gt;&gt; dp(n + 1, vector&lt;int&gt;(m + 1, 0));
+    for (int i = 1; i &lt;= n; i++)
+        for (int j = 1; j &lt;= m; j++)
+            dp[i][j] = a[i - 1] == b[j - 1] ? dp[i - 1][j - 1] + 1
+                                            : max(dp[i - 1][j], dp[i][j - 1]);
+    string res;
+    int i = n, j = m;
+    while (i &gt; 0 &amp;&amp; j &gt; 0) {
+        if (a[i - 1] == b[j - 1]) {            // этот символ входит в ответ
+            res += a[i - 1];
+            i--; j--;
+        } else if (dp[i - 1][j] &gt;= dp[i][j - 1]) i--;   // идём туда, где больше
+        else j--;
+    }
+    reverse(res.begin(), res.end());           // набирали с конца
+    return res;
+}</pre>
+<div class="good"><b>Проверка.</b> Сверено с перебором всех подпоследовательностей на 20 000 случайных пар строк (длины до 8, три буквы): длина совпала, а результат каждый раз оказывался подпоследовательностью обеих строк. На <code>ABCBD</code>, <code>BDCAB</code> получается длина 3.</div>
+<div class="fix"><b>Важное дополнение: память.</b> Если нужна только длина НОП, достаточно хранить две строки таблицы ($O(m)$ памяти). Для восстановления ответа полная таблица нужна (или более хитрые методы вроде алгоритма Хиршберга, который здесь не рассматривался).</div>
+<div class="note"><b>Из чата.</b> <ts t="1:27:53"/> <em>При равных $A_i$ и $B_j$ можно не смотреть на $dp_{i-1,j}$ и $dp_{i,j-1}$?</em> Да: $dp_{i-1,j-1}$ уже включает всё нужное; см. разбор выше.</div>
+
+<h2 data-tc="3:06:53">Семинар: приёмы и задачи на ДП</h2>
+<p><ts t="2:49:24"/> После перерыва начинается семинар: второй преподаватель разбирает задачи из контеста вместе с участниками. Условия звучат устно, поэтому ниже они записаны так, как были заданы на семинаре; где формулировка осталась неполной, это оговорено.</p>
+
+<h3 data-tc="3:06:53">Приём: массивы смещений <code>dx</code>, <code>dy</code></h3>
+<p><ts t="3:06:53"/> Первый приём, который пригодится в задачах на сетке и лабиринтах. Когда из клетки можно сдвинуться в несколько сторон (север, юг, запад, восток и ещё четыре диагонали), вместо восьми однотипных <code>if</code> заводят два массива смещений длины $8$ и перебирают переходы циклом. <ts t="3:11:40"/> Асимптотика не меняется (восемь проверок остаются восемью проверками), зато код короче, и в нём меньше мест для опечаток.</p>
+<pre class="cpp">// 8 направлений: С, СВ, В, ЮВ, Ю, ЮЗ, З, СЗ
+const int dx[8] = {-1, -1, 0, 1, 1,  1,  0, -1};   // изменение номера строки
+const int dy[8] = { 0,  1, 1, 1, 0, -1, -1, -1};   // изменение номера столбца
+
+for (int k = 0; k &lt; 8; k++) {
+    int ni = i + dx[k], nj = j + dy[k];
+    if (ni &lt; 0 || ni &gt;= n || nj &lt; 0 || nj &gt;= m) continue;   // вышли за поле
+    if (grid[ni][nj] == '#') continue;                       // стена
+    // ... переход из (i, j) в (ni, nj)
+}</pre>
+
+<h3 data-tc="3:12:31">Задача «Поставки еды и две шахты»</h3>
+<div class="formula"><b>Условие (как оно звучало).</b> Есть $N$ поставок еды; поставка $i$ имеет вид $a_i \in \{0, 1, 2\}$. Есть две шахты. Каждую поставку нужно отдать ровно одной из шахт. Когда шахта получает поставку, она даёт уголь: смотрим на эту поставку и две предыдущие, которые получила <em>та же шахта</em>. Если все три вида различны — $3$ тонны; если встречаются два вида — $2$ тонны; если все одного вида — $1$ тонна. Шахте можно отдать любое число поставок. Нужно максимизировать суммарное количество тонн (<ts t="3:14:49"/>).</div>
+<p><ts t="3:15:38"/> Условие приходится повторить: шахты две; каждой шахте поставки даются в порядке прихода; сколько поставок получит каждая — неважно, важна только суммарная прибыль в тоннах. Отдельный ответ с самим распределением не требуется — достаточно числа.</p>
+<ol>
+<li><p><strong>Определение.</strong> <ts t="3:16:56"/> Хочется $dp_i$ — максимум угля на первых $i$ поставках. Но этого мало: прибавку от следующей поставки определяют две последние поставки <em>каждой</em> шахты, а в $dp_i$ их нет. Поэтому в состояние добавляют «хеш» — число, кодирующее эти четыре вида. <ts t="3:19:41"/> Хранить нужно по две последние поставки (а не три), потому что новая поставка в сумме с двумя предыдущими и образует три. Итого $dp_{i,h}$ — максимум угля, когда обработаны первые $i$ поставок, а состояние шахт описывает число $h$.</p></li>
+<li><p><strong>Размер состояния.</strong> <ts t="3:20:15"/> Каждая из четырёх позиций (две в первой шахте, две во второй) принимает одно из трёх значений, поэтому лектор получает $3^4 = 81$ состояние и асимптотику $O(81 \cdot N)$. <ts t="3:21:06"/> Лектор договаривается обозначать такие константы просто $K$: «$O(Kn)$», где $K$ — размер набора состояний.</p></li>
+<li><p><strong>База.</strong> <ts t="3:22:24"/> Для удобства добавляют нулевую поставку; $dp_{0,h} = 0$ при пустых шахтах.</p></li>
+<li><p><strong>Переход.</strong> <ts t="3:26:17"/> Проще считать «вперёд». Если известно $dp_{i,h}$, то поставку $a_{i+1}$ можно отдать первой шахте или второй, и состояние $h$ меняется на $h'$ (в соответствующей шахте старый «предпоследний» вид забывается, последний сдвигается, на его место встаёт новый). Прибавка угля равна числу различных видов среди новой поставки и двух предыдущих в этой шахте, и $dp_{i+1,h'}$ берётся как максимум по всем таким переходам. <ts t="3:28:21"/> Двух переходов именно два (какой шахте отдать), хеши у них получаются разные.</p></li>
+<li><p><strong>Ответ.</strong> Максимум по всем $h$ из $dp_{N,h}$.</p></li>
+</ol>
+<div class="fix"><b>Исправление: нужна пометка «пусто».</b> В начале у шахты ещё нет двух поставок, и это нельзя изобразить видом $0$, $1$ или $2$ — иначе пустая шахта выглядела бы как шахта, получившая поставки вида $0$, и прибавка угля считалась бы неверно. Правильно кодировать каждую позицию четырьмя значениями ($0, 1, 2$ и «пусто»), то есть $4^4 = 256$ состояний. Именно это число участник называет в конце семинара (<ts t="4:31:38"/>), и оно по-прежнему мало: $256 \cdot N \cdot 2$ переходов.</div>
+<pre class="cpp">// Виды 0..2, «пусто» = 3. Состояние шахты — две последние поставки (p, q), q — самая свежая.
+// Состояние обеих шахт: h = ((p1*4 + q1)*4 + p2)*4 + q2  (0..255)
+int gain(int p, int q, int x) {                // сколько тонн даст поставка x
+    int mask = 1 &lt;&lt; x;                         // множество различных видов
+    if (q != 3) mask |= 1 &lt;&lt; q;
+    if (p != 3) mask |= 1 &lt;&lt; p;
+    return __builtin_popcount(mask);
+}
+
+int solve(const vector&lt;int&gt;&amp; a) {
+    vector&lt;int&gt; dp(256, -1), nd(256);
+    dp[((3 * 4 + 3) * 4 + 3) * 4 + 3] = 0;     // обе шахты пусты
+    for (int x : a) {
+        fill(nd.begin(), nd.end(), -1);
+        for (int h = 0; h &lt; 256; h++) if (dp[h] &gt;= 0) {
+            int q2 = h % 4, p2 = h / 4 % 4, q1 = h / 16 % 4, p1 = h / 64;
+            // поставка x уходит в первую шахту
+            int h1 = ((q1 * 4 + x) * 4 + p2) * 4 + q2;
+            nd[h1] = max(nd[h1], dp[h] + gain(p1, q1, x));
+            // поставка x уходит во вторую шахту
+            int h2 = ((p1 * 4 + q1) * 4 + q2) * 4 + x;
+            nd[h2] = max(nd[h2], dp[h] + gain(p2, q2, x));
+        }
+        dp = nd;
+    }
+    return *max_element(dp.begin(), dp.end());
+}</pre>
+<div class="good"><b>Проверка.</b> Код сверен с полным перебором всех $2^N$ способов раздать поставки на 5 000 случайных массивов длины до 12: максимумы совпали. Асимптотика: $O(256 \cdot N)$ по времени, $O(256)$ по памяти (хранится только текущий слой).</div>
+<div class="note"><b>Из чата.</b> <ts t="4:32:38"/> Участник пишет решение, в котором на каждый переход создаётся <code>std::set</code> из трёх видов, чтобы посчитать число различных. Лектор объясняет, почему это замедляет программу: создание и удаление контейнера на каждый из десятков миллионов переходов — дорогие операции с памятью, их не окупает размер три. Лучше считать различные виды маской или несколькими сравнениями, как в функции <code>gain</code> выше.</div>
+
+<h3 data-tc="3:31:40">Задача: сколько неубывающих массивов с заданной суммой</h3>
+<div class="formula"><b>Условие (как оно звучало).</b> Даны числа $N$ и $K$. Нужно найти количество массивов $a_1, a_2, \dots, a_m$ (длина $m$ любая) таких, что $\sum a_i = N$ и $a_1 = K$. Ответ выводится по модулю $10^9 + 7$ (<ts t="3:45:25"/>). Чтобы не углубляться в комбинаторику, лектор сразу добавляет условие, что массив <em>не убывает</em> (<ts t="3:34:16"/>).</div>
+<p><ts t="3:34:45"/> <strong>Ход обсуждения.</strong> Сначала лектор пробует состояние «длина $i$ и последний элемент $x$»; сразу выясняется (<ts t="3:37:25"/>), что нужен ещё один параметр — сумма. Вводится $S$ — остаток суммы. Получается состояние из трёх параметров $dp_{i,x,S}$, а переход перебирает предыдущий последний элемент $x_1$ от $K$ до $x$ — слишком много (<ts t="3:43:57"/> лектор называет такое решение «самым тупым» и ищет, как его ускорить). Дальше (<ts t="3:46:00"/>) замечено, что порядок циклов можно менять: фиксируем остаток $S$ и переходим от $x$ к $x+1$, и при этом в сумму по $x_1$ добавляется всего один новый член. Идея — получить префиксные суммы по $x_1$. <ts t="3:49:29"/> Но параметры $i$, $x$ и $S$ меняются одновременно, и сделать префиксные суммы напрямую не получается; обсуждение переходит к замене смысла параметра $S$ (<ts t="3:51:33"/>), но до готового решения не доходит, и семинар переходит к следующей задаче.</p>
+<div class="own"><b>Собственное решение (в лекции не доведено до конца).</b> Заметим, что длина $m$ никого не интересует, а неубывающий массив с первым элементом $K$ полностью задаётся множеством остальных элементов (с повторениями), каждый из которых $\ge K$, а сумма равна $r = N - K$. Это классическая задача о количестве способов набрать сумму $r$ «монетами» номиналов $K, K+1, \dots, r$, где каждый номинал можно брать сколько угодно раз и порядок не важен. Рассматриваем номиналы по возрастанию:
+$$ways_x[s] = ways_{x-1}[s] + ways_x[s - x].$$
+Первое слагаемое — «монету $x$ не берём», второе — «берём хотя бы одну». Внутренний цикл по $s$ идёт от $x$ вверх, поэтому массив достаточно хранить один:
+<pre class="cpp">const long long MOD = 1e9 + 7;
+
+long long count_arrays(int n, int k) {
+    if (k &gt; n) return 0;
+    int r = n - k;                          // сумму r нужно набрать числами &gt;= k
+    vector&lt;long long&gt; ways(r + 1, 0);
+    ways[0] = 1;                            // пустой набор (массив из одного элемента k)
+    for (int x = k; x &lt;= r; x++)            // номинал x
+        for (int s = x; s &lt;= r; s++)
+            ways[s] = (ways[s] + ways[s - x]) % MOD;
+    return ways[r];
+}</pre>
+Время $O(N^2)$, память $O(N)$. Именно здесь «в сумму добавляется один новый член» из рассуждения лектора: при переходе от номинала $x-1$ к $x$ в $ways[s]$ добавляется единственное слагаемое $ways_x[s-x]$. Проверено полным перебором для всех $1 \le K \le N \le 25$; для $N = 10$, $K = 2$ ответ $7$.</div>
+
+<h3 data-tc="3:56:26">Задача «Пловцы и дорожки»</h3>
+<div class="formula"><b>Условие (как оно звучало).</b> Есть $N$ дорожек в бассейне и $S$ пловцов; дан массив $a_1, \dots, a_N$ — сколько людей плавает на каждой дорожке, $\sum a_i = S$. Нужно переразбить пловцов по дорожкам так, чтобы на соседних дорожках количества людей отличались не более чем на единицу ($|b_i - b_{i+1}| \le 1$). Порядок пловцов в «ленте» не меняется: мы можем лишь сдвигать разметку дорожек. Каждый раз, когда границу дорожки сдвигают, «потревоженные» люди дают штраф; человек, которого потревожили дважды (две границы пересекли его), считается дважды. Нужно найти минимальный суммарный штраф. Ограничения: $N \le 400$, $S \le 1500$ (<ts t="4:08:52"/>).</div>
+<p><ts t="3:57:49"/> <strong>Примеры лектора.</strong> Для массива $(3, 0, 1)$ подходит $(2, 1, 1)$: один человек перешёл на соседнюю дорожку, штраф $1$. Для $(8, 0, 2)$ подходит $(4, 3, 3)$; <ts t="4:00:12"/> штраф получается $5$, а не $4$, потому что одного из людей потревожили дважды — через него прошли сразу две границы.</p>
+<p><strong>Как считается штраф: сдвиги границ.</strong></p>
+<figure class="viz"><svg viewBox="0 0 760 312" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="312" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Штраф — сумма сдвигов границ: |P₁−Q₁| + |P₂−Q₂|</text><text x="144" y="92" text-anchor="end" font-size="13" font-weight="400" fill="#9aa4b2">было 8 0 2</text><rect x="150" y="70" width="444" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="372.0" y="93.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><rect x="598" y="70" width="8" height="36" rx="3" fill="none" stroke="#9aa4b2" stroke-dasharray="3 3"/><text x="602" y="122" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">0</text><rect x="598" y="70" width="108" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="652.0" y="93.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><text x="144" y="222" text-anchor="end" font-size="13" font-weight="400" fill="#9aa4b2">стало 4 3 3</text><rect x="150" y="200" width="220" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="260.0" y="223.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">4</text><rect x="374" y="200" width="164" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="456.0" y="223.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="542" y="200" width="164" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="624.0" y="223.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><line x1="598" y1="128" x2="374" y2="128" stroke="#ff8c1a" stroke-width="3" marker-end="url(#ar)"/><text x="608" y="133" text-anchor="start" font-size="13" font-weight="400" fill="#ff8c1a">|8 − 4| = 4</text><line x1="598" y1="160" x2="542" y2="160" stroke="#fc6255" stroke-width="3" marker-end="url(#ar)"/><text x="608" y="165" text-anchor="start" font-size="13" font-weight="400" fill="#fc6255">|8 − 7| = 1</text><text x="380" y="290" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">итого 4 + 1 = 5 «потревоженных» — как в примере на лекции</text></svg><figcaption>Каждая граница дорожки сдвигается с префиксной суммы P на Q; человек, оказавшийся между старым и новым положением границы, считается один раз за каждую такую границу.</figcaption></figure>
+<div class="own"><b>Развёрнутое объяснение.</b> Штраф удобно считать по границам. Границу между дорожками $i$ и $i+1$ описывает количество людей слева от неё: до переразбиения это $P_i = a_1 + \dots + a_i$, после — $Q_i = b_1 + \dots + b_i$. Граница сдвинулась на $|P_i - Q_i|$ людей, и каждый такой человек был «потревожен» именно этой границей. Человек, оказавшийся между старым и новым положением двух границ, считается дважды — как в условии. Поэтому
+$$\text{штраф} = \sum_{i=1}^{N-1} |P_i - Q_i|.$$
+Проверка по примерам лектора: для $(8,0,2) \to (4,3,3)$: $P = (8,8)$, $Q = (4,7)$, штраф $4 + 1 = 5$. Для $(3,0,1) \to (2,1,1)$: $P = (3,3)$, $Q = (2,3)$, штраф $1$.</div>
+<p><strong>Как ограничить размер состояния.</strong></p>
+<p><ts t="4:03:15"/> <strong>Сколько людей может быть на одной дорожке.</strong> Допустим, на самой загруженной дорожке стоит $m$ человек. Соседние дорожки отличаются не более чем на единицу, поэтому на дорожках слева или справа от неё в лучшем случае $m-1, m-2, \dots$ человек (дальше, возможно, нули). Значит, сумма $S$ не меньше $m + (m-1) + \dots + 1 \approx m^2 / 2$, откуда $m \lesssim \sqrt{2S}$. <ts t="4:05:06"/> Если дорожек мало, то оценка другая: порядка $S/N + N/2$ (лектор называет её для случая «мало дорожек», а общую оценку — «корнем из $S$ плюс единица»). <ts t="4:08:08"/> Вывод лектора: не нужно перебирать все $S$ значений для последней дорожки, достаточно порядка $\sqrt S$.</p>
+<div class="own"><b>Собственное уточнение.</b> Точную границу легко вычислить: если максимум равен $m$, то минимальная сумма — это $\sum_{j=0}^{N-1} \max(m - j, 0)$ (максимум стоит с краю, дальше убывание на единицу). Наибольшее $m$ с такой суммой $\le S$ — и есть верхняя граница числа людей на дорожке. Для $N = 400$, $S = 1500$ это $54$, для $N = 10$, $S = 1500$ — $154$.</div>
+<p><strong>Состояние и переход.</strong></p>
+<p><ts t="4:13:37"/> Состояние: $dp_{i,s,l}$ — минимальный штраф, если расставлены первые $i$ дорожек, в них суммарно $s$ человек, а на последней стоит $l$ человек. <ts t="4:14:07"/> Переход: на следующей дорожке будет $l-1$, $l$ или $l+1$ человек — три варианта, отсюда новая сумма $s + l'$. <ts t="4:15:48"/> Параметр «сумма» нужен, чтобы знать, где сейчас проходит граница после первых $i$ дорожек, и посчитать, на сколько людей её пришлось сдвинуть относительно исходной.</p>
+<p><ts t="4:17:48"/> Лектор считает штраф перехода через префиксные суммы исходного массива и бинарный поиск позиции границы (<ts t="4:18:05"/>), затем (<ts t="4:22:12"/>) называет наивный вариант с подсчётом «руками» стоимостью $O(N)$ на переход и предлагает заранее подсчитать штрафы сдвигов в таблице (<ts t="4:24:35"/>). Асимптотика после этого — порядка $O(N \cdot S \cdot \sqrt S)$ (<ts t="4:26:49"/>); лектор отмечает, что фактически состояний меньше из-за ограничения на число людей. <ts t="4:27:29"/> Подставляя оценки, получаем порядка $10^8$ операций, которые по оценке лектора укладываются в ограничение по времени.</p>
+<div class="own"><b>Развёрнутое объяснение.</b> Формула штрафа через границы делает переход мгновенным. Если после $i$ дорожек в них $s$ человек, то при выборе количества людей $l'$ на следующей дорожке штраф за границу после дорожки $i$ добавляется равным $|P_i - s|$ — без бинарного поиска и без таблиц.
+$$dp_{i,s',l'} = \min_{l \in \{l'-1,\ l',\ l'+1\}} dp_{i-1,\,s'-l',\,l} + |P_i - s'|.$$
+Ответ: $\min_l dp_{N,S,l}$ (для $i = N$ штраф $|P_N - S| = 0$ автоматически). База: для первой дорожки $dp_{1,l,l} = |P_1 - l|$ при любом допустимом $l$.
+<pre class="cpp">int min_penalty(const vector&lt;int&gt;&amp; a) {
+    const int INF = 1e9;
+    int n = a.size(), S = accumulate(a.begin(), a.end(), 0);
+    vector&lt;int&gt; P(n + 1, 0);                     // префиксные суммы исходных дорожек
+    for (int i = 0; i &lt; n; i++) P[i + 1] = P[i] + a[i];
+    int cap = 0;                                 // верхняя граница людей на дорожке
+    for (;; cap++) {
+        long long sum = 0;
+        for (int j = 0; j &lt; n; j++) sum += max(cap + 1 - j, 0);
+        if (sum &gt; S) break;
+    }
+    // dp[s][l]: расставлены первые i дорожек, в них s человек, на последней l
+    vector&lt;vector&lt;int&gt;&gt; dp(S + 1, vector&lt;int&gt;(cap + 1, INF)), nd;
+    for (int l = 0; l &lt;= min(cap, S); l++) dp[l][l] = abs(P[1] - l);
+    for (int i = 2; i &lt;= n; i++) {
+        nd.assign(S + 1, vector&lt;int&gt;(cap + 1, INF));
+        for (int s = 0; s &lt;= S; s++)
+            for (int l = 0; l &lt;= cap; l++) {
+                if (dp[s][l] &gt;= INF) continue;
+                for (int nl = max(l - 1, 0); nl &lt;= min(l + 1, cap); nl++) {
+                    int ns = s + nl;
+                    if (ns &gt; S) continue;
+                    nd[ns][nl] = min(nd[ns][nl], dp[s][l] + abs(P[i] - ns));
+                }
+            }
+        dp.swap(nd);
+    }
+    int best = INF;
+    for (int l = 0; l &lt;= cap; l++) best = min(best, dp[S][l]);
+    return best;
+}</pre>
+Время $O(N \cdot S \cdot cap)$ с тремя переходами на состояние, память $O(S \cdot cap)$ за счёт двух слоёв. Проверено: на $(3,0,1)$ и $(8,0,2)$ получаются $1$ и $5$; результат совпал с перебором всех допустимых $b$ на 4 000 случайных массивов; на максимальных данных ($N = 400$, $S = 1500$) программа работает около $0{,}1$ с.</div>
+<div class="note"><b>Из чата.</b> <ts t="4:30:01"/> <em>Что хранится в этом ДП?</em> Штраф. <ts t="4:30:18"/> Участник предлагает хранить для каждой дорожки число людей, которые должны через неё пройти. Лектор показывает трудность: на дорожку что-то приходит, а потом от неё что-то уходит, поэтому «сколько должно перейти» не определяется независимо для каждой дорожки; удобнее считать по границам, как выше.</div>
+
+<h2 data-tc="4:28:13">Итог занятия</h2>
+<p> Общее наблюдение по задачам: во всех трёх случаях исходная идея — «ответ на префиксе» — упиралась в нехватку информации в состоянии, и решение появлялось после добавления нужных параметров (последние поставки, остаток суммы, последняя дорожка и сумма). Именно так устроены и задачи лекции: НВП и строки без «11».</p>
+
+<p><strong>Сводка задач занятия.</strong></p>
+<table>
+<thead><tr><th>Задача</th><th>Состояние</th><th>Переход</th><th>Сложность</th></tr></thead>
+<tbody>
+<tr><td>Строки без «11»</td><td>$dp_{i,c}$, $c$ — последний символ</td><td>$dp_{i,1} = dp_{i-1,0}$; $dp_{i,0} = dp_{i-1,0} + dp_{i-1,1}$</td><td>$O(N)$</td></tr>
+<tr><td>НВП</td><td>$dp_i$ — конец ровно в $i$ / $d_\ell$ — наименьший конец длины $\ell$</td><td>максимум по $j &lt; i$ с $a_j &lt; a_i$ / замена первого $d \ge a$ (<code>lower_bound</code>)</td><td>$O(n^2)$ / $O(n \log n)$</td></tr>
+<tr><td>НОП</td><td>$dp_{i,j}$ — НОП префиксов</td><td>$dp_{i-1,j-1}+1$ при равенстве, иначе $\max$ из двух соседей</td><td>$O(nm)$</td></tr>
+<tr><td>Две шахты</td><td>$dp_{i,h}$, $h$ — последние две поставки каждой шахты ($4^4$ значений)</td><td>отдать поставку первой или второй шахте</td><td>$O(256 \cdot N)$</td></tr>
+<tr><td>Неубывающие массивы с суммой</td><td>$ways[s]$ при допустимых «монетах» $\ge K$</td><td>$ways[s] \mathrel{+}= ways[s - x]$</td><td>$O(N^2)$</td></tr>
+<tr><td>Пловцы</td><td>$dp_{i,s,l}$</td><td>$l' \in \{l-1, l, l+1\}$, штраф $|P_i - s'|$</td><td>$O(N \cdot S \cdot \sqrt S)$</td></tr>
+</tbody>
+</table>
