@@ -95,7 +95,8 @@ def ts_link(video, tc):
     t = tc_seconds(tc)
     h, m, s = t // 3600, t % 3600 // 60, t % 60
     q = (f"{h}h" if h else "") + (f"{m}m" if m or h else "") + f"{s}s"
-    return (f'<a class="ts" href="https://vkvideo.ru/{video}?t={q}" target="_blank" rel="noopener" '
+    href = f"{video}?t={t}s" if str(video).startswith("http") else f"https://vkvideo.ru/{video}?t={q}"
+    return (f'<a class="ts" href="{href}" target="_blank" rel="noopener" '
             f'title="Смотреть лекцию с этого момента">{tc_label(tc)}</a>')
 
 
@@ -128,7 +129,7 @@ def process_headings(body: str, video: str):
 
 
 def page(meta, body, prev, nxt):
-    video = meta["video"]
+    video = meta["video"] or meta.get("youtube")
     body = wrap_code(body)
     body, items = process_headings(body, video)
     toc = "".join(

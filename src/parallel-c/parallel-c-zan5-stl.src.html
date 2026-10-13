@@ -1,0 +1,357 @@
+<!--meta {"title": "STL: ввод-вывод, итераторы, компараторы, контейнеры", "parallel": "parallel-c", "pname": "Параллель C", "porder": 5, "n": 5, "video": null, "subtitle": "Быстрый ввод-вывод и файлы, итераторы и полуинтервалы, sort/unique/lower_bound, лямбды и компараторы, переполнение типов, set/multiset/map и отладка _GLIBCXX_DEBUG.", "chips": ["Лекция", "≈ 1 ч 50 мин", "Язык кода: C++"], "youtube": "https://youtu.be/htNZw0_IcPI"}-->
+<h2 data-tc="0:00:13">Ввод-вывод</h2>
+<h3 data-tc="0:00:13">1.1. Минимальная программа и код возврата</h3>
+<p><ts t="0:00:13"/> Начнём с самой простой программы на C++ — она выводит <code>Hello World</code>. Среда разработки после запуска печатает служебную строку вроде «process finished with exit code 0»: это <strong>код возврата</strong> программы. Код $0$ означает «ошибок нет»; его возвращает оператор <code>return 0;</code> в конце <code>main</code>. Если написать <code>return 1;</code>, код возврата будет ненулевым, и тестирующая система сообщит <strong>«ошибка выполнения»</strong> (Runtime Error), даже если весь вывод правильный. Поэтому в <code>main</code> всегда пишут <code>return 0;</code>.</p>
+<p><ts t="0:07:21"/> <strong>Можно ли не писать <code>return 0</code>?</strong> В функции <code>main</code> — можно: если оператора <code>return</code> нет, считается, что вернулся ноль. Это единственное исключение: в любой другой функции, которая должна что-то вернуть, <code>return</code> обязателен.</p>
+
+<h3 data-tc="0:01:27">1.2. <code>'\n'</code> или <code>endl</code>: буфер и flush</h3>
+<p><ts t="0:01:27"/> Перенести строку можно двумя способами: добавить в вывод символ <code>'\n'</code> или написать <code>endl</code>. Оба раза строка переносится, но разница между ними существенная.</p>
+<ul>
+<li><code>'\n'</code> — это один невидимый символ «перенос строки». Он только переносит строку.</li>
+<li><code>endl</code> переносит строку <em>и</em> ещё принудительно говорит программе: «выведи на экран всё, что накоплено до этого». Это называется <strong>flush</strong> (сброс буфера).</li>
+</ul>
+<p><ts t="0:02:30"/> Дело в том, что C++ печатает не мгновенно: вывод сначала попадает в <strong>буфер</strong> — область памяти, которая нужна для ускорения ввода-вывода, — и только потом уходит из программы на экран или в файл. Буфер сбрасывается, если явно попросить (<code>endl</code>, <code>flush</code>) и когда программа завершается.</p>
+<figure class="viz"><svg viewBox="0 0 760 300" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="300" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Куда попадает вывод: буфер и flush</text><text x="40" y="56" text-anchor="start" font-size="14" font-weight="700" fill="#58c4dd">'\n' — только перенос строки</text><rect x="40" y="70" width="150" height="60" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="115.0" y="105.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">программа</text><rect x="300" y="70" width="170" height="60" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="385.0" y="98.0" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">буфер</text><text x="385.0" y="123" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">копится порциями</text><rect x="580" y="70" width="140" height="60" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="650.0" y="105.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">экран / файл</text><line x1="192" y1="100" x2="298" y2="100" stroke="#9aa4b2" stroke-width="2" marker-end="url(#ar)"/><text x="245" y="90" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">cout &lt;&lt;</text><line x1="472" y1="100" x2="578" y2="100" stroke="#9aa4b2" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar)"/><text x="525" y="90" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">потом</text><text x="380" y="154" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">быстро, но вывод может «застрять» в буфере</text><text x="40" y="174" text-anchor="start" font-size="14" font-weight="700" fill="#ffff00">endl = '\n' + flush</text><rect x="40" y="188" width="150" height="60" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="115.0" y="223.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">программа</text><rect x="300" y="188" width="170" height="60" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="385.0" y="216.0" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">буфер</text><text x="385.0" y="241" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">копится порциями</text><rect x="580" y="188" width="140" height="60" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="650.0" y="223.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">экран / файл</text><line x1="192" y1="218" x2="298" y2="218" stroke="#9aa4b2" stroke-width="2" marker-end="url(#ar)"/><text x="245" y="208" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2" font-family="ui-monospace,Menlo,monospace">cout &lt;&lt;</text><line x1="472" y1="218" x2="578" y2="218" stroke="#ffff00" stroke-width="3" marker-end="url(#ar)"/><text x="525" y="208" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">сразу</text><text x="380" y="272" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">гарантированно напечатано, но заметно медленнее</text></svg><figcaption>Буфер ускоряет вывод. Без явного сброса программа не обязана печатать всё немедленно — для интерактивных задач это критично.</figcaption></figure>
+<p><ts t="0:03:12"/> Есть и третий способ: вывести <code>'\n'</code>, а затем отдельно <code>flush</code>: <code>cout &lt;&lt; "text" &lt;&lt; '\n' &lt;&lt; flush;</code>. Можно сбросить буфер и без переноса строки — <code>cout &lt;&lt; "text" &lt;&lt; flush;</code>, но так пишут редко. Практически используют один из двух вариантов: <code>'\n'</code> или <code>endl</code>.</p>
+<table>
+<tr><th></th><th><code>'\n'</code></th><th><code>endl</code></th></tr>
+<tr><td>Переносит строку</td><td>да</td><td>да</td></tr>
+<tr><td>Сбрасывает буфер</td><td>нет</td><td>да, сразу</td></tr>
+<tr><td>Скорость при большом выводе</td><td>быстро</td><td>заметно медленнее</td></tr>
+<tr><td>Где применять</td><td>обычные (неинтерактивные) задачи</td><td>интерактивные задачи</td></tr>
+</table>
+<p><ts t="0:03:49"/> <strong>Интерактивные задачи.</strong> Это отдельный вид задач: ввод не зафиксирован заранее, а зависит от ваших действий. Классический пример — «угадай число»: специальная программа-<em>интерактор</em> загадала число, а вы задаёте вопросы и получаете ответы, которые подстраиваются под ваши запросы. Частая ошибка — вывести запрос с <code>'\n'</code>: он может остаться в буфере и не дойти до интерактора, тот будет ждать, программа зависнет и получит вердикт «превышено ограничение по времени». В интерактивных задачах пишите <code>endl</code>.</p>
+<p><ts t="0:04:53"/> <strong>Минус <code>endl</code></strong> — он работает сильно медленнее, особенно если строк много. Поэтому правило такое: <strong>задача неинтерактивная — используйте <code>'\n'</code>; интерактивная — <code>endl</code></strong>. При большом выводе (миллион строк) <code>endl</code> легко даёт превышение времени, тогда как с <code>'\n'</code> всё работает хорошо.</p>
+
+<h3 data-tc="0:07:54">1.3. Как ускорить ввод и вывод</h3>
+<p><ts t="0:07:54"/> Мы уже знаем один способ ускорить вывод — писать <code>'\n'</code> вместо <code>endl</code>. Есть ещё «две магические строчки», которые ускоряют и ввод, и вывод. Их вставляют в начало <code>main</code>:</p>
+<pre class="cpp">int main() {
+    ios::sync_with_stdio(false);   // отвязываем потоки C++ от потоков языка C
+    cin.tie(nullptr);              // не сбрасывать cout перед каждым чтением из cin
+    // ... остальная программа
+}</pre>
+<p><ts t="0:08:30"/> На занятии не обсуждали, как они устроены; можно считать, что они просто ускоряют ввод-вывод. Если по условию на вход приходится, например, $200\,000$ чисел и столько же надо вывести, это уже большой ввод-вывод, и эти две строчки стоит добавить. При небольшом вводе (одно число, пять чисел) они ничего не меняют, но и не вредят. Если же ввод большой, программа с ними работает быстрее.</p>
+<p><ts t="0:09:32"/> <strong>Почему по умолчанию не сделано быстро?</strong> Люди пишут на C++ в разных сценариях и ждут от ввода-вывода разного. В обычном программировании мы хотим, чтобы всё выведенное <em>до</em> чтения числа гарантированно появилось на экране, пока программа ждёт ввод. Поэтому по умолчанию сделано так, как удобно для обычного программирования. В олимпиадном программировании нас не интересует, как связаны поток ввода и поток вывода, поэтому мы включаем быстрый режим сами.</p>
+<div class="fix"><b>Важное дополнение: две оговорки к быстрому вводу-выводу.</b> (1) После <code>sync_with_stdio(false)</code> нельзя смешивать <code>cin/cout</code> с <code>scanf/printf</code> в одной программе — порядок данных может нарушиться. (2) В интерактивных задачах с <code>cin.tie(nullptr)</code> вывод перед чтением уже не сбрасывается автоматически, поэтому сброс нужно делать явно: <code>endl</code> или <code>cout.flush()</code>. Эти оговорки в записи не звучали.</div>
+
+<h3 data-tc="0:12:06">1.4. Ввод и вывод через файлы</h3>
+<p><ts t="0:12:06"/> Иногда в задаче нужно читать числа не из консоли, а из файла (и писать результат тоже в файл). Для этого подключают библиотеку <code>fstream</code>. Создадим рядом с программой два файла — <code>input.txt</code> (запишем в него шесть чисел) и <code>output.txt</code> — и прочитаем числа, умножив каждое на два.</p>
+<pre class="cpp">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    ifstream fin("input.txt");     // input file stream: читаем из файла
+    ofstream fout("output.txt");   // output file stream: пишем в файл
+
+    vector&lt;int&gt; a(6);
+    for (int i = 0; i &lt; 6; i++) fin &gt;&gt; a[i];       // читаем так же, как из cin
+    for (int i = 0; i &lt; 6; i++) fout &lt;&lt; a[i] * 2 &lt;&lt; ' ';
+    return 0;
+}</pre>
+<p><ts t="0:14:25"/> После запуска на экране ничего не появилось — но в файле <code>output.txt</code> лежат все числа, умноженные на два. Чтение из файла работает так же, как из <code>cin</code>, только вместо <code>cin</code> стоит имя потока (<code>fin</code>), а вывод — вместо <code>cout</code> имя потока (<code>fout</code>).</p>
+<p><ts t="0:14:39"/> Имена <code>fin</code> и <code>fout</code> — просто имена переменных, их можно назвать как угодно (хоть <code>abc</code>), главное — одинаково использовать при объявлении и при чтении.</p>
+<p><ts t="0:15:13"/> <strong>Про <code>std</code>.</strong> Всё это относится к пространству имён <code>std</code>. Если убрать строку <code>using namespace std;</code>, всё подсветится красным, и придётся везде писать <code>std::</code> — <code>std::ifstream</code>, <code>std::vector</code>. На олимпиадах многие (и преподаватель) пишут <code>using namespace std;</code>, чтобы не мучиться.</p>
+<p><ts t="0:16:01"/> <strong>Другие способы.</strong> Читать из файла можно и иначе (например, функциями из C), но <code>ifstream/ofstream</code> — самый простой и самый быстрый по сравнению с остальными, особых минусов у них нет. Если нужен другой метод, достаточно загуглить «как считать число из файла в C++».</p>
+<div class="fix"><b>Важное дополнение: файлы ищутся рядом с программой.</b> Имя <code>"input.txt"</code> без пути означает «файл с таким именем в рабочей папке программы» (в среде разработки это папка запуска проекта). Если файл не найден, чтение просто ничего не прочитает, и поток окажется в состоянии ошибки. Ещё один распространённый способ перенаправить стандартный ввод-вывод на файлы — функция <code>freopen</code>; в записи она не разбиралась.</div>
+
+<h3 data-tc="0:16:45">1.5. Если неизвестно, сколько чисел</h3>
+<p><ts t="0:16:45"/> Бывают задачи, где количество чисел не дано заранее. В Python такое решают за одну строку: <code>input().split()</code>. В C++ вектор делают без фиксированного размера и читают в цикле:</p>
+<pre class="cpp">vector&lt;int&gt; a;
+int x;
+while (fin &gt;&gt; x) {      // пока удалось считать очередное число
+    a.push_back(x);
+}</pre>
+<p><ts t="0:17:46"/> Выражение <code>fin &gt;&gt; x</code> само по себе имеет значение: оно «истинно», если чтение прошло успешно, и «ложно», если числа кончились. Тело цикла выполняется, пока удаётся что-то считать. Мы дописали в файл ещё два числа, запустили — вывелись все восемь, то есть программа справилась с заранее неизвестным количеством.</p>
+<p><ts t="0:18:55"/> То же самое работает и для обычного ввода (<code>while (cin &gt;&gt; x)</code>). В консоли это выглядит так, будто программа ждёт новых чисел бесконечно: конец ввода нужно отправить специальной комбинацией клавиш (у преподавателя в среде сработало сочетание Command+D). Для файлов понятно, где конец ввода, а в тестирующей системе, где вход тоже поступает из файла, цикл заканчивается сам. Трудности — именно особенность демонстрации в консоли.</p>
+<div class="fix"><b>Важное дополнение: как отправить «конец ввода» в консоли.</b> На Linux и macOS обычно <code>Ctrl+D</code>, в консоли Windows — <code>Ctrl+Z</code>, затем <code>Enter</code>. В среде разработки поведение может отличаться (как и на занятии).</div>
+
+<h3 data-tc="0:20:54">1.6. Чтение строки с пробелами</h3>
+<p><ts t="0:20:54"/> Как считать строку с пробелами и вывести целиком? Попробуем «очевидный» код:</p>
+<pre class="cpp">string s;
+cin &gt;&gt; s;
+cout &lt;&lt; "S = " &lt;&lt; s;</pre>
+<p><ts t="0:21:31"/> Введём <code>Hello World</code>. Что выведет программа? Мнения разделились, но правильный ответ — <code>S = Hello</code>. Причина: <code>cin &gt;&gt;</code> считывает слово <strong>до первого пробельного символа</strong>. Пробел остановил чтение, и вторая половина не считалась.</p>
+<p><ts t="0:22:29"/> Чтобы считать строку целиком до переноса, используют <code>getline</code>:</p>
+<pre class="cpp">string s;
+getline(cin, s);               // читает всю строку до '\n', вместе с пробелами
+cout &lt;&lt; "S = " &lt;&lt; s;           // S = Hello World</pre>
+<p><ts t="0:23:03"/> Такие задачи встречаются редко, но встречаются. Из вопросов в чате: <code>getline</code> можно поставить и в условие <code>while</code> (преподаватель такого никогда не встречал, но проверил — работает). <strong>Аналога <code>split</code> из Python в C++ нет</strong>: если нужно разбить строку на части, придётся написать это самостоятельно.</p>
+<div class="fix"><b>Важное дополнение: <code>getline</code> после <code>cin &gt;&gt;</code>.</b> Если сначала прочитать число через <code>cin &gt;&gt; n</code>, а затем вызвать <code>getline</code>, он сразу вернёт <em>пустую</em> строку: символ перевода строки после числа остался во вводе. Нужно один раз «съесть» остаток строки, например <code>cin.ignore();</code> или лишний <code>getline</code>. Разбить строку на слова можно через <code>stringstream</code>: <code>stringstream ss(s); string w; while (ss &gt;&gt; w) { ... }</code>.</div>
+
+<h3 data-tc="0:24:45">1.7. Точность вывода вещественных чисел</h3>
+<p><ts t="0:24:45"/> Последняя тема про вывод — точность. Пусть <code>double x = 3.1415926535;</code> и мы пишем просто <code>cout &lt;&lt; x;</code>. Программа выведет <code>3.14159</code>: значащих цифр мало (по умолчанию шесть; на записи говорили «пять знаков после точки»). Если условие требует более точного вывода, получится неверный ответ.</p>
+<p><ts t="0:25:35"/> Чтобы выводилось больше знаков, перед выводом пишут:</p>
+<pre class="cpp">cout.precision(16);        // сколько знаков выводить
+cout &lt;&lt; fixed;             // фиксированная запись: precision — число цифр после точки
+cout &lt;&lt; x &lt;&lt; '\n';         // 3.1415926535000001</pre>
+<p><ts t="0:26:04"/> Заметьте хвостик «…001» в конце. Он появляется из-за того, как хранятся числа с плавающей точкой (тип <code>double</code>): они хранятся не с абсолютной точностью, а с некоторой погрешностью, поэтому мы видим не точно то число, которое записали, а число с маленьким «хвостиком». Так устроено во всех языках программирования. Поэтому в задачах, где нужен дробный ответ, его просят не с абсолютной точностью, а с небольшой погрешностью (порядка $10^{-6}$; точное требование всегда указано в условии).</p>
+<p><ts t="0:27:02"/> То же можно записать короче, в одну строчку: <code>cout &lt;&lt; fixed &lt;&lt; setprecision(16);</code>. Результат тот же — это просто разный способ оформления.</p>
+<div class="note"><b>Вопросы из чата.</b> <ts t="0:29:08"/> <em>Действует ли <code>precision</code> и <code>fixed</code> только на следующий вывод?</em> Нет: они меняют сам поток <code>cout</code>, поэтому действуют на <strong>все последующие</strong> операции вывода. <ts t="0:27:14"/> <em>Округляет ли <code>double</code> или обрубает?</em> Его лучше понимать как «делает что-то непонятное»: величина погрешности зависит от размера хранимого числа (у чисел порядка миллиона она одна, у чисел около нуля другая). <ts t="0:29:52"/> <em>Как отменить?</em> Преподаватель не помнил способа и заметил, что обычно отменять не нужно.</div>
+<div class="fix"><b>Важное дополнение: <code>setprecision</code> и отмена.</b> Манипулятор <code>setprecision</code> живёт в библиотеке <code>&lt;iomanip&gt;</code>; <code>cout.precision(16)</code> дополнительных библиотек не требует. Отменить режим <code>fixed</code> можно через <code>cout &lt;&lt; defaultfloat;</code>, но число знаков (<code>precision</code>) при этом сохраняется — его нужно вернуть отдельно, например <code>cout.precision(6)</code>.</div>
+<p><ts t="0:27:59"/> Эту проблему с точностью вы, скорее всего, уже встречали в контесте на бинарный поиск.</p>
+
+<h2 data-tc="0:30:42">Итераторы</h2>
+<h3 data-tc="0:30:42">2.1. Что такое итератор</h3>
+<p><ts t="0:30:47"/> Допустим, у нас есть <code>set</code> чисел, и мы вставили в него несколько значений:</p>
+<pre class="cpp">set&lt;int&gt; x;
+x.insert(3); x.insert(1); x.insert(2);</pre>
+<p><ts t="0:31:17"/> Хотим вывести минимальное число. Мы знаем, что в <code>set</code> элементы лежат отсортированными по возрастанию (цикл по <code>set</code> печатает <code>1 2 3</code>). Но как получить именно <em>первый</em> элемент, не проходя всё множество? Чтобы обращаться к элементам контейнера, проходиться по ним и искать их, придумали <strong>итераторы</strong>.</p>
+<pre class="cpp">auto it = x.begin();       // итератор на первый элемент
+cout &lt;&lt; *it;               // 1 — разыменование: значение, на которое он указывает</pre>
+<p><ts t="0:32:01"/> Слово <code>auto</code> означает, что компилятор сам определит тип переменной — мы не указываем его явно. <code>it</code> — просто имя переменной. Функция <code>x.begin()</code> возвращает итератор на первый элемент множества, а <code>x.end()</code> — итератор, о котором ниже.</p>
+<p><ts t="0:32:51"/> Итератор — это <strong>не само значение</strong>, а специальный объект. Поэтому <code>cout &lt;&lt; it</code> не сработает. Чтобы получить значение, написанное «в ячейке», нужна звёздочка: <code>*it</code>. Это называется <strong>разыменование итератора</strong>.</p>
+
+<h3 data-tc="0:33:25">2.2. <code>begin</code>, <code>end</code> и полуинтервалы</h3>
+<p><ts t="0:33:25"/> Как вывести максимум множества? Хочется взять «последний» итератор: <code>*x.end()</code>. Запускаем — выводится <code>0</code>, а не <code>3</code>. Причина: <code>x.end()</code> указывает <strong>не на последний элемент, а на следующую позицию за последним</strong>. В C++ итераторы удобно представлять себе работающими на <strong>полуинтервалах</strong> $[\text{begin},\,\text{end})$: <code>begin()</code> указывает на «1», <code>begin()+1</code> — на «2», <code>begin()+2</code> — на «3», а <code>begin()+3</code> — на «позицию после последнего»; туда же указывает <code>end()</code>.</p>
+<figure class="viz"><svg viewBox="0 0 760 270" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="270" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Итераторы set: [begin, end) — полуинтервал</text><rect x="150" y="80" width="100" height="56" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="200.0" y="115.0" text-anchor="middle" font-size="20" font-weight="400" fill="#dfe7f1">1</text><rect x="270" y="80" width="100" height="56" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="320.0" y="115.0" text-anchor="middle" font-size="20" font-weight="400" fill="#dfe7f1">2</text><rect x="390" y="80" width="100" height="56" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="440.0" y="115.0" text-anchor="middle" font-size="20" font-weight="400" fill="#dfe7f1">3</text><rect x="510" y="80" width="100" height="56" rx="6" fill="none" stroke="#9aa4b2" stroke-width="2" stroke-dasharray="6 5"/><text x="560" y="114" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">пусто</text><line x1="150" y1="62" x2="510" y2="62" stroke="#ffff00" stroke-width="2"/><text x="150" y="56" text-anchor="middle" font-size="18" font-weight="400" fill="#ffff00">[</text><text x="510" y="56" text-anchor="middle" font-size="18" font-weight="400" fill="#ffff00">)</text><text x="330" y="52" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">элементы множества</text><line x1="200" y1="144" x2="200" y2="168" stroke="#83c167" stroke-width="3" marker-end="url(#ar)"/><text x="200" y="190" text-anchor="middle" font-size="14" font-weight="400" fill="#83c167" font-family="ui-monospace,Menlo,monospace">begin()</text><text x="200" y="208" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">минимум</text><line x1="440" y1="144" x2="440" y2="168" stroke="#ff8c1a" stroke-width="3" marker-end="url(#ar)"/><text x="440" y="190" text-anchor="middle" font-size="14" font-weight="400" fill="#ff8c1a" font-family="ui-monospace,Menlo,monospace">prev(end())</text><text x="440" y="208" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">= end() − 1, максимум</text><line x1="560" y1="144" x2="560" y2="168" stroke="#fc6255" stroke-width="3" marker-end="url(#ar)"/><text x="560" y="190" text-anchor="middle" font-size="14" font-weight="400" fill="#fc6255" font-family="ui-monospace,Menlo,monospace">end()</text><text x="560" y="208" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">за последним</text><text x="380" y="250" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">*end() разыменовывать нельзя — там нет элемента; *prev(end()) даёт 3</text></svg><figcaption>end() указывает не на последний элемент, а на «позицию после последнего». Чтобы получить максимум, нужно сделать шаг назад.</figcaption></figure>
+<p><ts t="0:34:38"/> На предыдущий элемент указывает <code>end() - 1</code>, на предыдущий от него — <code>end() - 2</code> и так далее. В <code>set</code>, однако, нельзя написать <code>it + 2</code> или <code>end() - 1</code> (почему — чуть ниже), зато можно сделать шаг назад операцией <code>--</code>:</p>
+<pre class="cpp">auto it = x.end();
+--it;                      // теперь it указывает на последний элемент
+cout &lt;&lt; *it;               // 3</pre>
+<p><ts t="0:35:25"/> Итак, итераторы — специальные объекты, позволяющие итерироваться по элементам множества и обращаться к их значениям.</p>
+<div class="fix"><b>Важное дополнение: короткие записи.</b> Максимум <code>set</code> можно получить и так: <code>*x.rbegin()</code> или <code>*prev(x.end())</code>. Если множество пусто, <code>begin() == end()</code>, и разыменовывать нечего — перед <code>*it</code> проверяйте <code>it != x.end()</code>.</div>
+
+<h3 data-tc="0:35:49">2.3. Сдвиг итератора и проход по контейнеру</h3>
+<p><ts t="0:35:49"/> Итератор можно <strong>увеличивать</strong>: <code>++it</code> сдвигает его на следующий элемент. Если <code>it</code> указывал на <code>begin()</code> (то есть на «1»), после <code>++it</code> он указывает на «2». Один такой шаг в <code>set</code> работает за $O(\log n)$, где $n$ — размер множества; обращение к первому элементу и к последнему — за $O(1)$.</p>
+<p><ts t="0:36:48"/> Теперь можно написать цикл по всем элементам:</p>
+<pre class="cpp">for (auto it = x.begin(); it != x.end(); ++it)
+    cout &lt;&lt; *it &lt;&lt; ' ';    // 1 2 3</pre>
+<p><ts t="0:37:12"/> Такой проход занимает $O(n)$, а не $O(n\log n)$, хотя каждый шаг по отдельности оценивается как $\log$: если пройти <em>по всем</em> элементам, суммарно получается $O(n)$.</p>
+<div class="own"><b>Развёрнутое объяснение.</b> Элементы <code>set</code> хранятся в сбалансированном двоичном дереве поиска. Один шаг <code>++it</code> в худшем случае поднимается или спускается по дереву на глубину $O(\log n)$, но при полном обходе каждое ребро дерева проходится не более двух раз. Поэтому сумма по всем шагам равна $O(n)$, и в среднем шаг — это $O(1)$.</div>
+
+<h3 data-tc="0:37:51">2.4. Поиск и удаление по итератору</h3>
+<p><ts t="0:37:51"/> Раньше, на бинарном поиске, мы видели функции <code>lower_bound</code> и <code>upper_bound</code>. У <code>set</code> есть их аналоги — методы <code>x.lower_bound(2)</code> и <code>x.upper_bound(2)</code>. Они возвращают <strong>не индекс и не значение, а итератор</strong>:</p>
+<pre class="cpp">auto it = x.lower_bound(2);    // итератор на первый элемент, не меньший 2
+x.erase(it);                   // удаляет элемент, на который указывает итератор</pre>
+<div class="fix"><b>Важное дополнение: метод, а не функция.</b> Для <code>set</code> и <code>map</code> нужно вызывать <em>метод</em> <code>x.lower_bound(v)</code>. Общая функция <code>lower_bound(x.begin(), x.end(), v)</code> на них работает за линейное время, потому что итераторы <code>set</code> нельзя сдвинуть сразу на много позиций (см. следующий пункт).</div>
+
+<h3 data-tc="0:39:07">2.5. Итераторы разных контейнеров</h3>
+<p><ts t="0:39:14"/> Итераторы есть не только у <code>set</code>, но и у любых контейнеров: <code>map</code>, <code>vector</code>, <code>unordered_set</code> и других. У вектора тоже есть <code>v.begin()</code> и <code>v.end()</code>; если вектор пуст, они равны.</p>
+<p><ts t="0:40:03"/> Но есть важное различие. У итераторов вектора можно выполнять <strong>арифметику</strong>: прибавлять и вычитать числа, вычитать один итератор из другого. Всё это работает за $O(1)$:</p>
+<pre class="cpp">auto it = v.begin();
+it = it + 3;                       // сдвиг сразу на 3 вперёд
+int len = v.end() - v.begin();     // разность итераторов — число: размер вектора</pre>
+<p><ts t="0:40:42"/> В <code>set</code> и <code>map</code> так нельзя: там итератор можно сдвигать лишь на один шаг операциями <code>++</code> и <code>--</code>. С итераторами вектора вы уже сталкивались на бинарном поиске:</p>
+<pre class="cpp">int idx = lower_bound(v.begin(), v.end(), 0) - v.begin();   // индекс первого элемента ≥ 0</pre>
+<p><ts t="0:41:07"/> Функция возвращает итератор, и чтобы понять индекс в векторе, мы вычитали из него <code>v.begin()</code>. Это просто разность двух итераторов — расстояние между элементами вектора.</p>
+<p><ts t="0:41:42"/> Чтобы сдвинуть итератор <code>set</code> на несколько позиций, нужно либо писать цикл, либо вызвать функцию <code>advance(it, k)</code> — но она всё равно делает <code>++</code> ровно $k$ раз. Если написать так для переменной $k$, это будет работать долго (преподаватель называл оценку $k\log n$): при большом $k$ и многих сдвигах — это медленно. В векторе же можно просто написать <code>v.begin() + 100</code>, и это $O(1)$, потому что у вектора есть индексы.</p>
+<div class="fix"><b>Важное дополнение: оценка для <code>advance</code> в <code>set</code>.</b> Формально $k$ шагов <code>++</code> стоят $O(k\log n)$ в худшем случае; при подряд идущих шагах реальная стоимость ближе к $O(k)$. В любом случае стоимость растёт с $k$, а не постоянна, как у вектора.</div>
+<div class="note"><b>Вопросы из чата.</b> <ts t="0:43:56"/> <em>Зачем нужны итераторы в векторах?</em> Их принимают стандартные функции — <code>lower_bound</code>, <code>sort</code> и другие: они работают не с самим вектором, а с итераторами. <ts t="0:44:12"/> <em>Что делает <code>advance</code>?</em> Сдвигает переданный итератор на указанное число шагов (ровно столько раз делает <code>++</code>). <ts t="0:44:24"/> <em>Что такое <code>set</code>?</em> Контейнер, хранящий элементы в отсортированном порядке по возрастанию, причём каждый элемент в одном экземпляре: если вставить число несколько раз, оно будет лежать только один раз.</div>
+
+<h2 data-tc="0:45:00">Сортировка, компараторы и стандартные алгоритмы</h2>
+<h3 data-tc="0:45:00">3.1. <code>sort</code> и полуинтервал</h3>
+<p><ts t="0:45:09"/> Заведём вектор и положим в него числа от 1 до 5 в некотором порядке: <code>5 2 1 4 3</code>. Чтобы отсортировать, вспоминаем:</p>
+<pre class="cpp">sort(a.begin(), a.end());          // 1 2 3 4 5</pre>
+<p><ts t="0:46:12"/> Видно, что <code>sort</code> принимает именно <strong>итераторы</strong>. Вместо <code>a.end()</code> можно писать <code>a.begin() + a.size()</code> — это буквально тот же итератор.</p>
+<p><ts t="0:46:35"/> Хотим отсортировать только первые три элемента, остальные оставив на местах:</p>
+<pre class="cpp">sort(a.begin(), a.begin() + 3);    // 1 2 5 4 3 — отсортированы только первые три
+sort(a.begin(), a.begin() + 4);    // сортируется ровно полуинтервал [begin, begin+4)</pre>
+<p><ts t="0:47:10"/> То есть <code>sort</code> сортирует тот <strong>полуинтервал</strong>, который ему передали; остальные элементы он не трогает.</p>
+<p><ts t="0:47:21"/> <strong>Итераторы из разных контейнеров.</strong> Передавать в <code>sort</code> <code>begin()</code> одного вектора и конец другого нельзя: в лучшем случае программа упадёт, в худшем — сделает что попало. Любые действия с итераторами (сравнение, вычитание, сложение, передача в функцию) допустимы только если они из <strong>одного контейнера</strong>. На записи такой вызов завершился ошибкой выполнения (код выхода 138).</p>
+
+<h3 data-tc="0:49:09">3.2. Обратные итераторы</h3>
+<p><ts t="0:49:09"/> Как отсортировать массив в порядке <em>убывания</em>? Для этого есть <strong>обратные итераторы</strong> <code>rbegin()</code> и <code>rend()</code>: они указывают на элементы в обратном порядке. Если отсортировать «в обратном порядке», получим массив по убыванию:</p>
+<pre class="cpp">sort(a.rbegin(), a.rend());        // 5 4 3 2 1</pre>
+<figure class="viz"><svg viewBox="0 0 760 300" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="300" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Прямые и обратные итераторы одного массива</text><rect x="130" y="112" width="92" height="52" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="176.0" y="143.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">a[0]</text><rect x="230" y="112" width="92" height="52" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="276.0" y="143.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">a[1]</text><rect x="330" y="112" width="92" height="52" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="376.0" y="143.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">a[2]</text><rect x="430" y="112" width="92" height="52" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="476.0" y="143.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">a[3]</text><rect x="530" y="112" width="92" height="52" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="576.0" y="143.6" text-anchor="middle" font-size="16" font-weight="400" fill="#dfe7f1">a[4]</text><line x1="176" y1="98" x2="176" y2="110" stroke="#83c167" stroke-width="3" marker-end="url(#ar)"/><text x="176" y="88" text-anchor="middle" font-size="14" font-weight="400" fill="#83c167" font-family="ui-monospace,Menlo,monospace">begin()</text><line x1="626" y1="104" x2="626" y2="172" stroke="#fc6255" stroke-width="3" stroke-dasharray="5 4"/><text x="626" y="88" text-anchor="middle" font-size="14" font-weight="400" fill="#fc6255" font-family="ui-monospace,Menlo,monospace">end()</text><line x1="126" y1="104" x2="126" y2="172" stroke="#c78bff" stroke-width="3" stroke-dasharray="5 4"/><text x="126" y="194" text-anchor="middle" font-size="14" font-weight="400" fill="#c78bff" font-family="ui-monospace,Menlo,monospace">rend()</text><line x1="576" y1="182" x2="576" y2="170" stroke="#ff8c1a" stroke-width="3" marker-end="url(#ar)"/><text x="576" y="198" text-anchor="middle" font-size="14" font-weight="400" fill="#ff8c1a" font-family="ui-monospace,Menlo,monospace">rbegin()</text><line x1="570" y1="242" x2="144" y2="242" stroke="#ff8c1a" stroke-width="2" marker-end="url(#ar)"/><text x="380" y="264" text-anchor="middle" font-size="12" font-weight="400" fill="#ff8c1a">rbegin → rend: проход справа налево</text></svg><figcaption>sort(a.rbegin(), a.rend()) расставляет элементы так, что при взгляде справа налево они идут по возрастанию — то есть по убыванию слева направо.</figcaption></figure>
+<p><ts t="0:49:52"/> <strong>Как соотносятся <code>rbegin</code>, <code>rend</code> и <code>begin</code>, <code>end</code>.</strong> <code>rbegin()</code> указывает на тот же элемент, что <code>end() - 1</code> (последний), а <code>rend()</code> — на позицию перед первым элементом. Сложение с обратными итераторами работает так же, как с обычными: например, у массива из пяти элементов <code>a.rbegin() + 5 == a.rend()</code>, но «двигаются» они справа налево.</p>
+<p><ts t="0:50:16"/> Напрямую сравнивать прямые итераторы с обратными не нужно. Если вы работаете с <code>rbegin/rend</code>, воспринимайте их как обычные итераторы, просто идущие в обратном порядке.</p>
+
+<h3 data-tc="0:51:09">3.3. Свой компаратор</h3>
+<p><ts t="0:51:09"/> Представим задачу: отсортировать числа так, чтобы сначала шли <strong>все чётные по возрастанию</strong>, а потом <strong>все нечётные по возрастанию</strong>. Для этого пишут свой <strong>компаратор</strong> — функцию, которая отвечает на вопрос: «правда ли, что число $a$ должно стоять <em>раньше</em>, чем число $b$?» Её передают в <code>sort</code> третьим аргументом — именем, <strong>без скобок</strong> (<code>cmp</code>, а не <code>cmp()</code>).</p>
+<pre class="cpp">bool cmp(int a, int b) {
+    if (a % 2 != b % 2)            // разной чётности:
+        return a % 2 == 0;         //   раньше стоит чётное
+    return a &lt; b;                  // одной чётности: по возрастанию
+}
+
+sort(a.begin(), a.end(), cmp);     // из 5 2 1 4 3 получится 2 4 1 3 5</pre>
+<p><ts t="0:53:09"/> Если в векторе не числа, а, например, пары, можно написать компаратор для них. Это даже более мощная вещь, чем параметр <code>key</code> в Python: можно сравнивать объекты любым способом.</p>
+<p><ts t="0:53:45"/> <strong>Строгость сравнения.</strong> В компараторе нужно проверять именно <strong>строгое</strong> «меньше» (<code>a &lt; b</code>), а не «меньше или равно». Если при равенстве возвращать <code>true</code>, то для пары равных элементов окажутся истинными одновременно <code>cmp(a, b)</code> и <code>cmp(b, a)</code>. Такого быть не должно — иначе всё сломается (программа может вести себя непредсказуемо или упасть).</p>
+
+<h3 data-tc="0:54:25">3.4. Удаление повторов: <code>sort</code> + <code>unique</code></h3>
+<p><ts t="0:54:31"/> Пусть в векторе есть несколько одинаковых элементов, например две двойки: <code>5 2 1 4 3 2</code>. Иногда нужно оставить только различные значения. Для этого есть функция <code>unique</code>: она удаляет подряд идущие равные элементы. Значит, сначала нужно отсортировать вектор, чтобы все одинаковые элементы встали рядом:</p>
+<pre class="cpp">sort(a.begin(), a.end());                              // 1 2 2 3 4 5
+a.resize(unique(a.begin(), a.end()) - a.begin());      // 1 2 3 4 5</pre>
+<p><ts t="0:55:22"/> Разберём второй строкой: <code>unique(a.begin(), a.end())</code> принимает два итератора, проходит по всему массиву, убирает подряд идущие повторы и возвращает итератор на <strong>новый конец</strong> массива. Вычитая из него <code>a.begin()</code>, получаем новый размер, и <code>resize</code> уменьшает вектор до такого размера.</p>
+<figure class="viz"><svg viewBox="0 0 760 360" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="360" rx="14" fill="#141a24"/><text x="380" y="26" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">sort → unique → resize на примере 5 2 1 4 3 2</text><text x="24" y="80" text-anchor="start" font-size="13" font-weight="400" fill="#9aa4b2">после sort</text><rect x="190" y="48" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="222.0" y="75.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">1</text><text x="222.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="260" y="48" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="292.0" y="75.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">2</text><text x="292.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="330" y="48" width="64" height="44" rx="6" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="362.0" y="75.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">2</text><text x="362.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="400" y="48" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="432.0" y="75.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">3</text><text x="432.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="470" y="48" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="502.0" y="75.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">4</text><text x="502.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="540" y="48" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="572.0" y="75.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">5</text><text x="572.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">5</text><text x="24" y="172" text-anchor="start" font-size="13" font-weight="400" fill="#9aa4b2">после unique</text><rect x="190" y="140" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="222.0" y="167.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">1</text><text x="222.0" y="202" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="260" y="140" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="292.0" y="167.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">2</text><text x="292.0" y="202" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="330" y="140" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="362.0" y="167.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">3</text><text x="362.0" y="202" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="400" y="140" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="432.0" y="167.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">4</text><text x="432.0" y="202" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="470" y="140" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="502.0" y="167.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">5</text><text x="502.0" y="202" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="540" y="140" width="64" height="44" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="572.0" y="167.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">?</text><text x="572.0" y="202" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">5</text><line x1="572.0" y1="214" x2="572.0" y2="192" stroke="#ffff00" stroke-width="3" marker-end="url(#ar)"/><text x="572.0" y="232" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">unique вернул сюда</text><text x="572.0" y="248" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">(новый конец)</text><text x="24" y="294" text-anchor="start" font-size="13" font-weight="400" fill="#9aa4b2">после resize</text><rect x="190" y="262" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="222.0" y="289.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">1</text><rect x="260" y="262" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="292.0" y="289.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">2</text><rect x="330" y="262" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="362.0" y="289.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">3</text><rect x="400" y="262" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="432.0" y="289.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">4</text><rect x="470" y="262" width="64" height="44" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="502.0" y="289.95" text-anchor="middle" font-size="17" font-weight="400" fill="#dfe7f1">5</text><text x="380" y="340" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">resize(unique(a.begin(), a.end()) − a.begin()): размер = 5</text></svg><figcaption>Красная — лишняя копия. Хвост после unique содержит неопределённое значение («?»), поэтому его обязательно отрезают resize.</figcaption></figure>
+<p><ts t="0:57:03"/> <strong>Вопросы из чата.</strong> <em>Что делает <code>resize</code>?</em> Уменьшает вектор до переданного размера. <em>Зачем сначала <code>sort</code>?</em> После сортировки все равные элементы идут подряд — это свойство сортировки; <code>unique</code> убирает только соседей. Без сортировки в массиве <code>5 2 1 4 3 2</code> ничего не удалится: двойки не стоят рядом. <ts t="0:56:26"/> <em>Можно ли обойтись без <code>unique</code>?</em> Конечно, можно написать свою функцию, но две строки <code>sort</code> и <code>unique</code> писать намного быстрее, чем делать это руками.</p>
+<p><ts t="1:00:03"/> Асимптотика: <code>sort</code> — $O(n\log n)$, <code>unique</code> — $O(n)$.</p>
+<div class="own"><b>Развёрнутое объяснение.</b> На записи сказано, что <code>unique</code> «переносит двойку в конец». Это упрощённая картинка: на самом деле элементы, которые оказались <em>после</em> возвращённого итератора, имеют <strong>неопределённые значения</strong> (в нашей проверке для <code>1 2 2 3 3 4</code> после <code>unique</code> массив стал <code>1 2 3 4 3 4</code>, а возвращённая позиция — 4). Поэтому хвост нужно обязательно отрезать — <code>resize</code> или <code>a.erase(unique(a.begin(), a.end()), a.end())</code>.</div>
+
+<h3 data-tc="1:00:32">3.5. Сколько раз встречается число: <code>lower_bound</code> и <code>upper_bound</code></h3>
+<p><ts t="1:00:32"/> Вспомним задачу «найти количество чисел, равных $x$». Если массив отсортирован, достаточно двух итераторов: первый — <code>lower_bound</code> от $x$ (первый элемент, не меньший $x$), второй — <code>upper_bound</code> (первый элемент, больший $x$). Все числа, равные $x$, лежат между ними, поэтому их количество — это <strong>разность итераторов</strong>.</p>
+<pre class="cpp">sort(a.begin(), a.end());                      // 1 2 2 3 4 5
+auto l = lower_bound(a.begin(), a.end(), 2);   // указывает на первую двойку
+auto r = upper_bound(a.begin(), a.end(), 2);   // указывает на тройку
+cout &lt;&lt; r - l &lt;&lt; '\n';                         // 2</pre>
+<p><ts t="1:01:56"/> Самое важное, что нужно понять про итераторы вектора: с ними можно работать как с числами — складывать, прибавлять к ним числа, брать разность (она — число). Разность итераторов вычисляется за $O(1)$, а сам поиск — за $O(\log n)$.</p>
+<p><ts t="1:02:43"/> <strong>Почему вычитание <code>a.begin()</code> даёт правильный размер?</strong> Потому что <code>unique</code> возвращает такой итератор, что при вычитании из него <code>begin()</code> получается размер нового массива. Это просто то, что возвращает функция.</p>
+
+<h3 data-tc="1:03:05">3.6. Лямбда-функции</h3>
+<p><ts t="1:03:14"/> Отдельную внешнюю функцию-компаратор писать не всегда удобно, поэтому можно воспользоваться <strong>лямбда-функцией</strong>. Синтаксис такой: квадратные скобки, в круглых — параметры, в фигурных — тело.</p>
+<pre class="cpp">sort(a.begin(), a.end(), [](int a, int b) {
+    if (a % 2 != b % 2) return a % 2 == 0;
+    return a &lt; b;
+});</pre>
+<p><ts t="1:05:09"/> Если внутри лямбды нужна <strong>внешняя переменная</strong>, в квадратные скобки пишут амперсанд — <code>[&amp;]</code>; тогда внутри функции видны все внешние переменные. Пример: сортировка чисел по остатку от деления на $x$:</p>
+<pre class="cpp">int x = 2;
+sort(a.begin(), a.end(), [&amp;](int a, int b) {
+    return a % x &lt; b % x;                // сравниваем только по остатку
+});</pre>
+<p><ts t="1:05:45"/> Числа отсортировались по модулю два: сначала сравнимые с нулём, затем с единицей. Обратите внимание: числа <code>2, 4, 2</code> идут в произвольном порядке, и этот порядок никак не гарантирован, потому что с точки зрения компаратора они <strong>одинаковые</strong> — могут стоять как угодно.</p>
+<div class="fix"><b>Важное дополнение: устойчивость.</b> Если порядок «одинаковых» элементов должен сохраниться, используют <code>stable_sort</code> — он сохраняет относительный порядок равных элементов (с теми же параметрами, что и <code>sort</code>).</div>
+
+<h3 data-tc="1:06:35">3.7. Передача по константной ссылке</h3>
+<p><ts t="1:06:35"/> Пусть теперь у нас не вектор чисел, а <strong>вектор векторов</strong> — <code>vector&lt;vector&lt;int&gt;&gt;</code> — и мы пишем компаратор для него. Если параметры объявить как <code>vector&lt;int&gt; a, vector&lt;int&gt; b</code>, то при каждом вызове компаратора вектор будет <strong>копироваться</strong>. Чтобы этого не было, векторы передают по <strong>константной ссылке</strong>: <code>const тип&amp; имя</code>.</p>
+<pre class="cpp">sort(v.begin(), v.end(), [](const vector&lt;int&gt;&amp; a, const vector&lt;int&gt;&amp; b) {
+    return a[0] &lt; b[0];                  // сравниваем первые элементы
+});</pre>
+<p><ts t="1:07:35"/> С числами тоже можно написать <code>const int&amp;</code>, но в этом нет смысла: <code>int</code> копируется быстро, а вот вектор может быть большим, и его копирование будет очень долгим. Слово <code>const</code> значит, что менять объект внутри нельзя: например, <code>a[0] = 1;</code> не скомпилируется.</p>
+
+<h3 data-tc="1:08:55">Структуры и оператор сравнения</h3>
+<p><ts t="1:08:55"/> Хотим завести свой тип — например, дату. Дата — это день, месяц и год. Тип объявляют ключевым словом <code>struct</code>, внутри перечисляют поля:</p>
+<pre class="cpp">struct Date {
+    int day, mon, year;
+};
+
+vector&lt;Date&gt; dates;
+dates.push_back({1, 1, 2000});     // в фигурных скобках — поля в порядке объявления
+dates.push_back({2, 1, 2010});</pre>
+<p><ts t="1:10:33"/> Теперь хотим отсортировать этот вектор: <code>sort(dates.begin(), dates.end());</code>. Такая запись не скомпилируется (подсветится красным): <strong>C++ по умолчанию не знает, как сравнивать наши типы</strong>. Чтобы всё заработало, внутри структуры нужно описать оператор сравнения:</p>
+<pre class="cpp">struct Date {
+    int day, mon, year;
+    bool operator&lt;(const Date&amp; other) const {
+        if (year != other.year) return year &lt; other.year;
+        if (mon != other.mon) return mon &lt; other.mon;
+        if (day != other.day) return day &lt; other.day;
+        return false;                // даты равны, значит «не меньше»
+    }
+};</pre>
+<p><ts t="1:11:09"/> Расшифруем запись. Функция называется <code>operator&lt;</code> — это специальное имя. Она возвращает <code>bool</code>: правда ли, что <em>эта</em> дата меньше другой. Другая дата передаётся как <code>const Date&amp; other</code>: амперсанд означает, что дата <strong>не копируется</strong>, а передаётся тот экземпляр, который уже лежит в векторе; а <code>const</code> после скобок значит, что функция не изменяет саму дату. В теле: сначала сравниваем годы; если равны — месяцы; если и месяцы равны — дни; если всё совпало, то эта дата <em>не меньше</em> другой — возвращаем <code>false</code>.</p>
+<p><ts t="1:13:12"/> Теперь ошибка пропала. Выведем даты циклом <code>for (const Date&amp; d : dates)</code> — первая дата идёт раньше второй; если поменять местами порядок <code>push_back</code>, даты всё равно выведутся в нужном (отсортированном) порядке.</p>
+<p><ts t="1:13:48"/> <strong>Вопрос из чата:</strong> можно ли записывать так — <code>Date d = {1, 1, 2000};</code>? Можно. Способов много: с равно, без равно, с именами полей (<code>.day = …, .mon = …, .year = …</code>); чтобы разобрать все способы инициализации структур, нужно глубже погружаться в C++, и этим сегодня не занимались.</p>
+<div class="own"><b>Собственный пример.</b> То же сравнение короче: <code>return tie(year, mon, day) &lt; tie(other.year, other.mon, other.day);</code> — <code>tie</code> собирает значения в кортеж, а кортежи сравниваются лексикографически, как и нужно датам.</div>
+
+<h2 data-tc="1:15:05">Типы данных и переполнение</h2>
+<h3 data-tc="1:15:09">4.1. <code>int</code> и переполнение</h3>
+<p><ts t="1:15:09"/> Вспомним, какие бывают типы. Тип <code>int</code> хранит целые числа в диапазоне примерно от $-2\cdot10^{9}$ до $2\cdot10^{9}$ (точнее, от $-2^{31}$ до $2^{31}-1$); это можно найти в шпаргалке. Что делать, если нужно перемножить два <code>int</code>? Заведём <code>int c = a * b;</code> и введём <code>1 2</code> — выведется $2$. Теперь введём $10^6$ и $10^6$: результат $10^{12}$, но выведется <strong>отрицательное число</strong>.</p>
+<p><ts t="1:16:31"/> Так быть не должно, но мы столкнулись с <strong>переполнением</strong>. Оно возникает, когда результат операции не помещается в тип. Число $10^6\cdot10^6=10^{12}$ лежит за пределами диапазона <code>int</code>, поэтому получается «мусор».</p>
+<div class="own"><b>Собственный пример.</b> На типичном компьютере вместо $10^{12}$ получится $10^{12}\bmod 2^{32}$, переведённое в знаковое число: $-727379968$. Но так делать нельзя полагаться — формально результат не определён (см. 4.3).</div>
+
+<h3 data-tc="1:17:01">4.2. <code>long long</code> и большие числа</h3>
+<p><ts t="1:17:08"/> Числа больше, чем помещаются в <code>int</code>, нужны часто, поэтому есть тип <code>int64_t</code> — целые числа примерно от $-9\cdot10^{18}$ до $9\cdot10^{18}$ (на записи преподаватель поправил себя: не $2\cdot10^{18}$, а $9\cdot10^{18}$). Заменим тип на <code>int64_t</code> — теперь вывелось правильное число $10^{12}$.</p>
+<p><ts t="1:17:57"/> Многие вместо <code>int64_t</code> пишут <code>long long</code> — это то же самое. Если нужно хранить ещё большие числа, нужно придумывать что-то отдельное, но по опыту преподавателя такое почти никогда не встречается: числа почти всегда помещаются в 64-битный тип.</p>
+<div class="fix"><b>Важное дополнение: <code>long</code> и <code>long long</code>.</b> На записи звучит «<code>long</code>», но имеется в виду именно <code>long long</code>. Одиночный <code>long</code> зависит от системы: на Windows он 32-битный, на Linux 64-битный (в нашей проверке на Linux <code>sizeof(long) = 8</code>), поэтому для надёжности пишут <code>long long</code> или <code>int64_t</code>.</div>
+<p><ts t="1:18:46"/> Есть ещё <code>__int128</code>: его <strong>нельзя вводить и выводить</strong> напрямую (<code>cin</code> и <code>cout</code> с ним не работают), но для промежуточных вычислений он годится, если поддерживается вашей системой. Встроенной поддержки сколь угодно больших чисел в C++ нет.</p>
+
+<h3 data-tc="1:19:14">4.3. Неопределённое поведение</h3>
+<p><ts t="1:19:14"/> <strong>Что будет, если несколько раз умножить и вызвать переполнение — результат будет одинаковым?</strong> Переполнение знаковых чисел в C++ — это <strong>неопределённое поведение</strong> (undefined behavior, UB). С ним вы уже встречались: например, когда выходите за границы массива, ошибка не обязательно возникает — может вывестись какой-то мусор. С переполнением то же самое.</p>
+<p><ts t="1:19:40"/> На одном и том же компьютере результат, скорее всего, будет одинаковым, но <strong>никто этого не гарантирует</strong>. Поэтому нельзя писать код, рассчитывая на то, что переполнение произойдёт определённым образом. И нельзя использовать UB как генератор случайных чисел — это будет мусор, причём одинаковый.</p>
+<p><ts t="1:20:39"/> Покажем выход за границу: цикл по индексам вектора, которых нет. На маленьких значениях что-то выводится, но если выводить $10^4$, $10^6$, $10^7$ чисел — программа рано или поздно упадёт с ошибкой сегментации. Результат сильно зависит от системы и от того, как выделяется память.</p>
+<p><ts t="1:22:06"/> Если нужен рандомайзер, для этого есть специальные средства — не используйте UB как генератор случайных чисел.</p>
+<div class="fix"><b>Важное дополнение: что использовать вместо UB.</b> В C++ для случайных чисел есть библиотека <code>&lt;random&gt;</code>, например <code>mt19937 rng(seed);</code>. Для беззнаковых типов (<code>unsigned</code>) переполнение, напротив, определено: счёт идёт по модулю $2^{32}$ (или $2^{64}$).</div>
+
+<h2 data-tc="1:22:28">Контейнеры: <code>set</code>, <code>multiset</code>, <code>map</code>, <code>unordered_*</code></h2>
+<h3 data-tc="1:22:37">5.1. <code>set</code>: основные операции</h3>
+<p><ts t="1:22:45"/> С <code>set</code> чисел мы уже работали. Теперь можно сделать и <code>set&lt;Date&gt;</code>: это возможно, потому что у нас определён оператор сравнения. Если его удалить, <code>x.insert(...)</code> подсветится красным — нет операции сравнения. Если вернуть, всё заработает. Вывод: если вы определили <code>operator&lt;</code> для своей структуры, её можно класть в <code>set</code>.</p>
+<p><ts t="1:23:45"/> Повторим, что можно делать с множеством чисел:</p>
+<ul>
+<li><code>x.insert(v)</code> — вставка за $O(\log n)$.</li>
+<li><code>x.erase(v)</code> — удаление значения, тоже за $O(\log n)$. Если такого элемента нет, ничего не произойдёт — ничего страшного.</li>
+<li><code>x.begin()</code>, <code>x.end()</code>, итераторы — о них говорили выше.</li>
+<li><code>x.find(v)</code> — итератор на элемент $v$. Если элемента нет, возвращается <code>x.end()</code>, а <em>разыменование</em> такого итератора — ошибка выполнения (на записи <code>find</code> от шестёрки дал ошибку).</li>
+<li><code>x.lower_bound(v)</code>, <code>x.upper_bound(v)</code> — итераторы-границы. Чтобы вывести элемент, следующий за троечкой, можно воспользоваться <code>upper_bound(3)</code> — он возвращает первый элемент, больший трёх.</li>
+<li><code>x.contains(v)</code> — возвращает <code>bool</code>; <code>x.count(v)</code> — число (в <code>set</code> оно либо $0$, либо $1$); <code>x.size()</code> — размер; все эти операции — $O(\log n)$ (кроме <code>size</code> — $O(1)$).</li>
+</ul>
+<p><ts t="1:25:37"/> Все элементы множества выводятся циклом <code>for (int v : x) cout &lt;&lt; v &lt;&lt; ' ';</code>.</p>
+<div class="fix"><b>Важное дополнение: версия языка.</b> Метод <code>contains</code> появился в C++20; в более ранних стандартах пишут <code>x.count(v)</code> или <code>x.find(v) != x.end()</code>.</div>
+
+<h3 data-tc="1:26:03">5.2. Удаление элементов во время обхода</h3>
+<p><ts t="1:26:08"/> Допустим, нужно удалить из множества все нечётные числа. Хочется написать так: пройти циклом по <code>x</code> и для нечётного <code>i</code> вызвать <code>x.erase(i)</code>. <strong>Делать так строго нельзя</strong>: если идти по множеству циклом с двоеточием (<code>for (int i : x)</code>), множество в это время нельзя изменять — вы, скорее всего, получите ошибку выполнения.</p>
+<p><ts t="1:27:00"/> Вместо этого пишут явный итератор и сами решают, когда его двигать:</p>
+<pre class="cpp">for (auto it = x.begin(); it != x.end(); ) {   // в заголовке цикла итератор не увеличиваем
+    if (*it % 2 == 0) {
+        ++it;                      // чётное оставляем — идём дальше
+    } else {
+        it = x.erase(it);          // нечётное удаляем; erase возвращает следующий элемент
+    }
+}</pre>
+<p><ts t="1:27:52"/> <code>erase</code> от итератора возвращает итератор на элемент <em>после</em> удалённого, и мы присваиваем его <code>it</code>. Так можно корректно удалять элементы во время обхода.</p>
+<p><ts t="1:28:34"/> <strong>Вопрос из чата:</strong> чем <code>++it</code> отличается от <code>it++</code>? С точки зрения увеличения итератора ничем, так же как для чисел; они различаются только возвращаемым значением: <code>++it</code> возвращает уже увеличенное значение, а <code>it++</code> — прежнее. Если запись стоит отдельной командой, разницы нет.</p>
+
+<h3 data-tc="1:29:21">5.3. Компаратор для <code>set</code></h3>
+<p><ts t="1:29:21"/> Представим, что вставили числа от 1 до 6 и хотим, чтобы сначала шли чётные, потом нечётные. Тогда пишем компаратор как лямбду, называем её <code>f</code> и указываем её тип вторым параметром шаблона:</p>
+<pre class="cpp">auto f = [](int a, int b) {
+    if (a % 2 != b % 2) return a % 2 == 0;
+    return a &lt; b;
+};
+set&lt;int, decltype(f)&gt; x(f);        // множество упорядочено по f
+for (int i = 1; i &lt;= 6; i++) x.insert(i);
+for (int v : x) cout &lt;&lt; v &lt;&lt; ' ';    // 2 4 6 1 3 5</pre>
+<p><ts t="1:30:45"/> Вот так можно передать в <code>set</code> свой компаратор не только для собственной структуры, но и для обычных типов вроде <code>int</code>. <code>decltype</code> — способ получить тип лямбды, чтобы передать его в <code>set</code>; в олимпиадном программировании он почти нигде не используется, кроме таких случаев, когда нужно что-то передать в <code>set</code>.</p>
+<div class="fix"><b>Важное дополнение: <code>x(f)</code> в C++17.</b> В записи показан только тип, но в стандарте C++17 лямбду нужно ещё и передать конструктору: <code>set&lt;int, decltype(f)&gt; x(f);</code>. Без <code>(f)</code> компилятор C++17 выдаёт ошибку (мы проверили: «use of deleted function»); начиная с C++20 лямбда без захвата создаётся сама, и достаточно <code>set&lt;int, decltype(f)&gt; x;</code>.</div>
+
+<h3 data-tc="1:33:08">5.4. <code>multiset</code></h3>
+<p><ts t="1:33:08"/> В <code>set</code> каждое значение хранится либо 0, либо 1 раз: повторный <code>insert</code> просто ничего не добавляет. Но иногда нужно хранить несколько экземпляров. Для этого есть <code>multiset</code>: если вставить каждое число два раза, в нём сохранится по два экземпляра.</p>
+<p><ts t="1:33:56"/> Как удалять элементы из <code>multiset</code>. <code>x.erase(3)</code> удаляет <strong>все вхождения</strong> тройки. Чтобы удалить ровно <strong>одно</strong> вхождение, пишут <code>x.extract(3)</code>: удалится только одна троечка, вторая останется. Если такого числа нет (<code>x.extract(7)</code>), ничего не изменится.</p>
+<p><ts t="1:34:42"/> Со всем остальным <code>multiset</code> работает так же, как <code>set</code>, и с такой же асимптотикой (<code>lower_bound</code>, <code>upper_bound</code> и другие операции). Но <strong><code>count</code> в <code>multiset</code> работает за $O(\log n + k)$</strong>, где $k$ — количество элементов с этим значением: он находит первое число и затем идёт вперёд, пока значения совпадают. Поэтому <code>count</code> в <code>multiset</code> лучше не использовать. Если нужно подсчитывать количества, лучше воспользоваться <code>map</code>.</p>
+<div class="good"><b>Проверка.</b> На <code>multiset&lt;int&gt; m = {1,1,2,2,3,3}</code> мы проверили: <code>m.erase(m.find(3))</code> оставляет одну тройку, <code>m.erase(2)</code> убирает обе двойки, <code>m.extract(1)</code> убирает одну единицу и возвращает непустой «узел», а <code>extract(7)</code> (нет такого числа) возвращает пустой узел и ничего не меняет. Эквивалент для старых стандартов — <code>m.erase(m.find(v))</code> (но только если <code>find</code> нашёл элемент).</div>
+
+<h3 data-tc="1:35:51">5.5. <code>map</code></h3>
+<p><ts t="1:35:51"/> <code>map</code> — это просто <strong>словарь</strong>. Нужно подключить <code>&lt;map&gt;</code> (или <code>&lt;bits/stdc++.h&gt;</code>). В угловых скобках пишут тип <strong>ключа</strong> и тип <strong>значения</strong>:</p>
+<pre class="cpp">map&lt;string, int&gt; mp;
+mp["amongus"] = 1;
+mp["hello"] = 2;
+mp["xabc"] = 0;
+for (auto [key, value] : mp)       // key — ключ, value — значение
+    cout &lt;&lt; key &lt;&lt; " -&gt; " &lt;&lt; value &lt;&lt; '\n';</pre>
+<p><ts t="1:36:55"/> Вывод получится <code>amongus -&gt; 1</code>, <code>hello -&gt; 2</code>, <code>xabc -&gt; 0</code>: всё отсортировано <strong>по ключу</strong> (строка <code>xabc</code> оказалась последней, <code>amongus</code> первой, <code>hello</code> второй).</p>
+<p><ts t="1:37:34"/> Что можно делать:</p>
+<ul>
+<li><code>mp.contains("hello")</code> — есть ли такой ключ (вернётся 1, если есть; в старых стандартах пишут <code>mp.count(key)</code>).</li>
+<li><code>mp.erase("xabc")</code> — удаляет ключ и возвращает, сколько элементов удалено (при повторном вызове — 0), а в выводе удалённого элемента уже нет.</li>
+<li><code>mp.lower_bound(a)</code> — первый элемент, у которого <strong>ключ</strong> не меньше $a$. Все операции — <code>erase</code>, <code>lower_bound</code>, <code>upper_bound</code> — работают по <strong>ключу</strong>, а не по значению. Итераторы (<code>begin</code>, <code>end</code> и т.д.) работают так же, как у <code>set</code>.</li>
+</ul>
+<p><ts t="1:39:32"/> В обычной <code>map</code> все операции — вставка, обращение к элементу, проверка наличия, <code>lower_bound</code> — работают за $O(\log n)$; обход — за $O(n)$.</p>
+<div class="fix"><b>Важное дополнение: <code>mp[key]</code> создаёт элемент.</b> Если ключа в словаре не было, обращение <code>mp[key]</code> <em>добавляет</em> его со значением по умолчанию (для <code>int</code> — 0) и увеличивает размер. Чтобы только проверить наличие ключа, используйте <code>contains</code>, <code>count</code> или <code>find</code> (в нашей проверке <code>mp["new"]</code> дало 0 и размер вырос с 2 до 3).</div>
+
+<h3 data-tc="1:39:17">5.6. <code>unordered_map</code> и <code>unordered_set</code></h3>
+<p><ts t="1:39:17"/> Есть ещё два типа, про которые неоднократно спрашивали: <code>unordered_map</code> и <code>unordered_set</code>. Мы только что сказали, что в <code>map</code> элементы лежат в отсортированном порядке, но это свойство нужно не всегда: иногда достаточно быстро обращаться по ключу. Для этого и есть <code>unordered_map</code> — он умеет делать то же, что обычная <code>map</code>, но <strong>не умеет делать <code>lower_bound</code></strong>. Зато в нём вставка, обращение, удаление и проверка наличия работают за $O(1)$ (в среднем).</p>
+<p><ts t="1:40:33"/> Но элементы в нём <strong>не отсортированы</strong>: порядок произвольный и может зависеть от версии компилятора, операционной системы и так далее. Внутри используется <strong>хеш-таблица</strong>. Это аналог <code>dict</code> в Python — там словарь тоже не отсортирован по ключу.</p>
+<p><ts t="1:41:19"/> По аналогии есть <code>unordered_set</code>. Нужны <code>#include &lt;unordered_set&gt;</code> и <code>#include &lt;unordered_map&gt;</code>. Вставили числа 1, 10, 3, 1000 — вывелись они в каком-то произвольном порядке. Преимущество перед <code>set</code> — операции за $O(1)$ вместо $O(\log n)$. Но если нужны <code>lower_bound</code>/<code>upper_bound</code> или чтобы числа лежали отсортированными, нужен обычный <code>set</code>. Если же нужна более быстрая вставка и удаление — <code>unordered_set</code>.</p>
+<div class="fix"><b>Важное дополнение: «$O(1)$» — это в среднем.</b> В худшем случае операции в хеш-таблице могут деградировать до $O(n)$ (например, на специально подобранных тестах), и на некоторых платформах такие тесты используют против <code>unordered_*</code>. Если сомневаетесь — берите <code>map</code>/<code>set</code>.</div>
+
+<h3 data-tc="1:43:00">5.7. Сводка по контейнерам</h3>
+<table>
+<tr><th>Контейнер</th><th>Что хранит</th><th>Порядок</th><th><code>insert</code> / <code>erase</code> / поиск</th><th><code>lower_bound</code></th></tr>
+<tr><td><code>set</code></td><td>уникальные значения</td><td>по возрастанию</td><td>$O(\log n)$</td><td>есть, $O(\log n)$</td></tr>
+<tr><td><code>multiset</code></td><td>значения с повторами</td><td>по возрастанию</td><td>$O(\log n)$; <code>count</code> — $O(\log n + k)$</td><td>есть, $O(\log n)$</td></tr>
+<tr><td><code>map</code></td><td>пары «ключ — значение»</td><td>по ключу</td><td>$O(\log n)$</td><td>есть, по ключу</td></tr>
+<tr><td><code>unordered_set</code> / <code>unordered_map</code></td><td>уникальные значения / пары</td><td>произвольный</td><td>$O(1)$ в среднем</td><td>нет</td></tr>
+</table>
+<p>Эта таблица — собранный по записи итог: она показывает выбор контейнера по задаче («нужна сортировка или <code>lower_bound</code>» — <code>set</code>/<code>map</code>; «нужны только быстрые вставка, удаление и поиск» — <code>unordered_*</code>; «нужны повторы» — <code>multiset</code>, а для подсчёта количеств — <code>map</code>).</p>
+
+<h2 data-tc="1:43:19">Отладка: проверка выхода за границы</h2>
+<p><ts t="1:43:51"/> Вспомним: если завести вектор из трёх чисел и вывести <code>v[4]</code>, программа выведет что угодно (у преподавателя — ноль): мы вышли за границы массива, и это никак не отловилось. Чтобы ловить такие ошибки, в самом начале программы <strong>до всех <code>#include</code></strong> можно написать:</p>
+<pre class="cpp">#define _GLIBCXX_DEBUG
+#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+int main() {
+    vector&lt;int&gt; v = {1, 2, 3};
+    cout &lt;&lt; v[4] &lt;&lt; endl;            // теперь это завершится понятной ошибкой
+}</pre>
+<p><ts t="1:45:04"/> Этот <code>#define</code> работает, если у вас компилятор GCC (<code>g++</code>) или MinGW — а он может стоять, например, если вы поставили Code::Blocks со встроенным компилятором. Тогда при запуске появится сообщение об ошибке: на занятии показали «attempt to subscript container … out-of-bounds index … container only holds 3 elements». Сообщение большое, но смысл не в нём, а в том, что при отладке такие проблемы легче находить.</p>
+<p><ts t="1:46:13"/> Преподаватель сначала написал имя с двумя подчёркиваниями — и у него ничего не заработало; правильно писать с одним подчёркиванием в начале, как выше.</p>
+<p><ts t="1:47:09"/> <strong>Обратная сторона:</strong> эта проверка очень сильно замедляет программу, потому что при каждом обращении выполняется проверка границ. Поэтому, когда вы отправляете код в тестирующую систему, этот <code>#define</code> нужно <strong>убирать</strong> — иначе вы, скорее всего, получите превышение времени (TL).</p>
+<div class="good"><b>Проверка.</b> Код из этого конспекта скомпилирован g++ 13 (стандарты C++17 и C++20) и запущен: <code>while (fin &gt;&gt; x)</code> на строковом потоке читает все числа; <code>sort + unique + resize</code> даёт <code>1 2 3 4 5</code>; <code>r - l</code> для двойки в <code>1 2 2 3 4 5</code> равно 2; компаратор «чётные, потом нечётные» даёт <code>2 4 1 3 5</code>, а <code>set</code> с тем же компаратором — <code>2 4 6 1 3 5</code>; <code>sort(a.rbegin(), a.rend())</code> даёт <code>5 4 3 2 1</code>; удаление нечётных во время обхода оставляет <code>2 4 6</code>; <code>sizeof(long long) = 8</code>, <code>10^6 · 10^6</code> в <code>long long</code> равно <code>10^12</code>; <code>cout &lt;&lt; fixed &lt;&lt; setprecision(16)</code> выводит <code>3.1415926535000001</code>; с <code>#define _GLIBCXX_DEBUG</code> выход за границы вектора даёт сообщение об ошибке.</div>
+
+<h2 data-tc="1:47:49">Итог занятия</h2>
+<p><ts t="1:47:49"/> Лекция на этом закончена: после перерыва у вас будет решение контеста, а вопросы по занятию можно задавать в чате или в Telegram.</p>
+<ul>
+<li><strong>Ввод-вывод:</strong> <code>'\n'</code> быстрее и годится для обычных задач, <code>endl</code> нужен в интерактивных; <code>sync_with_stdio(false)</code> и <code>cin.tie(nullptr)</code> ускоряют большой ввод-вывод; файлы читают через <code>ifstream/ofstream</code>; <code>while (cin &gt;&gt; x)</code> читает неизвестное число значений, <code>getline</code> — строку с пробелами; для точного вывода — <code>precision</code> и <code>fixed</code>.</li>
+<li><strong>Итераторы:</strong> <code>end()</code> указывает за последний элемент; у вектора можно складывать и вычитать, у <code>set</code> и <code>map</code> — только <code>++</code> и <code>--</code>.</li>
+<li><strong>Сортировка:</strong> <code>sort</code> работает с полуинтервалом итераторов; свой порядок задаёт компаратор со строгим «меньше»; для удаления повторов — <code>sort</code> + <code>unique</code> + <code>resize</code>.</li>
+<li><strong>Типы:</strong> <code>int</code> переполняется на $\approx 2\cdot10^9$, поэтому для больших чисел — <code>long long</code>; переполнение и выход за границы — неопределённое поведение.</li>
+<li><strong>Контейнеры:</strong> <code>set</code>/<code>multiset</code>/<code>map</code> — сортированные, операции за $O(\log n)$; <code>unordered_*</code> — без порядка и без <code>lower_bound</code>, но за $O(1)$ в среднем.</li>
+</ul>
