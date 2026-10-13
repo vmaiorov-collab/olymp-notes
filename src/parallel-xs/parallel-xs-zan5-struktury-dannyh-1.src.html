@@ -1,0 +1,611 @@
+<!--meta {"title": "Структуры данных 1", "parallel": "parallel-xs", "pname": "Параллель XS", "porder": 2, "n": 5, "video": null, "subtitle": "Лекция по дереву отрезков и родственным структурам: массовые операции, площадь объединения прямоугольников, неявное дерево, Фенвик, дерево сортировок и каскадирование, доминирование в 3D и 4D; разбор математики; семинар.", "chips": ["Лекция + разбор + семинар", "≈ 4 ч 57 мин", "Язык кода: C++"], "youtube": "https://youtu.be/ZPzCHVFCAJo"}-->
+<h2 data-tc="0:05:04">Лекция: структуры данных на дереве отрезков</h2>
+<p><ts t="0:05:04"/> Запись начинается с настройки звука и разговоров до начала; содержательная часть стартует в <ts t="0:05:04"/>. Лекция посвящена «необычным» вариантам дерева отрезков и родственным структурам: массовые операции, дерево Фенвика, дерево отрезков-сортировок (merge sort tree) с каскадированием, а затем серия задач на размерности — от одномерной до четырёхмерной. Основной лектор — первый преподаватель (в программе курса — Данис Валиуллин); ведущие занятия по ходу задают друг другу вопросы и спорят с залом, эти обсуждения передаются сжато.</p>
+
+<h3 data-tc="0:05:25">Дерево отрезков с массовыми операциями</h3>
+<p><ts t="0:05:36"/> <strong>Задача.</strong> На массиве нужны две операции: <code>+= x</code> на отрезке и сумма на отрезке (<ts t="0:05:25"/>–<ts t="0:05:51"/>). Дерево отрезков с суммами строим как обычно: в каждой вершине хранится сумма на её отрезке, листья — элементы, корень — весь массив (<ts t="0:05:56"/>–<ts t="0:06:57"/>). Запрос суммы остаётся прежним; меняется только обновление (<ts t="0:08:02"/>–<ts t="0:08:35"/>).</p>
+<p><ts t="0:08:41"/> Любой отрезок $[l,r]$ распадается на $O(\log n)$ полностью накрытых вершин. Если ко всем элементам вершины с $s$ листьями прибавить $x$, её сумма вырастет на $s\cdot x$ (<ts t="0:09:49"/>–<ts t="0:10:39"/>).</p>
+<p><ts t="0:10:44"/> <strong>Почему нельзя просто обновить накрытые вершины и их предков.</strong> Тогда запрос по корню и по накрытым вершинам будет верным, но если спуститься ниже накрытой вершины, дети ничего не знают о прибавлении: информация о $x$ «потеряна» (<ts t="0:10:44"/>–<ts t="0:12:50"/>).</p>
+<p><ts t="0:12:54"/> <strong>Ленивые операции.</strong> В каждой вершине храним два числа: сумму $\mathrm{sum}_v$ и <em>отложенное прибавление</em> $\mathrm{add}_v$ — сколько ещё нужно добавить сыновьям (<ts t="0:12:54"/>–<ts t="0:13:44"/>). Когда накрытая вершина получает $+x$, мы сразу правильно меняем её сумму ($+\,x\cdot\text{длина}$) и записываем $x$ в $\mathrm{add}$ обоих сыновей — а дальше «они уже сами разберутся» (<ts t="0:13:19"/>–<ts t="0:14:07"/>). Когда мы приходим в сына с ненулевым $\mathrm{add}$, ко всем листьям его поддерева нужно добавить $\mathrm{add}$, поэтому сумма растёт на $\mathrm{add}\cdot\text{длина}$, а сыновьям передаётся то же значение (<ts t="0:14:07"/>–<ts t="0:15:11"/>).</p>
+<figure class="viz"><svg viewBox="0 0 760 380" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="380" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Ленивое прибавление: add[v] — «ещё не передано сыновьям»</text><text x="180" y="56" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">+5 на [0, 1]: сумма верна, дети не знают</text><line x1="170" y1="100" x2="90" y2="190" stroke="#3b4a63" stroke-width="2"/><line x1="170" y1="100" x2="250" y2="190" stroke="#3b4a63" stroke-width="2"/><line x1="90" y1="190" x2="50" y2="280" stroke="#3b4a63" stroke-width="2"/><line x1="90" y1="190" x2="130" y2="280" stroke="#3b4a63" stroke-width="2"/><line x1="250" y1="190" x2="210" y2="280" stroke="#3b4a63" stroke-width="2"/><line x1="250" y1="190" x2="290" y2="280" stroke="#3b4a63" stroke-width="2"/><rect x="108" y="78" width="124" height="44" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="170.0" y="104.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">sum = 14</text><rect x="28" y="168" width="124" height="44" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="90.0" y="194.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">sum = 12</text><text x="42" y="160" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">add = +5</text><rect x="188" y="168" width="124" height="44" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="250.0" y="194.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">sum = 2</text><rect x="22" y="262" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="50.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="102" y="262" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="130.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="182" y="262" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="210.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="262" y="262" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="290.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="70" y="330" text-anchor="middle" font-size="12" font-weight="400" fill="#fc6255">листья пока старые (1, 1)</text><text x="560" y="56" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">push(v): add передан детям и обнулён</text><line x1="550" y1="100" x2="470" y2="190" stroke="#3b4a63" stroke-width="2"/><line x1="550" y1="100" x2="630" y2="190" stroke="#3b4a63" stroke-width="2"/><line x1="470" y1="190" x2="430" y2="280" stroke="#3b4a63" stroke-width="2"/><line x1="470" y1="190" x2="510" y2="280" stroke="#3b4a63" stroke-width="2"/><line x1="630" y1="190" x2="590" y2="280" stroke="#3b4a63" stroke-width="2"/><line x1="630" y1="190" x2="670" y2="280" stroke="#3b4a63" stroke-width="2"/><rect x="488" y="78" width="124" height="44" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="550.0" y="104.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">sum = 14</text><rect x="408" y="168" width="124" height="44" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="470.0" y="194.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">sum = 12</text><text x="422" y="160" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">add = 0</text><rect x="568" y="168" width="124" height="44" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="630.0" y="194.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">sum = 2</text><rect x="402" y="262" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="430.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="482" y="262" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="510.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="562" y="262" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="590.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="642" y="262" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="670.0" y="285.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="450" y="330" text-anchor="middle" font-size="12" font-weight="400" fill="#83c167">после push листья 6, 6</text><text x="380" y="360" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">sum[левого] = 2·(1) + 2·5 = 12 сразу, а в листья 5 уйдёт позже</text></svg><figcaption>Прибавление остановилось в накрытой вершине: её сумма сразу верна, а детям оставлена пометка add. Вызов push перед любым спуском вниз передаёт пометку детям.</figcaption></figure>
+<p><ts t="0:15:11"/> Это оформляется функцией <code>push(v)</code>: прибавить $\mathrm{add}_v$ сыновьям, пересчитать сумму, обнулить $\mathrm{add}_v$ (<ts t="0:15:11"/>–<ts t="0:15:46"/>). Она ничего не портит: повторный вызов не изменит значений (<ts t="0:15:46"/>–<ts t="0:16:15"/>). Правило: <strong>вызывать <code>push</code> перед любым спуском вниз</strong> — и в запросе суммы, и в обновлении (<ts t="0:16:15"/>–<ts t="0:16:52"/>).</p>
+<pre class="cpp">struct LazySum {
+    int n;
+    vector&lt;ll&gt; sum, add;                         // add[v] — сколько ещё нужно добавить сыновьям
+    LazySum(int n) : n(n), sum(4 * n, 0), add(4 * n, 0) {}
+    void apply(int v, int l, int r, ll x) { sum[v] += x * (r - l); add[v] += x; }
+    void push(int v, int l, int r) {             // безвредно вызывать сколько угодно раз
+        if (!add[v]) return;
+        int m = (l + r) / 2;
+        apply(2 * v, l, m, add[v]); apply(2 * v + 1, m, r, add[v]);
+        add[v] = 0;
+    }
+    void update(int v, int l, int r, int ql, int qr, ll x) {   // [ql, qr) += x
+        if (qr &lt;= l || r &lt;= ql) return;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) { apply(v, l, r, x); return; }
+        push(v, l, r);
+        int m = (l + r) / 2;
+        update(2 * v, l, m, ql, qr, x); update(2 * v + 1, m, r, ql, qr, x);
+        sum[v] = sum[2 * v] + sum[2 * v + 1];
+    }
+    ll get(int v, int l, int r, int ql, int qr) {
+        if (qr &lt;= l || r &lt;= ql) return 0;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) return sum[v];
+        push(v, l, r);
+        int m = (l + r) / 2;
+        return get(2 * v, l, m, ql, qr) + get(2 * v + 1, m, r, ql, qr);
+    }
+    void update(int l, int r, ll x) { update(1, 0, n, l, r, x); }
+    ll get(int l, int r) { return get(1, 0, n, l, r); }
+};</pre>
+
+<h3 data-tc="0:17:19">Площадь объединения прямоугольников</h3>
+<p><ts t="0:17:22"/> <strong>Задача.</strong> На плоскости $n$ прямоугольников со сторонами, параллельными осям (они могут пересекаться и быть вложены); найти площадь их объединения. Ограничения: координаты до $10^9$, $n\le 10^5$ (<ts t="0:17:19"/>–<ts t="0:18:48"/>). Зал отмечает, что задача известная («баян»).</p>
+<p><ts t="0:19:05"/> <strong>Сжатие по $y$.</strong> Оставим только те значения $y$, которые встречаются среди границ прямоугольников. Промежутки между соседними значениями — «полоски», у каждой есть вес (её длина), и площадь считается как сумма весов покрытых полосок на ширину (<ts t="0:19:05"/>–<ts t="0:20:18"/>). Различных полосок не больше $2n$, поэтому по ним можно строить дерево отрезков с массовыми операциями (<ts t="0:20:18"/>–<ts t="0:20:38"/>).</p>
+<p><ts t="0:20:30"/> <strong>Заметающая прямая.</strong> Выпишем события по $x$ в один массив: «прямоугольник открылся» ($+1$ на отрезке полосок) и «закрылся» ($-1$). При равных $x$ сначала открытия, затем закрытия (<ts t="0:20:30"/>–<ts t="0:21:22"/>). Значение в полоске — сколько прямоугольников её сейчас накрывают, оно никогда не уходит ниже нуля, потому что закрытие идёт после открытия (<ts t="0:21:36"/>–<ts t="0:22:25"/>).</p>
+<p><ts t="0:22:25"/> Между двумя соседними значениями $x_1<x_2$ набор накрытых полосок не меняется, и вклад в площадь равен $(\text{суммарный вес полосок со значением}>0)\cdot(x_2-x_1)$ (<ts t="0:22:25"/>–<ts t="0:23:36"/>). Нужна структура с операциями «прибавить на отрезке» и «вес позиций, не равных нулю» (<ts t="0:23:36"/>–<ts t="0:23:56"/>). Так как все значения неотрицательны, ненулевые — это «все, кроме нулевых», а нулевые — это минимальные, <em>если минимум равен нулю</em>. Поэтому в вершине храним <strong>минимум и суммарный вес позиций, где он достигается</strong> (<ts t="0:24:03"/>–<ts t="0:25:12"/>). Пересчёт вершины: если у сыновей минимумы равны — веса складываем, иначе берём меньший минимум с его весом (<ts t="0:24:40"/>–<ts t="0:24:57"/>); прибавление на всей вершине сдвигает минимум и не меняет количества (<ts t="0:24:57"/>–<ts t="0:25:08"/>).</p>
+<p><ts t="0:25:12"/> Покрытая длина $=\text{общая длина}-(\text{вес минимумов, если минимум}=0)$, добавляем её, умноженную на $x_2-x_1$, к площади (<ts t="0:25:12"/>–<ts t="0:25:52"/>).</p>
+<figure class="viz"><svg viewBox="0 0 760 348" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="348" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Площадь объединения: заметающая прямая и полоски по y</text><rect x="40" y="40" width="400" height="240" rx="8" fill="#1E2836" stroke="#3b4a63"/><rect x="80" y="80" width="160" height="110" fill="#1d4257" stroke="#58c4dd" stroke-width="2" opacity="0.85"/><rect x="160" y="150" width="180" height="100" fill="#27431f" stroke="#83c167" stroke-width="2" opacity="0.85"/><rect x="290" y="60" width="110" height="100" fill="#53300a" stroke="#ff8c1a" stroke-width="2" opacity="0.85"/><line x1="220" y1="34" x2="220" y2="286" stroke="#ffff00" stroke-width="3" stroke-dasharray="6 4"/><text x="220" y="304" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">x</text><text x="580" y="54" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">число накрывающих</text><rect x="480" y="60" width="90" height="18" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="525.0" y="73.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">0</text><rect x="218" y="60" width="4" height="20" fill="#fc6255" opacity="0.9"/><rect x="480" y="80" width="90" height="68" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="525.0" y="118.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">1</text><rect x="218" y="80" width="4" height="70" fill="#83c167" opacity="0.9"/><rect x="480" y="150" width="90" height="8" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><rect x="218" y="150" width="4" height="10" fill="#83c167" opacity="0.9"/><rect x="480" y="160" width="90" height="28" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="525.0" y="178.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">2</text><rect x="218" y="160" width="4" height="30" fill="#83c167" opacity="0.9"/><rect x="480" y="190" width="90" height="58" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="525.0" y="223.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">1</text><rect x="218" y="190" width="4" height="60" fill="#83c167" opacity="0.9"/><text x="580" y="276" text-anchor="middle" font-size="12" font-weight="400" fill="#dfe7f1">вес полоски — её длина</text><text x="380" y="306" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">ненулевые = всё минус вес минимумов при min = 0</text><text x="380" y="332" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">площадь += (покрытая длина) · (x_следующее − x_текущее)</text></svg><figcaption>Между соседними x набор покрытых полосок постоянен. В дереве хранится минимум числа накрытий и вес минимумов; нулевые полоски — те, где минимум равен нулю.</figcaption></figure>
+<pre class="cpp">struct MinCount {
+    int n;
+    vector&lt;ll&gt; mn, add;
+    vector&lt;ll&gt; cnt;                              // суммарный вес позиций, где достигается минимум
+    MinCount(const vector&lt;ll&gt;&amp; w) : n(w.size()), mn(4 * w.size(), 0), add(4 * w.size(), 0), cnt(4 * w.size(), 0) { build(1, 0, n, w); }
+    void build(int v, int l, int r, const vector&lt;ll&gt;&amp; w) {
+        if (r - l == 1) { cnt[v] = w[l]; return; }
+        int m = (l + r) / 2;
+        build(2 * v, l, m, w); build(2 * v + 1, m, r, w);
+        pull(v);
+    }
+    void pull(int v) {
+        mn[v] = min(mn[2 * v], mn[2 * v + 1]);
+        cnt[v] = (mn[2 * v] == mn[v] ? cnt[2 * v] : 0) + (mn[2 * v + 1] == mn[v] ? cnt[2 * v + 1] : 0);
+    }
+    void apply(int v, ll x) { mn[v] += x; add[v] += x; }
+    void push(int v) { if (add[v]) { apply(2 * v, add[v]); apply(2 * v + 1, add[v]); add[v] = 0; } }
+    void update(int v, int l, int r, int ql, int qr, ll x) {
+        if (qr &lt;= l || r &lt;= ql) return;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) { apply(v, x); return; }
+        push(v);
+        int m = (l + r) / 2;
+        update(2 * v, l, m, ql, qr, x); update(2 * v + 1, m, r, ql, qr, x);
+        pull(v);
+    }
+    pair&lt;ll, ll&gt; query(int v, int l, int r, int ql, int qr) {      // (минимум, вес минимумов)
+        if (qr &lt;= l || r &lt;= ql) return {LLONG_MAX, 0};
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) return {mn[v], cnt[v]};
+        push(v);
+        int m = (l + r) / 2;
+        auto a = query(2 * v, l, m, ql, qr), b = query(2 * v + 1, m, r, ql, qr);
+        if (a.first &lt; b.first) return a;
+        if (b.first &lt; a.first) return b;
+        return {a.first, a.second + b.second};
+    }
+    void update(int l, int r, ll x) { update(1, 0, n, l, r, x); }
+    pair&lt;ll, ll&gt; query(int l, int r) { return query(1, 0, n, l, r); }
+};</pre>
+<pre class="cpp">ll union_area(const vector&lt;array&lt;int, 4&gt;&gt;&amp; rect) {            // {x1, y1, x2, y2}, x1 &lt; x2, y1 &lt; y2
+    vector&lt;int&gt; ys;
+    for (auto&amp; r : rect) { ys.push_back(r[1]); ys.push_back(r[3]); }
+    sort(ys.begin(), ys.end()); ys.erase(unique(ys.begin(), ys.end()), ys.end());
+    int m = (int)ys.size() - 1;                                // полоса i = [ys[i], ys[i+1]) с весом длины
+    if (m &lt;= 0) return 0;
+    vector&lt;ll&gt; w(m);
+    for (int i = 0; i &lt; m; i++) w[i] = ys[i + 1] - ys[i];
+    ll total = ys.back() - ys[0];
+    MinCount tree(w);
+    vector&lt;array&lt;int, 4&gt;&gt; ev;                                  // {x, -тип, l, r}: открытие (+1) идёт раньше закрытия
+    for (auto&amp; r : rect) {
+        int l = lower_bound(ys.begin(), ys.end(), r[1]) - ys.begin();
+        int h = lower_bound(ys.begin(), ys.end(), r[3]) - ys.begin();
+        ev.push_back({r[0], -1, l, h}); ev.push_back({r[2], 1, l, h});
+    }
+    sort(ev.begin(), ev.end());
+    ll area = 0;
+    for (size_t i = 0; i &lt; ev.size(); i++) {
+        if (i) {
+            auto [mn, c] = tree.query(0, m);
+            ll covered = total - (mn == 0 ? c : 0);            // ненулевые = всё минус нули
+            area += covered * (ev[i][0] - ev[i - 1][0]);
+        }
+        tree.update(ev[i][2], ev[i][3], -ev[i][1]);            // -(-1) = +1 при открытии, -1 при закрытии
+    }
+    return area;
+}</pre>
+<div class="own"><b>Проверка.</b> Структура «минимум + вес минимумов» и функция площади сверены с поклеточным подсчётом на случайных наборах прямоугольников. Этот же шаблон ниже пригодится ещё раз (задача про $\mathrm{mex}$).</div>
+
+<h3 data-tc="0:26:03">Обсуждение: «снизу», неявное дерево, Фенвик</h3>
+<p><ts t="0:26:30"/> По ходу зал спорит о нерекурсивном («снизу») дереве отрезков: оно пишется быстрее, чем «сверху», а при должном желании на нём можно сделать и массовые операции, но это сложно (<ts t="0:27:11"/>–<ts t="0:27:53"/>). В лекции задачи решаются «сверху».</p>
+<p><ts t="0:28:14"/> <strong>Неявное (динамическое) дерево отрезков.</strong> Нужно дерево на отрезке размера до $10^{18}$, при том что запросов всего порядка $10^5$ (<ts t="0:28:14"/>–<ts t="0:28:40"/>). У вершины левый и правый сыновья могут быть <em>не созданы</em> (индекс $-1$); значение в несозданной вершине считается значением «по умолчанию» (нули или арифметическая прогрессия — что-нибудь, что легко посчитать без хранения) (<ts t="0:29:10"/>–<ts t="0:29:54"/>). При обновлении, если нужного сына нет, создаём его и идём дальше; при запросе — аналогично или просто считаем, что там нули (<ts t="0:29:54"/>–<ts t="0:30:26"/>). Запрос затрагивает $\log C\approx 60$ вершин, всего создаётся порядка $60Q$ вершин — гораздо меньше $10^{18}$ (<ts t="0:30:26"/>–<ts t="0:30:45"/>).</p>
+<pre class="cpp">struct DynTree {
+    struct Node { ll sum = 0; int l = -1, r = -1; };
+    vector&lt;Node&gt; t; ll N;
+    DynTree(ll N) : N(N) { t.emplace_back(); }
+    int child(int v, bool right) {
+        int c = right ? t[v].r : t[v].l;
+        if (c &lt; 0) { c = t.size(); t.emplace_back(); (right ? t[v].r : t[v].l) = c; }
+        return c;
+    }
+    void add(ll pos, ll x) {                                   // a[pos] += x, создаём только вершины на пути
+        int v = 0; ll lo = 0, hi = N;
+        t[v].sum += x;
+        while (hi - lo &gt; 1) {
+            ll m = (lo + hi) / 2;
+            bool right = pos &gt;= m;
+            v = child(v, right);
+            (right ? lo : hi) = m;
+            t[v].sum += x;
+        }
+    }
+    ll get(int v, ll lo, ll hi, ll l, ll r) {                  // сумма на [l, r)
+        if (v &lt; 0 || r &lt;= lo || hi &lt;= l) return 0;             // отсутствующая вершина — нули
+        if (l &lt;= lo &amp;&amp; hi &lt;= r) return t[v].sum;
+        ll m = (lo + hi) / 2;
+        return get(t[v].l, lo, m, l, r) + get(t[v].r, m, hi, l, r);
+    }
+    ll get(ll l, ll r) { return get(0, 0, N, l, r); }
+};</pre>
+
+<h3 data-tc="0:32:40">Дерево Фенвика</h3>
+<p><ts t="0:32:40"/> <strong>Определение.</strong> В ячейке $i$ дерева Фенвика хранится сумма элементов исходного массива на промежутке от $i$ вниз, не включая $i-2^k$, где $2^k$ — младший единичный бит числа $i$: для $i=8$ это сумма до нуля, для $i=3$ — до двойки (<ts t="0:32:46"/>–<ts t="0:33:11"/>). Ограничение по сути одно: нужна <em>обратимая</em> операция (сумма подходит), потому что запрос на отрезке сводится к двум префиксам: $\mathrm{sum}(l,r)=\mathrm{pref}(r)-\mathrm{pref}(l-1)$ (<ts t="0:33:44"/>–<ts t="0:34:09"/>).</p>
+<div class="fix"><b>Уточнение.</b> В записи лектор говорит «максимальный бит», но его же примеры ($8\to 0$, $3\to 2$) соответствуют <em>младшему</em> единичному биту, то есть $i\,\&\,(-i)$; именно так определено дерево Фенвика.</div>
+<ul>
+<li><ts t="0:34:09"/> <strong>Префикс $i$:</strong> берём ячейку $i$ (она закрывает промежуток вниз до $i-2^k$), затем ячейку $i-2^k$ и так далее, каждый раз убирая один единичный бит — всего $O(\log n)$ слагаемых (<ts t="0:34:16"/>–<ts t="0:35:24"/>).</li>
+<li><ts t="0:35:30"/> <strong>Прибавление в точке $i$:</strong> нужно обновить ячейки, чей промежуток содержит $i$; переходим к ним, каждый раз <em>прибавляя</em> младший бит: $i \mathrel{+}= i\,\&\,(-i)$ (<ts t="0:35:40"/>–<ts t="0:36:26"/>).</li>
+</ul>
+<p><ts t="0:36:26"/> Код — две короткие функции: <code>for (; i &lt;= n; i += i &amp; -i) t[i] += x</code> и <code>for (; i &gt; 0; i -= i &amp; -i) ans += t[i]</code>. Формулу $i\,\&\,(-i)$ можно просто запомнить: она работает потому, что числа в компьютере хранятся в дополнительном коде, где $-1$ — все единицы (<ts t="0:36:34"/>–<ts t="0:37:38"/>).</p>
+<figure class="viz"><svg viewBox="0 0 760 296" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="296" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Дерево Фенвика: ячейка i хранит сумму на (i − lowbit(i), i]</text><rect x="70" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="102.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="140" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="172.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><rect x="210" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="242.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="280" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="312.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">4</text><rect x="350" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="382.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">5</text><rect x="420" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="452.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><rect x="490" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="522.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">7</text><rect x="560" y="52" width="64" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="592.0" y="74.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><rect x="72" y="108" width="62" height="24" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="102.0" y="125" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[1]</text><rect x="72" y="142" width="132" height="24" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="137.0" y="159" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[2]</text><rect x="212" y="108" width="62" height="24" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="242.0" y="125" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[3]</text><rect x="72" y="176" width="272" height="24" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="207.0" y="193" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[4]</text><rect x="352" y="108" width="62" height="24" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="382.0" y="125" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[5]</text><rect x="352" y="142" width="132" height="24" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="417.0" y="159" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[6]</text><rect x="492" y="108" width="62" height="24" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="522.0" y="125" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[7]</text><rect x="72" y="210" width="552" height="24" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="347.0" y="227" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">t[8]</text><text x="380" y="252" text-anchor="middle" font-size="14" font-weight="400" fill="#83c167">pref(7) = t[7] + t[6] + t[4]:  7 → 6 → 4 → 0  (убираем младший бит)</text><text x="380" y="278" text-anchor="middle" font-size="14" font-weight="400" fill="#ffff00">add(5): 5 → 6 → 8  (прибавляем младший бит) — обновляются t[5], t[6], t[8]</text></svg><figcaption>Ячейки разной «ширины»: длина промежутка равна младшему биту номера. Префикс собирается из O(log n) промежутков, обновление идёт по тем, что содержат изменяемый элемент.</figcaption></figure>
+<p><ts t="0:38:05"/> <strong>Построение</strong> — заполнить нулями и сделать $n$ обновлений, то есть $O(n\log n)$. Лектор в споре настаивает, что это нормально (запросы асимптотически логарифмические, а на степенях двойки работают даже быстрее), хотя за $O(n)$ тоже можно (<ts t="0:38:05"/>–<ts t="0:40:48"/>). Дерево Фенвика быстрее и занимает вчетверо меньше памяти, чем «дерево отрезков на $4n$» (<ts t="0:33:18"/>–<ts t="0:33:26"/>).</p>
+<pre class="cpp">struct Fenwick {
+    int n; vector&lt;ll&gt; t;
+    Fenwick(int n) : n(n), t(n + 1, 0) {}
+    void add(int i, ll x) { for (; i &lt;= n; i += i &amp; -i) t[i] += x; }   // индексы с 1
+    ll pref(int i) { ll r = 0; for (; i &gt; 0; i -= i &amp; -i) r += t[i]; return r; }
+    int kth(ll k) {                                                     // минимальное i с pref(i) &gt;= k
+        int pos = 0;
+        for (int pw = 1 &lt;&lt; __lg(n); pw; pw &gt;&gt;= 1)
+            if (pos + pw &lt;= n &amp;&amp; t[pos + pw] &lt; k) { pos += pw; k -= t[pos]; }
+        return pos + 1;
+    }
+};</pre>
+
+<h3 data-tc="0:41:17">Дерево отрезков-сортировок (merge sort tree)</h3>
+<p><ts t="0:41:38"/> <strong>Идея.</strong> В каждой вершине дерева хранить не сумму, а <em>весь отсортированный набор элементов</em> её отрезка: в корне — отсортированный массив, в сыновьях — отсортированные половины. Это ровно то, что строит сортировка слиянием: рекурсивные вызовы возвращают отсортированные массивы, которые мы сохраняем (<ts t="0:41:46"/>–<ts t="0:42:56"/>).</p>
+<ul>
+<li><ts t="0:43:04"/> <strong>Память.</strong> Каждый элемент лежит на $\log n$ слоях, итого $O(n\log n)$ (<ts t="0:43:04"/>–<ts t="0:43:22"/>).</li>
+<li><ts t="0:43:22"/> <strong>Построение.</strong> $O(n\log n)$, как у сортировки слиянием (<ts t="0:43:22"/>–<ts t="0:43:34"/>).</li>
+<li><ts t="0:43:34"/> <strong>Запрос «сколько чисел меньше $x$ на $[l,r]$».</strong> Разбиваем отрезок на $O(\log n)$ вершин, в каждой делаем <code>lower_bound</code> и складываем: $O(\log^2 n)$ (<ts t="0:43:34"/>–<ts t="0:44:22"/>).</li>
+<li><ts t="0:44:26"/> <strong>Обновление.</strong> Если вершины хранят <code>vector</code>, удалить и добавить элемент долго. Заменим векторы на <strong>ordered set</strong> из <code>pb_ds</code> — обычное множество, у которого есть операции «номер ключа» (<code>order_of_key</code>) и «ключ по номеру» (<code>find_by_order</code>); тогда обновление и запрос работают за $O(\log^2 n)$ (<ts t="0:44:47"/>–<ts t="0:47:35"/>). Лектор советует просто запомнить подключение (<code>ext/pb_ds/assoc_container.hpp</code>, <code>tree_policy.hpp</code>, пространство имён <code>__gnu_pbds</code>) и признаёт, что оно работает примерно в четыре раза дольше, чем собственное декартово дерево (<ts t="0:46:30"/>–<ts t="0:47:17"/>).</li>
+</ul>
+<pre class="cpp">typedef tree&lt;int, null_type, less&lt;int&gt;, rb_tree_tag, tree_order_statistics_node_update&gt; ordered_set;
+// s.order_of_key(x)   — сколько элементов меньше x
+// *s.find_by_order(k) — k-й по порядку элемент (с 0)</pre>
+
+<h3 data-tc="0:47:59">Частичное каскадирование</h3>
+<p><ts t="0:47:59"/> Теперь о том, что в зале, по признанию слушателей, не знает никто. <strong>Цель:</strong> убрать лишний логарифм из запроса «сколько чисел меньше $x$ на отрезке» в дереве отрезков-сортировок. Обновлений при этом нет — структура строится один раз (<ts t="0:48:41"/>–<ts t="0:49:12"/>). Лектор оговаривает, что на практике оно часто работает не быстрее обычного дерева сортировок: хотя асимптотика на $\log$ лучше, память в 4 раза больше, много кэш-промахов; но приводит замер на сабмитах: без каскадирования около 1,91 с, с каскадированием 1,37 с. Конечно, всё зависит от качества реализации (<ts t="0:48:52"/>–<ts t="0:54:11"/>).</p>
+<p><ts t="0:49:45"/> <strong>Идея.</strong> Массив корня получен слиянием массивов двух сыновей (двигаем два указателя, берём меньшее). Сделаем в корне один бинпоиск и найдём позицию $p$ первого элемента, не меньшего $x$ (<ts t="0:49:45"/>–<ts t="0:50:35"/>). Утверждение: для этого же запроса позиция в <em>каждом сыне</em> определяется по $p$ без бинпоиска:</p>
+<ul>
+<li><ts t="0:50:42"/> элемент, найденный в корне, пришёл из одной из половин; в этой половине он же будет первым не меньшим $x$ (если он первый на всём отрезке, то и в своей половине тоже) (<ts t="0:50:42"/>–<ts t="0:51:05"/>);</li>
+<li><ts t="0:51:05"/> в другой половине первым не меньшим $x$ будет ближайший справа от $p$ элемент, пришедший оттуда (<ts t="0:51:05"/>–<ts t="0:51:45"/>).</li>
+</ul>
+<p><ts t="0:51:52"/> Значит, для каждой позиции $i$ массива вершины достаточно заранее посчитать за линию, <em>сколько из первых $i$ элементов пришло из левого сына</em> (в левом сыне это его позиция, в правом — $i$ минус это число) — «следующий пришедший из другого массива» (<ts t="0:51:52"/>–<ts t="0:52:53"/>). Тогда один бинпоиск в корне и дальше обычный спуск по дереву, в котором в каждой вершине позиция известна «с неба»: <strong>$O(\log n)$ на запрос вместо $O(\log^2 n)$</strong> (<ts t="0:52:53"/>–<ts t="0:53:16"/>). Память — $O(n\log n)$ с большим множителем (лектор говорит про «четыре» (<ts t="0:53:16"/>–<ts t="0:53:27"/>)).</p>
+<figure class="viz"><svg viewBox="0 0 760 344" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="344" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Каскадирование: одна позиция в корне задаёт позиции в сыновьях</text><rect x="130" y="60" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="158.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="158.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="192" y="60" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="220.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><text x="220.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="254" y="60" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="282.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><text x="282.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="316" y="60" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="344.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">5</text><text x="344.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="378" y="60" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="406.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><text x="406.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="440" y="60" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="468.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">7</text><text x="468.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">5</text><rect x="502" y="60" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="530.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><text x="530.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">6</text><rect x="564" y="60" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="592.0" y="83.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">9</text><text x="592.0" y="112" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">7</text><text x="116" y="84" text-anchor="end" font-size="13" font-weight="400" fill="#9aa4b2">корень</text><rect x="150" y="220" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="178.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><text x="178.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="212" y="220" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="240.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">5</text><text x="240.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="274" y="220" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="302.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><text x="302.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="336" y="220" width="56" height="36" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="364.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">9</text><text x="364.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="430" y="220" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="458.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="458.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">0</text><rect x="492" y="220" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="520.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><text x="520.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="554" y="220" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="582.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">6</text><text x="582.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="616" y="220" width="56" height="36" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="644.0" y="243.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">7</text><text x="644.0" y="272" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><text x="136" y="244" text-anchor="end" font-size="13" font-weight="400" fill="#58c4dd">левый сын</text><text x="716" y="244" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1"></text><text x="560" y="300" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">правый сын</text><rect x="313" y="56" width="62" height="44" rx="8" fill="none" stroke="#ffff00" stroke-width="3"/><text x="344" y="40" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">x = 4: первый ≥ 4 стоит на позиции 3</text><line x1="336" y1="100" x2="238" y2="218" stroke="#58c4dd" stroke-width="2.5" marker-end="url(#ar)"/><line x1="356" y1="100" x2="580" y2="218" stroke="#83c167" stroke-width="2.5" marker-end="url(#ar)"/><text x="210" y="168" text-anchor="middle" font-size="12" font-weight="400" fill="#58c4dd">toL[3] = 1 из первых 3</text><text x="560" y="168" text-anchor="middle" font-size="12" font-weight="400" fill="#83c167">3 − 1 = 2</text><text x="380" y="328" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">в левом сыне позиция 1 (значение 5), в правом — 2 (значение 6): бинпоиск не нужен</text></svg><figcaption>Массив корня — слияние массивов сыновей. Для каждой позиции заранее запомнено, сколько из первых элементов пришло слева; по одной найденной позиции получаются позиции в обоих сыновьях.</figcaption></figure>
+<p><ts t="0:55:14"/> На вопрос из зала («а если сверху есть ещё элементы между») лектор отвечает: лишние элементы можно просто игнорировать — бинпоиск в корне указывает куда-то в «сжатый» массив; нужен лишь «следующий неравный», он считается предподсчётом (<ts t="0:55:14"/>–<ts t="0:56:12"/>).</p>
+<pre class="cpp">struct MergeSortTree {
+    int n; vector&lt;vector&lt;int&gt;&gt; val, toL;          // toL[v][i]: сколько из первых i элементов val[v] лежат в левом сыне
+    MergeSortTree(const vector&lt;int&gt;&amp; a) : n(a.size()), val(4 * a.size()), toL(4 * a.size()) { build(1, 0, n, a); }
+    void build(int v, int l, int r, const vector&lt;int&gt;&amp; a) {
+        if (r - l == 1) { val[v] = {a[l]}; return; }
+        int m = (l + r) / 2;
+        build(2 * v, l, m, a); build(2 * v + 1, m, r, a);
+        auto &amp;L = val[2 * v], &amp;R = val[2 * v + 1];
+        val[v].resize(r - l); toL[v].assign(r - l + 1, 0);
+        size_t i = 0, j = 0;
+        for (int k = 0; k &lt; r - l; k++) {
+            bool left = j == R.size() || (i &lt; L.size() &amp;&amp; L[i] &lt;= R[j]);
+            val[v][k] = left ? L[i++] : R[j++];
+            toL[v][k + 1] = toL[v][k] + left;
+        }
+    }
+    int cnt(int v, int l, int r, int ql, int qr, int p) {   // p — сколько элементов вершины v меньше x
+        if (qr &lt;= l || r &lt;= ql || p == 0) return 0;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) return p;
+        int m = (l + r) / 2;
+        return cnt(2 * v, l, m, ql, qr, toL[v][p]) + cnt(2 * v + 1, m, r, ql, qr, p - toL[v][p]);
+    }
+    int count_less(int ql, int qr, int x) {                 // на [ql, qr): один бинпоиск в корне, дальше O(1) на вершину
+        int p = lower_bound(val[1].begin(), val[1].end(), x) - val[1].begin();
+        return cnt(1, 0, n, ql, qr, p);
+    }
+};</pre>
+<div class="own"><b>Проверка.</b> Реализация выше хранит для каждой вершины массив <code>toL[i]</code> (сколько из первых $i$ элементов пришло слева); при равных значениях слияние берёт левый элемент первым. Запросы «сколько меньше $x$» сверены с перебором на 200 случайных массивах, включая поиск $k$-й статистики на отрезке и число различных (см. ниже).</div>
+
+<h3 data-tc="0:56:58">Многомерные деревья Фенвика</h3>
+<p><ts t="0:56:58"/> Многомерное дерево Фенвика — то же самое, но вложенное: Фенвик по первой координате, в каждой ячейке — Фенвик по второй и так далее; сумма на прямоугольнике — по формуле включений-исключений из префиксных сумм (в двумерном случае четыре слагаемых) (<ts t="0:56:58"/>–<ts t="0:58:21"/>). «Размерный» вариант с картой вместо массива даёт неявное дерево Фенвика (<ts t="0:57:09"/>–<ts t="0:58:08"/>). Лектор замечает, что в ответ на вопрос «сколько знают» зал «знает всё», и переходит к сложным задачам (<ts t="0:58:23"/>–<ts t="0:58:31"/>).</p>
+
+<h3 data-tc="0:58:31">$k$-я порядковая статистика на отрезке</h3>
+<p><ts t="0:58:31"/> <strong>Задача.</strong> Для отрезка $[l,r]$ найти $k$-й по величине элемент (<ts t="0:58:31"/>–<ts t="0:58:56"/>). Идея из зала — перебирать ответ бинарным поиском по значению (<ts t="0:59:03"/>–<ts t="0:59:11"/>). Лектор: сожмём координаты (получится перестановка), построим дерево отрезков-сортировок. Бинарный поиск по ответу: при кандидате $x$ посчитаем, сколько чисел на $[l,r]$ меньше $x$; если их не меньше $k$ — ответ левее (<ts t="1:00:09"/>–<ts t="1:00:56"/>). Время $O(\log^2 n)$ (<ts t="1:01:07"/>–<ts t="1:01:17"/>); лектор замечает, что и с каскадированием получится $\log^2$, поскольку бинпоиск по ответу даёт ещё один логарифм. Если есть обновления — заменяем отсортированные векторы на динамическую структуру (<ts t="1:01:28"/>–<ts t="1:01:55"/>).</p>
+<pre class="cpp">// k-я порядковая статистика на [l, r): бинпоиск по ответу, O(log^2)
+int kth_on_range(MergeSortTree&amp; t, int l, int r, int k) {   // k с 1
+    auto&amp; all = t.val[1];
+    int lo = 0, hi = (int)all.size() - 1;
+    while (lo &lt; hi) {
+        int mid = (lo + hi) / 2;
+        if (t.count_less(l, r, all[mid] + 1) &gt;= k) hi = mid; else lo = mid + 1;
+    }
+    return all[lo];
+}</pre>
+
+<h3 data-tc="1:02:00">НОД на отрезке при умножении на отрезке</h3>
+<p><ts t="1:02:09"/> <strong>Задача.</strong> Массив $a_1,\dots,a_n$; запросы: <code>*= x</code> на отрезке и $\gcd$ на отрезке (<ts t="1:02:09"/>–<ts t="1:02:44"/>). Идея из зала: хранить разложение на простые. В каждой вершине храним для каждого простого степень, с которой оно входит в $\gcd$ отрезка; умножение на $x$ — прибавление к соответствующим степеням (с лениво откладываемым значением, как раньше), а $\gcd$ двух сыновей — <strong>минимум по каждому простому</strong>, потому что простые независимы (<ts t="1:08:18"/>–<ts t="1:09:17"/>).</p>
+<p><ts t="1:06:26"/> Сколько простых? Если значения в запросах ограничены $A=10^3$, то различных простых около $168$ (лектор округляет до $200$). В вершине храним массив из $\le 200$ счётчиков, обновление и слияние стоят $O(200)$ на вершину, итого $O(200\cdot q\log n)$. Это много, и в зале спорят про память и константу; вывод обсуждения — для таких ограничений решение проходит (<ts t="1:07:42"/>–<ts t="1:10:53"/>). Для значений до $10^8$ разложения на простые хранить в каждой вершине нельзя, поэтому в разборе значения ограничены $10^3$ (<ts t="1:03:11"/>–<ts t="1:05:19"/>).</p>
+
+<h3 data-tc="1:10:58">Сколько элементов в отрезке попадает в $[x,y]$</h3>
+<p><ts t="1:11:03"/> <strong>Задача.</strong> Массив и запросы: изменить $a_i=x$; сколько таких $i\in[L,R]$, что $x\le a_i\le y$ (<ts t="1:11:03"/>–<ts t="1:12:09"/>). Это <strong>две</strong> задачи «сколько не больше $z$»: считаем на $[L,R]$ количество $\le y$ и вычитаем количество $<x$ — вариант дерева отрезков-сортировок (<ts t="1:12:17"/>–<ts t="1:12:34"/>).</p>
+
+<h3 data-tc="1:12:34">Бесполезные тройки и четвёрки (доминирование)</h3>
+<p><ts t="1:12:49"/> <strong>Задача.</strong> Даны $n$ троек $(a_i,b_i,c_i)$. Тройка $i$ <em>бесполезна</em>, если существует $j$ с $a_j>a_i$, $b_j>b_i$, $c_j>c_i$. Сколько троек остаётся (<ts t="1:12:41"/>–<ts t="1:13:25"/>)? Зал предлагает неявное трёхмерное дерево Фенвика (максимум на «суффиксе» — трёхмерном ортанте): это даёт $\log^3$ с большой константой, и лектор просит «быстрее, чем куб» (<ts t="1:14:06"/>–<ts t="1:15:23"/>).</p>
+<p><ts t="1:15:23"/> <strong>Двумерный случай.</strong> Отсортируем по $a$ по убыванию и пройдём, поддерживая максимум $b$ среди уже просмотренных: тройка (пара) бесполезна, если этот максимум строго больше её $b$ (<ts t="1:16:13"/>–<ts t="1:18:47"/>). Лектор записывает: сортировка по первому параметру превращает его «во время».</p>
+<p><ts t="1:18:53"/> <strong>Три измерения.</strong> После сортировки по $a$ у нас остаются пары $(b,c)$, идём по ним справа налево (в порядке, в котором нас могут убить) и складываем во вспомогательное дерево: индекс — $b$, значение — максимум $c$. Для очередной пары спрашиваем максимум $c$ на суффиксе по $b$ (тех, у кого $b$ больше): если он больше нашего $c$ — нас убивают (<ts t="1:19:50"/>–<ts t="1:21:12"/>). Нужно именно число убитых, а не число пар «убийца—жертва», поэтому достаточно максимума (<ts t="1:21:26"/>–<ts t="1:21:52"/>). Время $O(n\log n)$.</p>
+<pre class="cpp">vector&lt;char&gt; dominated_3d(const vector&lt;array&lt;int, 3&gt;&gt;&amp; p) {
+    int n = p.size();
+    vector&lt;int&gt; bs;
+    for (auto&amp; x : p) bs.push_back(x[1]);
+    sort(bs.begin(), bs.end()); bs.erase(unique(bs.begin(), bs.end()), bs.end());
+    int m = bs.size();
+    FenwickMax f(m);                                // по «перевёрнутому» b хранит максимум c: суффикс по b
+    auto rb = [&amp;](int b) { return m - (int)(lower_bound(bs.begin(), bs.end(), b) - bs.begin()); };   // 1..m, больше b — меньше номер
+    vector&lt;int&gt; ord(n); iota(ord.begin(), ord.end(), 0);
+    sort(ord.begin(), ord.end(), [&amp;](int x, int y) { return p[x][0] &gt; p[y][0]; });
+    vector&lt;char&gt; dead(n, 0);
+    for (int i = 0; i &lt; n;) {
+        int j = i;
+        while (j &lt; n &amp;&amp; p[ord[j]][0] == p[ord[i]][0]) j++;
+        for (int k = i; k &lt; j; k++) {               // сначала все запросы группы: равные a друг друга не убивают
+            int id = ord[k];
+            if (f.get(rb(p[id][1]) - 1) &gt; p[id][2]) dead[id] = 1;   // есть b' &gt; b с c' &gt; c (c хранится +1, 0 = пусто)
+        }
+        for (int k = i; k &lt; j; k++) { int id = ord[k]; f.upd(rb(p[id][1]), p[id][2]); }
+        i = j;
+    }
+    return dead;
+}</pre>
+<p><ts t="1:21:56"/> <strong>Четыре измерения.</strong> Попытки обойтись «по очереди» сжатием по каждой из переменных не работают (<ts t="1:22:37"/>–<ts t="1:23:34"/>): «обработать сколько-то параметров по отдельности и потом добавить ещё один» нельзя, нужно искать позицию, у которой <em>все четыре</em> больше, сразу (<ts t="1:23:49"/>–<ts t="1:24:07"/>). Многомерные Фенвики дают $\log^{d}$ и «можно сколько угодно измерений», но лектор утверждает, что можно обойтись одномерными структурами и получить $O(n\log^2 n)$ (<ts t="1:24:14"/>–<ts t="1:25:34"/>).</p>
+<p><ts t="1:28:14"/> <strong>Разделяй и властвуй (CDQ).</strong> Первый ход — отсортировать по $a$ (индексы нам не нужны) (<ts t="1:28:24"/>–<ts t="1:28:40"/>). Далее функция <code>solve(l, r)</code> получает подотрезок, отсортированный по $a$, а возвращает отметки «убит» для пар внутри него и массив, отсортированный по $b$ (<ts t="1:34:49"/>–<ts t="1:37:16"/>, <ts t="1:41:06"/>–<ts t="1:42:25"/>):</p>
+<ol>
+<li><ts t="1:41:41"/> Делим пополам, рекурсивно решаем левую и правую половины. Все убийства внутри половин уже учтены (<ts t="1:41:48"/>–<ts t="1:42:10"/>). У правой половины $a$ больше, поэтому элементы правой половины могут убивать элементы левой, но не наоборот: нас интересуют убийства «из правой половины в левую» (<ts t="1:35:11"/>–<ts t="1:36:24"/>).</li>
+<li><ts t="1:36:34"/> Порядок внутри половин уже не важен для $a$, поэтому «пересортируем» по $b$: оба результата рекурсии отсортированы по $b$, остаётся <strong>слить</strong> их за линию (<ts t="1:36:53"/>–<ts t="1:37:26"/>). Для каждого элемента помним, из какой половины он пришёл.</li>
+<li><ts t="1:37:36"/> Идём по слитому массиву в порядке <em>убывания</em> $b$ (<ts t="1:43:17"/>–<ts t="1:43:38"/>). Элементы правой половины добавляем в структуру по $(c,d)$; для элементов левой половины делаем запрос: есть ли в структуре элемент с $c'>c$ и $d'>d$. Если есть, то у него $a$ больше (он из правой половины), $b$ больше (он уже добавлен), $c$ и $d$ больше — значит, нас можно выбросить (<ts t="1:37:44"/>–<ts t="1:38:48"/>, <ts t="1:47:52"/>–<ts t="1:48:34"/>).</li>
+</ol>
+<figure class="viz"><svg viewBox="0 0 760 346" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="346" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Четырёхмерное доминирование: разделяй и властвуй по a</text><rect x="40" y="50" width="150" height="34" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="115.0" y="71.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">левая: a меньше</text><rect x="200" y="50" width="150" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="275.0" y="71.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">правая: a больше</text><text x="195" y="106" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">решили рекурсивно обе половины</text><rect x="40" y="140" width="50" height="34" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="65.0" y="161.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">L1</text><rect x="96" y="140" width="50" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="121.0" y="161.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">R2</text><rect x="152" y="140" width="50" height="34" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="177.0" y="161.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">L3</text><rect x="208" y="140" width="50" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="233.0" y="161.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">R4</text><rect x="264" y="140" width="50" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="289.0" y="161.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">R5</text><rect x="320" y="140" width="50" height="34" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="345.0" y="161.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">L6</text><text x="195" y="132" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">слили по b (возрастание)</text><line x1="344" y1="190" x2="64" y2="190" stroke="#ffff00" stroke-width="2.5" marker-end="url(#ar)"/><text x="195" y="212" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">идём справа налево: по убыванию b</text><text x="195" y="250" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">R → добавить (c, d) в структуру</text><text x="195" y="274" text-anchor="middle" font-size="13" font-weight="400" fill="#58c4dd">L → спросить: есть ли c' &gt; c и d' &gt; d?</text><rect x="440" y="50" width="280" height="240" rx="8" fill="#1E2836" stroke="#3b4a63"/><text x="580.0" y="40" text-anchor="middle" font-size="13" font-weight="400" fill="#9aa4b2">структура по (c, d): ступенька</text><circle cx="480" cy="240" r="6" fill="#83c167"/><circle cx="530" cy="190" r="6" fill="#83c167"/><circle cx="590" cy="140" r="6" fill="#83c167"/><circle cx="655" cy="100" r="6" fill="#83c167"/><line x1="480" y1="240" x2="530" y2="240" stroke="#83c167" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="530" y1="240" x2="530" y2="190" stroke="#83c167" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="530" y1="190" x2="590" y2="190" stroke="#83c167" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="590" y1="190" x2="590" y2="140" stroke="#83c167" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="590" y1="140" x2="655" y2="140" stroke="#83c167" stroke-width="1.5" stroke-dasharray="4 3"/><line x1="655" y1="140" x2="655" y2="100" stroke="#83c167" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="540" cy="240" r="7" fill="#fc6255"/><text x="540" y="266" text-anchor="middle" font-size="12" font-weight="400" fill="#fc6255">нас убивают</text><circle cx="510" cy="110" r="7" fill="#58c4dd"/><text x="510" y="94" text-anchor="middle" font-size="12" font-weight="400" fill="#58c4dd">выживает</text><text x="714" y="282" text-anchor="end" font-size="12" font-weight="400" fill="#9aa4b2">c →</text><text x="450" y="66" text-anchor="start" font-size="12" font-weight="400" fill="#9aa4b2">d ↑</text><text x="380" y="330" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">O(n log n) на уровень рекурсии, всего O(n log² n)</text></svg><figcaption>Левые элементы может убить только правая половина. Слияние по b даёт порядок обработки, а ступенчатая структура по (c, d) отвечает на вопрос «есть ли точка строго правее и выше».</figcaption></figure>
+<p><ts t="1:40:40"/> <strong>Структура по $(c,d)$.</strong> Для запроса «существует ли $c'>c$ и $d'>d$» достаточно хранить «ступенчатый стек» из несравнимых по $(c,d)$ пар: $c_1<c_2<\dots$ и $d_1>d_2>\dots$ (<ts t="1:44:07"/>–<ts t="1:44:49"/>). Вставка пары $(C,D)$: <code>lower_bound</code> по $c$ находит первую запись с $c'\ge C$. Если у неё $d'\ge D$, то новая пара бесполезна — не добавляем. Иначе удаляем все предшествующие записи с $d'\le D$ (они теперь бесполезны) и вставляем $(C,D)$ (<ts t="1:45:24"/>–<ts t="1:47:01"/>). Запрос $(C,D)$: берём первую запись с $c'>C$; у неё $d'$ среди подходящих наибольшее, поэтому достаточно сравнить $d'>D$ (<ts t="1:47:09"/>–<ts t="1:48:34"/>). Лектор в споре замечает, что здесь вместо дерева отрезков годится <code>set</code>.</p>
+<div class="fix"><b>Оценка времени.</b> Лектор называет итог $O(n\log n)$ («сортировка слиянием плюс $n\log n$»), но структура по $(c,d)$ даёт $O(\log)$ на элемент на каждом уровне рекурсии, то есть всего $O(n\log^2 n)$. Слияние вместо повторной сортировки экономит именно лишний логарифм сортировки — иначе было бы $\log^3$ (спор об этом — <ts t="1:39:32"/>–<ts t="1:40:00"/>).</div>
+<pre class="cpp">struct Dominance4D {
+    vector&lt;array&lt;int, 4&gt;&gt; P; vector&lt;char&gt; dead;
+    Dominance4D(vector&lt;array&lt;int, 4&gt;&gt; p) : P(move(p)), dead(P.size(), 0) {   // a попарно различны
+        sort(P.begin(), P.end());
+        solve(0, P.size());
+    }
+    // возвращает индексы [l, r), отсортированные по b; дополнительно отмечает убитых «через границу» половин
+    vector&lt;int&gt; solve(int l, int r) {
+        if (r - l == 1) return {l};
+        int m = (l + r) / 2;
+        auto A = solve(l, m), B = solve(m, r);        // у B значения a больше, чем у A
+        vector&lt;int&gt; mg; mg.reserve(r - l);
+        size_t i = 0, j = 0;
+        while (i &lt; A.size() || j &lt; B.size()) {        // слияние по b; при равных b правая половина идёт раньше
+            if (j == B.size() || (i &lt; A.size() &amp;&amp; P[A[i]][1] &lt; P[B[j]][1])) mg.push_back(A[i++]);
+            else mg.push_back(B[j++]);
+        }
+        map&lt;int, int&gt; front;                          // «ступенчатый стек»: c растёт, d убывает
+        for (int k = (int)mg.size() - 1; k &gt;= 0; k--) {   // по убыванию b
+            int id = mg[k], c = P[id][2], d = P[id][3];
+            if (id &gt;= m) {                            // из правой половины — добавляем в структуру
+                auto it = front.lower_bound(c);
+                if (it != front.end() &amp;&amp; it-&gt;second &gt;= d) continue;       // нас уже перекрывают
+                if (it != front.end() &amp;&amp; it-&gt;first == c) it = front.erase(it);
+                while (it != front.begin() &amp;&amp; prev(it)-&gt;second &lt;= d) front.erase(prev(it));
+                front[c] = d;
+            } else {                                  // из левой — спрашиваем: есть ли c' &gt; c и d' &gt; d
+                auto it = front.upper_bound(c);
+                if (it != front.end() &amp;&amp; it-&gt;second &gt; d) dead[id] = 1;
+            }
+        }
+        return mg;
+    }
+};</pre>
+<div class="own"><b>Проверка.</b> В коде предполагается, что значения $a$ попарно различны (как в разборе); при равных $a$ нужно отдельно проследить, чтобы «равные» не убивали друг друга. Трёхмерный и четырёхмерный варианты сверены с квадратичным перебором на 400 случайных наборах.</div>
+<div class="note"><b>Домашнее задание.</b> <ts t="1:49:57"/> В конце лектор предлагает подумать, как добавить пятый параметр; за решение — бонус (<ts t="1:49:57"/>–<ts t="1:50:13"/>).</div>
+
+<h3 data-tc="1:49:37">Количество различных на отрезке</h3>
+<p><ts t="1:49:37"/> <strong>Задача.</strong> Сколько различных чисел на отрезке $[l,r]$ (<ts t="1:49:37"/>–<ts t="1:49:44"/>)? Из зала: алгоритм Мо, оффлайн-вариант. Лектор показывает онлайн-решение на дереве отрезков-сортировок (<ts t="1:49:44"/>–<ts t="1:50:31"/>):</p>
+<ul>
+<li><ts t="1:50:31"/> вместо $a_i$ записываем $\mathrm{nxt}_i$ — индекс ближайшего справа элемента, равного $a_i$ (<ts t="1:50:31"/>–<ts t="1:50:48"/>);</li>
+<li><ts t="1:50:52"/> на отрезке $[l,r]$ каждое число надо посчитать один раз — по его последнему вхождению. У последнего вхождения $\mathrm{nxt}>r$, у остальных $\mathrm{nxt}\le r$. Остаётся найти количество $i\in[l,r]$ с $\mathrm{nxt}_i>r$ — это то же «сколько чисел больше $r$ на отрезке», $O(\log^2 n)$, а с каскадированием — $O(\log n)$ (<ts t="1:50:52"/>–<ts t="1:51:34"/>).</li>
+</ul>
+<p><ts t="1:51:19"/> Зал спорит, что можно решить «корнячкой» (корневой декомпозицией); лектор отвечает, что с каскадированием получится быстрее, а вопрос реальной скорости зависит от константы (<ts t="1:51:19"/>–<ts t="1:52:10"/>).</p>
+<pre class="cpp">// число различных на [l, r): считаем позиции, у которых следующее равное лежит за пределами отрезка
+int distinct_on_range(MergeSortTree&amp; tnext, int l, int r) { // tnext построено по nxt[i] = индекс следующего равного (или n)
+    return (r - l) - tnext.count_less(l, r, r);
+}</pre>
+
+<h3 data-tc="1:52:37">Задача про ящики и яблоки (оставлена без решения)</h3>
+<p><ts t="1:52:37"/> <strong>Условие.</strong> На поле падают яблоки; яблоко падает в момент $t$ в точке $x$. Есть ящики одинаковой длины $V$; каждый можно поставить в любую точку на время $D$ секунд подряд (один раз). Нужно собрать как можно больше яблок (<ts t="1:52:37"/>–<ts t="1:53:58"/>). Если смотреть на плоскость «время — координата», яблоки — точки, а ящики — одинаковые прямоугольники $V\times D$; нужно выбрать прямоугольники, покрывающие наибольшее число точек (<ts t="1:55:07"/>–<ts t="1:55:27"/>). Для одного ящика — максимальный подпрямоугольник (заметающей прямой с «+1 на отрезке» и максимумом), для двух возникают разбор случаев: прямоугольники не пересекаются (берём оптимальный для каждого) или пересекаются по какой-то общей точке (лектор предлагает перебирать самое левое и самое верхнее яблоко пересечения) (<ts t="1:58:16"/>–<ts t="2:02:00"/>). Простая идея «выбрать лучший, удалить яблоки, выбрать второй лучший» неверна: пример с тремя группами точек показывает, что жадность проигрывает сдвигу (<ts t="2:03:54"/>–<ts t="2:04:49"/>).</p>
+<div class="note"><b>Итог обсуждения.</b> <ts t="2:05:56"/> Ни одно из предложений к концу не доведено до решения; лектор говорит, что «это сложная задача» и сам не уверен, решается ли она (<ts t="1:58:11"/>, <ts t="2:05:56"/>). Дальше — перерыв и разбор контеста по математике.</div>
+
+<h2 data-tc="2:06:04">Перерыв и разбор контеста по математике</h2>
+<p><ts t="2:06:04"/> После лекции — перерыв (в записи он занимает несколько минут, <ts t="2:06:55"/>–<ts t="2:12:47"/>). Затем преподаватель разбирает контест по теме «Математика 1» (часть задач разобрана в лекции, их повторять не будут, <ts t="2:13:08"/>–<ts t="2:13:20"/>). В записи разбор идёт кратко, на идейном уровне.</p>
+
+<h3 data-tc="2:13:20">Задача D. Сумма НОД по парам</h3>
+<p><ts t="2:13:20"/> Прямо считать НОД для каждой пары слишком долго, поэтому для <strong>каждого числа $d$</strong> считаем количество пар, у которых НОД <em>равен</em> $d$ (<ts t="2:13:23"/>–<ts t="2:13:40"/>). Сначала берём все пары чисел, кратных $d$; затем вычитаем пары, у которых НОД кратен $d$, но строго больше $d$ — их мы уже посчитали для больших $d$ (<ts t="2:13:40"/>–<ts t="2:13:50"/>). Перебор всех $d$ вместе с их кратными работает за $O(n\log n)$ (гармонический ряд) (<ts t="2:13:50"/>–<ts t="2:14:20"/>).</p>
+
+<h3 data-tc="2:14:28">Задача G. Максимум $\gcd\cdot(\text{сумма}-\text{максимум})$ по подотрезкам</h3>
+<p><ts t="2:14:28"/> <strong>Условие.</strong> Для подотрезка массива значение равно $\gcd$ на нём, умноженному на (сумма на нём минус максимум на нём). Нужно максимизировать значение по всем подотрезкам (<ts t="2:14:28"/>–<ts t="2:15:12"/>).</p>
+<ul>
+<li><ts t="2:15:12"/> <strong>Фиксируем максимум:</strong> пусть максимум достигается в позиции $t$ (при равных можно брать, например, самый правый — в этой задаче это неважно, ведь мы ищем максимум) (<ts t="2:15:12"/>–<ts t="2:15:46"/>).</li>
+<li><ts t="2:15:57"/> <strong>Различных значений $\gcd$ у отрезков, оканчивающихся в одной позиции, не больше $\log A$.</strong> Каждое следующее $\gcd$ делит предыдущее и отличается от него, то есть как минимум вдвое меньше (<ts t="2:15:57"/>–<ts t="2:16:42"/>). То же верно для отрезков с общим началом.</li>
+<li><ts t="2:16:42"/> Поэтому можно перебрать «слева» значение $\gcd$ и «справа» значение $\gcd$ — получится $O(\log^2 A)$ пар. Числа могут быть отрицательными, поэтому сумма отрезка — это разность префиксных сумм, и для данной пары групп нужно взять <strong>максимальную</strong> префиксную сумму справа и <strong>минимальную</strong> слева (<ts t="2:16:42"/>–<ts t="2:17:20"/>).</li>
+<li><ts t="2:17:20"/> <strong>Как хранить группы концов с одинаковым $\gcd$.</strong> Идём по префиксу и поддерживаем стек групп: для каждого значения $\gcd$ — отрезок начал, дающих это значение. Новый элемент $a_k$ пересчитывает $\gcd$ каждой группы (две группы, ставшие равными, склеиваем); если две позиции были в одной группе, то они остаются в одной группе и после добавления нового элемента. В группе удобно хранить минимум и максимум префиксных сумм (<ts t="2:17:31"/>–<ts t="2:19:40"/>).</li>
+</ul>
+<p><ts t="2:19:40"/> Итог лектор оценивает как $O(n\log A)$ на перебор значений $\gcd$ (<ts t="2:19:40"/>–<ts t="2:19:56"/>).</p>
+<div class="own"><b>Оговорка.</b> В записи не показано, как границы групп обрезаются по области, где $a_t$ действительно максимум; без такого ограничения значение «сумма минус $a_t$» переоценивает ответ. Ограничение задаётся ближайшими большими элементами слева и справа от $t$. Перебор пар групп даёт $O(\log^2 A)$ на позицию, а не $O(\log A)$, как в итоговой оценке в записи.</div>
+
+<h3 data-tc="2:19:56">Задача I. Строки из букв A, B, C по числам соседних пар</h3>
+<p><ts t="2:20:11"/> Даны количества вхождений каждой пары букв как соседних символов в строке из трёх букв $A$, $B$, $C$; нужно найти количество подходящих строк по модулю (<ts t="2:20:13"/>–<ts t="2:20:51"/>). Для двух букв это задача из лекции: известно число переходов между блоками $A$ и $B$, а буквы «шарами и перегородками» раскладываются по блокам (<ts t="2:20:51"/>–<ts t="2:21:24"/>).</p>
+<p><ts t="2:21:24"/> Теперь добавляется буква $C$. Блоки из $C$ бывают трёх видов: вставленные <em>внутрь группы $A$</em> (между двумя $A$), <em>внутрь группы $B$</em> и <em>между $A$ и $B$</em> (в любом из двух порядков). Блок $C$ между двумя $A$ вносит поровну в пары $AC$ и $CA$, между двумя $B$ — поровну в $BC$ и $CB$ (<ts t="2:21:34"/>–<ts t="2:22:56"/>). Лектор: перебираем количество блоков $C$ одного вида (в разборе — между $B$) (<ts t="2:23:10"/>–<ts t="2:23:21"/>). Остаток пар $BC$ и $CB$ определяет блоки на переходах $B\to A$ и $A\to B$, остаток $AC$ и $CA$ — блоки внутри групп $A$ (<ts t="2:23:21"/>–<ts t="2:23:50"/>). Для найденного количества блоков каждого вида остаётся перемножить числа способов «шарами и перегородками» (<ts t="2:23:57"/>–<ts t="2:25:01"/>). После предпосчёта факториалов и обратных к ним за $O(\text{длины строки})$ время работы линейное: перебор по количеству блоков и подсчёт по формулам из лекции (<ts t="2:25:01"/>–<ts t="2:25:35"/>).</p>
+
+<h3 data-tc="2:26:05">Задача J. Пути по сетке через достопримечательности</h3>
+<p><ts t="2:26:05"/> Нужно посетить все достопримечательности, ходя по сетке; подсчитать число способов. Сведение, которое преподаватель уже рассказывала на прошлом занятии: вместо цикла из левого верхнего угла в правый нижний считаем <strong>пары непересекающихся путей</strong> — из клетки сразу за стартом в клетку сразу перед концом (<ts t="2:26:51"/>–<ts t="2:27:10"/>).</p>
+<ul>
+<li><ts t="2:27:10"/> Состояние динамики $dp[i][j]$: один путь дошёл до достопримечательности $i$, другой — до $j$, и все достопримечательности вплоть до $\max(i,j)$ посещены (<ts t="2:27:10"/>–<ts t="2:27:23"/>, <ts t="2:30:32"/>–<ts t="2:30:54"/>).</li>
+<li><ts t="2:27:28"/> <strong>Порядок.</strong> На каждом шаге сумма координат растёт, поэтому достопримечательности сортируем по $x+y$ — это порядок, в котором их можно посещать (<ts t="2:27:28"/>–<ts t="2:28:00"/>).</li>
+<li><ts t="2:28:08"/> <strong>Непересечение.</strong> Если пути пересеклись, то хвосты можно обменять местами: получатся два других пути из тех же начал, но к <em>переставленным</em> концам; все достопримечательности по-прежнему посещены. Значит, лишние пары — это пары путей, пришедших в конец 2 и конец 1 вместо конца 1 и конца 2, и ответ — разность двух значений динамики (<ts t="2:28:17"/>–<ts t="2:30:26"/>).</li>
+<li><ts t="2:31:06"/> <strong>Переходы.</strong> Пусть $i\ge j$. Если $i>j+1$, то достопримечательность $i-1$ уже посещена тем же путём, и берём $dp[i-1][j]$ умноженное на число путей из $i-1$ в $i$. Если $i=j+1$, то предыдущая достопримечательность этого пути — какая-то $k\le j$; перебираем $k$ и умножаем на число путей из $k$ в $i$ (<ts t="2:31:06"/>–<ts t="2:32:39"/>).</li>
+</ul>
+<p><ts t="2:32:39"/> Переходы первого вида стоят $O(1)$ (всего $O(n^2)$), второго — $O(n)$, но таких состояний только $O(n)$, поэтому тоже $O(n^2)$ в сумме. Итог $O(n^2)$ плюс предпосчёт факториалов для числа путей между клетками (<ts t="2:32:42"/>–<ts t="2:33:18"/>).</p>
+<div class="note"><b>Источники.</b> <ts t="2:33:32"/> Задача J — с регионального этапа 2024–2025, задача I — с регионального этапа 2022–2023; их разборы можно прочитать онлайн, там же есть разборы подзадач (<ts t="2:33:32"/>–<ts t="2:34:02"/>). Затем объявлен перерыв на 40 минут (<ts t="2:34:02"/>–<ts t="2:34:43"/>).</div>
+
+<h2 data-tc="3:17:00">Семинар: приёмы и задачи на структуры данных</h2>
+<p><ts t="3:17:00"/> После перерыва (<ts t="2:34:20"/>–<ts t="3:17:00"/>) — семинар. В начале ведущие проверяют новую трансляцию звука без входа в конференцию с компьютера, а затем семинар ведёт другой преподаватель: задачи идут «от простого к сложному», по ходу обсуждение с залом (<ts t="3:17:00"/>–<ts t="3:18:36"/>).</p>
+
+<h3 data-tc="3:18:36">Дерево отрезков в $2n$ ячейках</h3>
+<p><ts t="3:18:48"/> Когда пишут дерево отрезков «сверху», обычно выделяют массив на $4n$. На самом деле вершин не больше $2n$: на нижнем слое $n$ вершин, выше $n/2$, $n/4$ и так далее (<ts t="3:19:16"/>–<ts t="3:19:55"/>). Хочется индексацию, в которой нет пропусков (<ts t="3:20:02"/>–<ts t="3:20:10"/>). Стандартная нумерация — в порядке обхода в ширину (корень $0$, дальше $1,2,3,\dots$) оставляет «дыры», если дерево неполное (<ts t="3:21:00"/>–<ts t="3:21:37"/>).</p>
+<p><ts t="3:21:37"/> <strong>Нумерация в порядке обхода в глубину.</strong> Пусть вершина получила номер $x$. Левому сыну даём $x+1$, а правому — $x+2\,(\text{размер левого отрезка})$: у левого поддерева на $s$ листьях ровно $2s-1$ вершин, так что правый сын идёт сразу за ним (<ts t="3:21:48"/>–<ts t="3:22:37"/>). Пропусков нет, и памяти нужно $2n$ вместо $4n$.</p>
+<figure class="viz"><svg viewBox="0 0 760 344" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="344" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">Нумерация в порядке обхода в глубину: левый x + 1, правый x + 2·(размер левого)</text><line x1="380.0" y1="70" x2="220.0" y2="132" stroke="#3b4a63" stroke-width="2"/><line x1="380.0" y1="70" x2="540.0" y2="132" stroke="#3b4a63" stroke-width="2"/><line x1="220.0" y1="132" x2="113.33333333333333" y2="194" stroke="#3b4a63" stroke-width="2"/><line x1="220.0" y1="132" x2="273.3333333333333" y2="194" stroke="#3b4a63" stroke-width="2"/><line x1="273.3333333333333" y1="194" x2="220.0" y2="256" stroke="#3b4a63" stroke-width="2"/><line x1="273.3333333333333" y1="194" x2="326.6666666666667" y2="256" stroke="#3b4a63" stroke-width="2"/><line x1="540.0" y1="132" x2="433.33333333333337" y2="194" stroke="#3b4a63" stroke-width="2"/><line x1="540.0" y1="132" x2="593.3333333333334" y2="194" stroke="#3b4a63" stroke-width="2"/><line x1="593.3333333333334" y1="194" x2="540.0" y2="256" stroke="#3b4a63" stroke-width="2"/><line x1="593.3333333333334" y1="194" x2="646.6666666666666" y2="256" stroke="#3b4a63" stroke-width="2"/><circle cx="380.0" cy="70" r="19" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="380.0" y="74.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">0</text><text x="380.0" y="106" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[0,6)</text><circle cx="220.0" cy="132" r="19" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="220.0" y="136.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">1</text><text x="220.0" y="168" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[0,3)</text><circle cx="113.33333333333333" cy="194" r="19" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="113.33333333333333" y="198.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">2</text><text x="113.33333333333333" y="230" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[0,1)</text><circle cx="273.3333333333333" cy="194" r="19" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="273.3333333333333" y="198.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">3</text><text x="273.3333333333333" y="230" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[1,3)</text><circle cx="220.0" cy="256" r="19" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="220.0" y="260.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">4</text><text x="220.0" y="292" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[1,2)</text><circle cx="326.6666666666667" cy="256" r="19" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="326.6666666666667" y="260.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">5</text><text x="326.6666666666667" y="292" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[2,3)</text><circle cx="540.0" cy="132" r="19" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="540.0" y="136.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">6</text><text x="540.0" y="168" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[3,6)</text><circle cx="433.33333333333337" cy="194" r="19" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="433.33333333333337" y="198.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">7</text><text x="433.33333333333337" y="230" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[3,4)</text><circle cx="593.3333333333334" cy="194" r="19" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="593.3333333333334" y="198.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">8</text><text x="593.3333333333334" y="230" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[4,6)</text><circle cx="540.0" cy="256" r="19" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="540.0" y="260.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">9</text><text x="540.0" y="292" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[4,5)</text><circle cx="646.6666666666666" cy="256" r="19" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="646.6666666666666" y="260.9" text-anchor="middle" font-size="14" font-weight="400" fill="#dfe7f1">10</text><text x="646.6666666666666" y="292" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">[5,6)</text><text x="380" y="326" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">ячейки 0 … 2n − 2 используются ровно по разу, пропусков нет</text></svg><figcaption>Для n = 6: у левого поддерева 2s − 1 вершин (s — число листьев), так что правый сын идёт сразу за ним. Вершины соседних уровней лежат рядом в памяти.</figcaption></figure>
+<p><ts t="3:22:49"/> Есть и второй плюс: вершины лежат в памяти почти подряд, при спуске нет «странных прыжков» по памяти (<ts t="3:22:49"/>–<ts t="3:23:13"/>). Это особенно полезно, когда в вершине лежит что-то тяжёлое (строка, матрица переходов) — выигрыш по памяти и по кэшу примерно вдвое. Ведущий весь одиннадцатый класс писал так (<ts t="3:23:13"/>–<ts t="3:23:34"/>).</p>
+<pre class="cpp">struct SegSum2n {
+    int n; vector&lt;ll&gt; t;
+    SegSum2n(const vector&lt;ll&gt;&amp; a) : n(a.size()), t(2 * a.size()) { build(0, 0, n, a); }
+    void build(int x, int l, int r, const vector&lt;ll&gt;&amp; a) {           // отрезок [l, r)
+        if (r - l == 1) { t[x] = a[l]; return; }
+        int m = (l + r) / 2;
+        int L = x + 1, R = x + 2 * (m - l);                          // у левого поддерева 2(m-l)-1 вершин
+        build(L, l, m, a); build(R, m, r, a);
+        t[x] = t[L] + t[R];
+    }
+    ll get(int x, int l, int r, int ql, int qr) {
+        if (qr &lt;= l || r &lt;= ql) return 0;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) return t[x];
+        int m = (l + r) / 2;
+        return get(x + 1, l, m, ql, qr) + get(x + 2 * (m - l), m, r, ql, qr);
+    }
+    ll get(int l, int r) { return get(0, 0, n, l, r); }
+};</pre>
+<div class="own"><b>Проверка.</b> В тесте проверено, что для любого $n$ используются ячейки $0,\dots,2n-2$ ровно по одному разу, а суммы на отрезках совпадают с прямым подсчётом.</div>
+
+<h3 data-tc="3:23:37">Добавление, удаление, $k$-я порядковая статистика</h3>
+<p><ts t="3:23:45"/> <strong>Задача.</strong> Структура, которая умеет добавить число, удалить число и найти $k$-й по порядку элемент (<ts t="3:23:45"/>–<ts t="3:24:28"/>). Зал предлагает корневую, спуск по дереву отрезков, декартово дерево, <code>ordered_set</code> — ведущий отмечает, что последнее медленно и его нужно помнить (<ts t="3:24:28"/>–<ts t="3:25:08"/>).</p>
+<p><ts t="3:25:08"/> <strong>Решение.</strong> Сожмём координаты (если запросы известны заранее) и заведём дерево отрезков (или Фенвика) по значениям: добавление числа $x$ — $+1$ в точке $x$, удаление — $-1$. $k$-й элемент — минимальный префикс с суммой не меньше $k$, находится <strong>спуском</strong> (<ts t="3:25:16"/>–<ts t="3:26:26"/>). Поскольку запросы только $+1$ и $-1$ в точке, достаточно дерева Фенвика (<ts t="3:26:26"/>–<ts t="3:26:35"/>).</p>
+<ul>
+<li><ts t="3:26:42"/> Спуск по Фенвику можно заменить бинпоиском с префиксными суммами за $O(\log^2 n)$; ведущий считает, что это тоже быстро (константа около 100–400), и по факту часто быстрее дерева отрезков (<ts t="3:26:42"/>–<ts t="3:27:17"/>).</li>
+<li><ts t="3:27:49"/> Если запросы приходят онлайн, делаем неявный Фенвик — массив заменяется на ассоциативный контейнер (<ts t="3:27:49"/>–<ts t="3:28:01"/>).</li>
+<li><ts t="3:28:15"/> Сам спуск по Фенвику идёт так: в ячейке записана сумма на промежутке; если сумма в ячейке меньше $k$ — вычитаем её и сдвигаемся вправо, иначе уходим внутрь (<ts t="3:28:15"/>–<ts t="3:29:12"/>). Удобнее писать для нумерации с единицы.</li>
+</ul>
+<p>Реализация спуска по Фенвику — метод <code>kth</code> в коде выше (раздел про Фенвика); он проверен в тесте против перебора. <ts t="3:29:12"/> Вывод ведущего: «чем писать декартач — фигня»; такой способ намного проще.</p>
+
+<h3 data-tc="3:29:49">Прибавление на отрезке и $\gcd$ на отрезке</h3>
+<p><ts t="3:29:49"/> <strong>Задача.</strong> Операции: $+= x$ на отрезке и $\gcd$ на отрезке (числа до $10^9$ или около того, $n\le 5\cdot 10^4$) (<ts t="3:29:49"/>–<ts t="3:30:15"/>). Кажется, что $\gcd$ непредсказуемо меняется при прибавлении (то получает новые делители, то теряет), и надо подумать (<ts t="3:30:23"/>–<ts t="3:30:46"/>). Зал и чат ищут идею; ключ — свойство алгоритма Евклида (<ts t="3:32:44"/>–<ts t="3:33:06"/>):</p>
+<div class="formula">$\gcd(a,b)=\gcd(a-b,\,b)$</div>
+<p><ts t="3:33:14"/> Следствие: $\gcd(a_l,a_{l+1},\dots,a_r)=\gcd(a_l,\ a_{l+1}-a_l,\ \dots,\ a_r-a_{r-1})$ — достаточно знать $a_l$ и <em>разности соседних</em> (<ts t="3:33:14"/>–<ts t="3:35:30"/>). Прибавление $x$ на $[l,r]$ меняет только <strong>две</strong> разности: $d_l\mathrel{+}=x$ и $d_{r+1}\mathrel{-}=x$ (<ts t="3:35:23"/>–<ts t="3:35:52"/>). Значит:</p>
+<ul>
+<li>дерево отрезков по разностям поддерживает точечные изменения и $\gcd$ на отрезке;</li>
+<li>значение $a_l$ — префиксная сумма разностей, хранится в дереве Фенвика (<ts t="3:33:49"/>–<ts t="3:34:01"/>).</li>
+</ul>
+<p>Массовых операций (<code>push</code>) не нужно вовсе (<ts t="3:35:30"/>–<ts t="3:35:59"/>). Лектор уточняет, что догадаться до такого можно, если знать это свойство $\gcd$, а не «угадывая» сразу переход к разностям (<ts t="3:35:59"/>–<ts t="3:36:08"/>).</p>
+<pre class="cpp">struct RangeAddGcd {
+    int n, sz; vector&lt;ll&gt; d, seg; Fenwick bit;     // d[i] = a[i] - a[i-1]; bit хранит d, чтобы получить a[i]
+    RangeAddGcd(const vector&lt;ll&gt;&amp; a) : n(a.size()), d(a.size()), bit(a.size() + 1) {
+        for (int i = 0; i &lt; n; i++) { d[i] = a[i] - (i ? a[i - 1] : 0); bit.add(i + 1, d[i]); }
+        sz = 1; while (sz &lt; n) sz &lt;&lt;= 1;
+        seg.assign(2 * sz, 0);
+        for (int i = 1; i &lt; n; i++) seg[sz + i] = llabs(d[i]);
+        for (int v = sz - 1; v &gt;= 1; v--) seg[v] = std::gcd(seg[2 * v], seg[2 * v + 1]);
+    }
+    void bump(int i, ll x) {
+        if (i &gt;= n) return;
+        d[i] += x; bit.add(i + 1, x);
+        if (i == 0) return;                           // d[0] = a[0] в дереве НОД не участвует
+        int v = sz + i; seg[v] = llabs(d[i]);
+        for (v &gt;&gt;= 1; v; v &gt;&gt;= 1) seg[v] = std::gcd(seg[2 * v], seg[2 * v + 1]);
+    }
+    void add(int l, int r, ll x) { bump(l, x); bump(r + 1, -x); }          // [l, r] += x
+    ll gcd_query(int l, int r) {                                          // НОД на [l, r]
+        ll g = llabs(bit.pref(l + 1));                // a_l
+        ll res = 0;
+        for (int lo = l + 1 + sz, hi = r + 1 + sz; lo &lt; hi; lo &gt;&gt;= 1, hi &gt;&gt;= 1) {
+            if (lo &amp; 1) res = std::gcd(res, seg[lo++]);
+            if (hi &amp; 1) res = std::gcd(res, seg[--hi]);
+        }
+        return std::gcd(g, res);
+    }
+};</pre>
+
+<h3 data-tc="3:36:17">Наибольшая общая подпоследовательность двух перестановок</h3>
+<p><ts t="3:36:17"/> <strong>Задача.</strong> Даны две перестановки; найти длину их наибольшей общей подпоследовательности быстрее, чем за квадрат (<ts t="3:36:17"/>–<ts t="3:36:44"/>). Для обычных массивов за квадрат умеем, но у перестановок все элементы различны.</p>
+<p><ts t="3:36:52"/> <strong>Сведение к НВП.</strong> Для каждого числа из первой перестановки запоминаем его позицию. Идём по второй перестановке и заменяем каждое число на его позицию в первой; получается последовательность позиций. Общая подпоследовательность — это те числа, которые стоят в одном порядке в обеих перестановках, то есть <strong>возрастающая подпоследовательность</strong> в новой последовательности (<ts t="3:37:07"/>–<ts t="3:42:25"/>). Ответ — длина НВП (<ts t="3:41:53"/>–<ts t="3:42:34"/>).</p>
+<p><ts t="3:42:34"/> <strong>НВП через Фенвика.</strong> Динамика: $d_p$ — длина лучшей возрастающей цепочки, оканчивающейся на значении $p$. При приходе нового значения $p$ берём максимум $d$ на префиксе $[0,p-1]$ и записываем в ячейку $p$ значение «максимум $+1$» (<ts t="3:43:02"/>–<ts t="3:43:51"/>). Требуются «максимум на префиксе» и «присвоить в точке», причём новые значения в ячейках только <strong>возрастают</strong> — этого достаточно, чтобы вместо суммы в дереве Фенвика хранить максимум (<ts t="3:43:40"/>–<ts t="3:44:34"/>). Если бы значение в ячейке могло уменьшиться, пересчитать накопленные максимумы было бы нельзя.</p>
+<pre class="cpp">int lcs_of_permutations(const vector&lt;int&gt;&amp; p, const vector&lt;int&gt;&amp; q) {   // значения 0..n-1
+    int n = p.size();
+    vector&lt;int&gt; pos(n);
+    for (int i = 0; i &lt; n; i++) pos[p[i]] = i + 1;
+    FenwickMax f(n);
+    int best = 0;
+    for (int x : q) {                                 // идём по q, для каждого числа берём его позицию в p
+        int len = f.get(pos[x] - 1) + 1;              // длина лучшей цепочки, кончающейся левее в p
+        f.upd(pos[x], len);
+        best = max(best, len);
+    }
+    return best;
+}</pre>
+<div class="own"><b>Проверка.</b> Ответ сверен с динамикой за квадрат на 300 случайных парах перестановок.</div>
+
+<h3 data-tc="3:44:50">Прибавление на отрезке и сумма на отрезке на Фенвике</h3>
+<p><ts t="3:44:50"/> <strong>Задача.</strong> $+= x$ на отрезке и сумма на отрезке — обычно решается деревом отрезков с <code>push</code>. Ведущий называет задачу «мозговзрывающей»: нужно обойтись деревом Фенвика (<ts t="3:44:50"/>–<ts t="3:45:44"/>). Если убрать любую из двух операций, задача легко решается разностным массивом; обе сразу — нет (<ts t="3:45:44"/>–<ts t="3:46:02"/>).</p>
+<p><ts t="3:46:34"/> Пусть $d$ — разностный массив ($d_j=a_j-a_{j-1}$). Сумма на отрезке — разность двух префиксов (<ts t="3:47:07"/>–<ts t="3:47:31"/>). Сумма первых $r$ элементов:</p>
+<div class="formula">$\displaystyle\sum_{i=1}^{r}a_i=\sum_{i=1}^{r}\sum_{j=1}^{i}d_j=\sum_{j=1}^{r}d_j\,(r-j+1)=(r+1)\sum_{j=1}^{r}d_j-\sum_{j=1}^{r}j\,d_j$</div>
+<p><ts t="3:47:36"/> Элемент $d_j$ войдёт в сумму столько раз, сколько $i$ лежат на $[j,r]$ (<ts t="3:48:47"/>–<ts t="3:49:21"/>). Получаем две суммы по префиксу: одна по $d_j$, другая по $j\,d_j$ — <strong>два дерева Фенвика</strong> (<ts t="3:49:26"/>–<ts t="3:49:55"/>). Прибавление $x$ на $[l,r]$ — две точечные правки разностного массива в обоих деревьях (<ts t="3:49:55"/>).
+<pre class="cpp">// S(r) = sum_{j&lt;=r} d_j (r - j + 1) = (r + 1) * sum d_j  -  sum j * d_j
+struct RangeFenwick {
+    Fenwick b1, b2;
+    RangeFenwick(int n) : b1(n + 1), b2(n + 1) {}
+    void upd(int i, ll x) { b1.add(i, x); b2.add(i, x * i); }
+    void add(int l, int r, ll x) { upd(l, x); upd(r + 1, -x); }       // [l, r] += x, индексы с 1
+    ll pref(int r) { return (r + 1) * b1.pref(r) - b2.pref(r); }
+    ll get(int l, int r) { return pref(r) - pref(l - 1); }
+};</pre>
+<div class="own"><b>Проверка.</b> Формулу и код проверили на случайных операциях против прямого подсчёта.</div>
+
+<h3 data-tc="3:50:43">Дерево отрезков без <code>push</code></h3>
+<p><ts t="3:50:43"/> Ещё один способ решить ту же задачу. В массовых операциях обычно есть массив накопленных изменений (у нас — сколько нужно прибавить по поддереву), и функция <code>push</code> отправляет их вниз (<ts t="3:50:52"/>–<ts t="3:51:57"/>). Вызывать <code>push</code> на каждом шаге бывает дорого (в одной задаче с модулем и тяжёлой арифметикой это было причиной ТЛ) — можно <strong>не проталкивать</strong> изменения вниз (<ts t="3:52:05"/>–<ts t="3:52:41"/>, <ts t="3:56:34"/>–<ts t="3:57:09"/>).</p>
+<ul>
+<li><ts t="3:53:05"/> В вершине $v$ храним $\mathrm{mod}_v$ — сколько нужно добавить <em>всем</em> элементам поддерева (изменения, которые на ней остановились) и $\mathrm{sum}_v$ — сумма на поддереве <em>с учётом всех изменений внутри поддерева</em>, но без тех, что лежат на пути к корню (<ts t="3:53:14"/>–<ts t="3:54:22"/>).</li>
+<li><ts t="3:54:29"/> Обновление: разбиваем отрезок на накрытые вершины, добавляем $x$ в $\mathrm{mod}$ и $x\cdot\text{длина}$ в $\mathrm{sum}$; поднимаясь вверх, пересчитываем $\mathrm{sum}_v=\mathrm{sum}_{l}+\mathrm{sum}_{r}+\mathrm{mod}_v\cdot\text{длина}_v$ (<ts t="3:54:29"/>–<ts t="3:55:08"/>).</li>
+<li><ts t="3:55:16"/> Запрос суммы: идём вниз как обычно; в каждой посещённой вершине добавляем $\mathrm{mod}_v\cdot(\text{пересечение отрезка вершины с запросом})$ — вклад модификатора, который не спускали вниз (<ts t="3:55:16"/>–<ts t="3:56:29"/>).</li>
+</ul>
+<p><ts t="3:57:12"/> Отличие от обычного: с <code>push</code> изменение рано или поздно спускается вниз и «пропадает» из вершины, здесь оно остаётся в ней навсегда и учитывается каждый раз при пересчёте суммы предка и при запросе (<ts t="3:57:18"/>–<ts t="3:58:38"/>).</p>
+<pre class="cpp">struct NoPushTree {
+    int n; vector&lt;ll&gt; sum, mod;       // sum[v] учитывает все изменения внутри поддерева v; mod[v] — прибавка всем элементам v
+    NoPushTree(const vector&lt;ll&gt;&amp; a) : n(a.size()), sum(4 * a.size(), 0), mod(4 * a.size(), 0) { build(1, 0, n, a); }
+    void build(int v, int l, int r, const vector&lt;ll&gt;&amp; a) {
+        if (r - l == 1) { sum[v] = a[l]; return; }
+        int m = (l + r) / 2;
+        build(2 * v, l, m, a); build(2 * v + 1, m, r, a);
+        sum[v] = sum[2 * v] + sum[2 * v + 1];
+    }
+    void add(int v, int l, int r, int ql, int qr, ll x) {
+        if (qr &lt;= l || r &lt;= ql) return;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) { mod[v] += x; sum[v] += x * (r - l); return; }
+        int m = (l + r) / 2;
+        add(2 * v, l, m, ql, qr, x); add(2 * v + 1, m, r, ql, qr, x);
+        sum[v] = sum[2 * v] + sum[2 * v + 1] + mod[v] * (r - l);
+    }
+    ll get(int v, int l, int r, int ql, int qr) {
+        if (qr &lt;= l || r &lt;= ql) return 0;
+        if (ql &lt;= l &amp;&amp; r &lt;= qr) return sum[v];
+        int m = (l + r) / 2;
+        ll res = mod[v] * (min(r, qr) - max(l, ql));      // вклад модификатора, который не спускали вниз
+        return res + get(2 * v, l, m, ql, qr) + get(2 * v + 1, m, r, ql, qr);
+    }
+    void add(int l, int r, ll x) { add(1, 0, n, l, r, x); }
+    ll get(int l, int r) { return get(1, 0, n, l, r); }
+};</pre>
+<div class="note"><b>Когда работает.</b> <ts t="3:58:38"/> Приём подходит для операций, которые можно применять <em>в любом порядке и сворачивать в одно значение</em>: ведущие обсуждают, что нужны ассоциативность и коммутативность. Умножение матриц, где порядок запросов важен, так делать нельзя (<ts t="3:58:38"/>–<ts t="4:00:07"/>).</div>
+
+<h3 data-tc="4:00:10">Позиции $i$, для которых $\operatorname{mex}(a[i..R])=\max(a[i..R])+1$</h3>
+<p><ts t="4:00:18"/> <strong>Задача.</strong> Дан массив неотрицательных чисел и $Q$ запросов-отрезков $[L,R]$ (все запросы известны заранее). Ответ на запрос: сколько позиций $i\in[L,R]$ таких, что на суффиксе $a[i..R]$ минимальное неотрицательное число, которого там нет ($\operatorname{mex}$), равно максимуму на этом суффиксе плюс один (<ts t="4:00:18"/>–<ts t="4:01:56"/>, <ts t="4:24:44"/>–<ts t="4:25:29"/>).</p>
+<p><ts t="4:07:03"/> <strong>Переформулировка.</strong> Условие «$\operatorname{mex}=\max+1$» означает, что на суффиксе присутствуют <em>все</em> числа $0,1,\dots,\max$. Для неотрицательных чисел на суффиксе число различных значений <em>всегда не больше</em> $\max+1$ (возможные значения лежат в $[0,\max]$), а равенство достигается ровно когда присутствуют все (<ts t="4:09:14"/>–<ts t="4:11:42"/>, <ts t="4:15:41"/>–<ts t="4:16:35"/>). Поэтому условие равносильно $\max+1-\text{distinct}=0$ — а величина $\max+1-\text{distinct}$ неотрицательна, и «нулей» среди неотрицательных чисел можно считать как <strong>минимум и количество минимумов</strong> — ровно структура из задачи про прямоугольники (<ts t="4:13:09"/>–<ts t="4:16:52"/>). Ответ на запрос: возьмём минимум и количество минимумов на $[L,R]$; если минимум равен нулю — ответ равен количеству, иначе нулю (<ts t="4:16:35"/>–<ts t="4:17:04"/>).</p>
+<p><ts t="4:17:04"/> <strong>Заметаем $R$ слева направо.</strong> Поддерживаем массив $v_i=\max(a[i..R])+1-\text{distinct}(a[i..R])$ при шаге $R\to R+1$ и отвечаем на все запросы с этой правой границей (<ts t="4:17:11"/>–<ts t="4:17:31"/>). Новый элемент $x$ меняет две вещи:</p>
+<ul>
+<li><ts t="4:17:40"/> <strong>Число различных.</strong> Для суффиксов, начинающихся правее предыдущего вхождения $x$, число различных увеличивается на один; для остальных $x$ уже был. Значит, $v_i\mathrel{-}=1$ на $(\mathrm{prev}_x,\ R]$ (<ts t="4:17:40"/>–<ts t="4:18:46"/>).</li>
+<li><ts t="4:18:54"/> <strong>Максимум.</strong> Храним <strong>стек суффиксных максимумов</strong> (блоки подряд идущих $i$, у которых $\max(a[i..R])$ одинаков). При добавлении $x$ пока верхний блок имеет максимум $\le x$, снимаем его и на его отрезке прибавляем $x-\text{старый максимум}$; новая позиция получает блок с максимумом $x$ (<ts t="4:19:54"/>–<ts t="4:23:46"/>). Каждый блок добавляется и удаляется один раз, поэтому всего $O(n)$ обновлений дерева.</li>
+</ul>
+<figure class="viz"><svg viewBox="0 0 760 348" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="348" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">mex = max + 1 ⇔ max + 1 − distinct = 0, массив v для фиксированного R</text><text x="156" y="82" text-anchor="end" font-size="12" font-weight="400" fill="#9aa4b2">a[i]</text><rect x="170" y="60" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="216.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="270" y="60" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="316.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">0</text><rect x="370" y="60" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="416.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><rect x="470" y="60" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="516.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="570" y="60" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="616.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="156" y="132" text-anchor="end" font-size="12" font-weight="400" fill="#9aa4b2">max(a[i..R])</text><rect x="170" y="110" width="92" height="34" rx="6" fill="#1d4257" stroke="#58c4dd" stroke-width="2"/><text x="216.0" y="132.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="270" y="110" width="92" height="34" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="316.0" y="132.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><rect x="370" y="110" width="92" height="34" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="416.0" y="132.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><rect x="470" y="110" width="92" height="34" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="516.0" y="132.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="570" y="110" width="92" height="34" rx="6" fill="#3a2858" stroke="#c78bff" stroke-width="2"/><text x="616.0" y="132.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="156" y="182" text-anchor="end" font-size="12" font-weight="400" fill="#9aa4b2">distinct(a[i..R])</text><rect x="170" y="160" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="216.0" y="182.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">4</text><rect x="270" y="160" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="316.0" y="182.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">3</text><rect x="370" y="160" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="416.0" y="182.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><rect x="470" y="160" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="516.0" y="182.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="570" y="160" width="92" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="616.0" y="182.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="156" y="232" text-anchor="end" font-size="12" font-weight="400" fill="#9aa4b2">v = max + 1 − distinct</text><rect x="170" y="210" width="92" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="216.0" y="232.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">0</text><rect x="270" y="210" width="92" height="34" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="316.0" y="232.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">0</text><rect x="370" y="210" width="92" height="34" rx="6" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="416.0" y="232.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="470" y="210" width="92" height="34" rx="6" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="516.0" y="232.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><rect x="570" y="210" width="92" height="34" rx="6" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="616.0" y="232.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="216.0" y="52" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 0</text><text x="316.0" y="52" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 1</text><text x="416.0" y="52" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 2</text><text x="516.0" y="52" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 3</text><text x="616.0" y="52" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">i = 4</text><text x="380" y="282" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">стек блоков суффиксных максимумов: [0] (3), [1..2] (2), [3..4] (1)</text><text x="380" y="306" text-anchor="middle" font-size="13" font-weight="400" fill="#ffff00">новый x: v −= 1 на (prev(x), R]; блоки с max ≤ x сливаются, на них v += x − старый max</text><text x="380" y="330" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">ответ на [L, R]: минимум v и число минимумов; если минимум = 0, то ответ — это число</text></svg><figcaption>Зелёные клетки — позиции, для которых на суффиксе есть все числа от 0 до максимума. Нулей среди неотрицательных v ищем как «минимум и число минимумов».</figcaption></figure>
+<p><ts t="4:23:46"/> Итого $O((n+Q)\log n)$. Ведущий для надёжности пересказывает идею второй раз (<ts t="4:24:44"/>–<ts t="4:29:11"/>).</p>
+<pre class="cpp">// (то же самое: mex(a[i..R]) = max(a[i..R]) + 1). Оффлайн, заметаем R слева направо.
+vector&lt;int&gt; count_full_suffixes(const vector&lt;int&gt;&amp; a, const vector&lt;pair&lt;int, int&gt;&gt;&amp; qs) {   // запросы [L, R], с 0
+    int n = a.size();
+    MinCount tree(vector&lt;ll&gt;(n, 1));                // val[i] = max(a[i..R]) + 1 - (число различных в a[i..R])
+    vector&lt;vector&lt;pair&lt;int, int&gt;&gt;&gt; byR(n);
+    for (int i = 0; i &lt; (int)qs.size(); i++) byR[qs[i].second].push_back({qs[i].first, i});
+    vector&lt;int&gt; ans(qs.size(), 0);
+    map&lt;int, int&gt; last;                             // последнее вхождение числа
+    vector&lt;array&lt;int, 3&gt;&gt; st;                       // стек суффиксных максимумов: {начало, конец, значение}
+    for (int R = 0; R &lt; n; R++) {
+        int x = a[R];
+        auto it = last.find(x);
+        int prevPos = it == last.end() ? -1 : it-&gt;second;
+        last[x] = R;
+        tree.update(prevPos + 1, R + 1, -1);        // +1 различное для всех левых границ правее прошлого вхождения
+        int start = R;
+        while (!st.empty() &amp;&amp; st.back()[2] &lt;= x) {  // поглощаем блоки, где максимум был не больше x
+            auto [s, e, v] = st.back(); st.pop_back();
+            tree.update(s, e + 1, x - v);           // старый максимум v заменяется на x
+            start = s;
+        }
+        tree.update(R, R + 1, x + 1);               // новая позиция: максимум x и константа +1
+        st.push_back({start, R, x});
+        for (auto [L, id] : byR[R]) {
+            auto [mn, c] = tree.query(L, R + 1);
+            ans[id] = mn == 0 ? (int)c : 0;
+        }
+    }
+    return ans;
+}</pre>
+<div class="own"><b>Проверка.</b> Для новой позиции в коде прибавляется $x+1$ (максимум плюс константа), а «$-1$ за новое различное» применяется ко всему промежутку $(\mathrm{prev}_x,R]$ — в сумме для позиции $R$ получается $x$. Ответы сверены с перебором $\operatorname{mex}$ и максимума на 500 случайных массивах.</div>
+
+<h3 data-tc="4:29:21">Разбиения на отрезки со строго возрастающим OR</h3>
+<p><ts t="4:29:21"/> <strong>Задача.</strong> Дан массив из $n$ чисел. Сколько существует способов разбить его на подряд идущие отрезки так, чтобы побитовое OR на отрезках <em>строго возрастало</em> (<ts t="4:29:32"/>–<ts t="4:30:34"/>)? Нужно быстрее, чем за квадрат (<ts t="4:30:34"/>–<ts t="4:30:42"/>).</p>
+<p><ts t="4:31:03"/> <strong>Ключевой факт.</strong> Если зафиксировать правый конец $i$ и двигать левый, то значение OR только растёт, причём каждый раз, когда оно меняется, в нём включается новый бит; значит, <em>различных значений OR на отрезках с общим правым концом не больше $\log A$</em>. Поэтому пар «правый конец — значение OR» в сумме $O(n\log A)$, хотя всех отрезков $O(n^2)$ (<ts t="4:32:46"/>–<ts t="4:34:57"/>, <ts t="4:43:30"/>–<ts t="4:44:02"/>).</p>
+<figure class="viz"><svg viewBox="0 0 760 360" role="img" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs><rect x="0" y="0" width="760" height="360" rx="14" fill="#141a24"/><text x="380" y="24" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">OR строго возрастает: группы начал и точки (j, y) с весами dp</text><rect x="40" y="60" width="56" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="68.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">4</text><text x="68.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">1</text><rect x="102" y="60" width="56" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="130.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="130.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">2</text><rect x="164" y="60" width="56" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="192.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">2</text><text x="192.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">3</text><rect x="226" y="60" width="56" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="254.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">8</text><text x="254.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">4</text><rect x="288" y="60" width="56" height="34" rx="6" fill="#1E2836" stroke="#3b4a63" stroke-width="1.5"/><text x="316.0" y="82.25" text-anchor="middle" font-size="15" font-weight="400" fill="#dfe7f1">1</text><text x="316.0" y="110" text-anchor="middle" font-size="11" font-weight="400" fill="#9aa4b2">5</text><rect x="40" y="128" width="56" height="28" rx="6" fill="#4f1f1b" stroke="#fc6255" stroke-width="2"/><text x="68.0" y="146.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">15</text><rect x="102" y="128" width="56" height="28" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="130.0" y="146.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">11</text><rect x="164" y="128" width="56" height="28" rx="6" fill="#53300a" stroke="#ff8c1a" stroke-width="2"/><text x="192.0" y="146.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">11</text><rect x="226" y="128" width="56" height="28" rx="6" fill="#4d4d00" stroke="#ffff00" stroke-width="2"/><text x="254.0" y="146.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">9</text><rect x="288" y="128" width="56" height="28" rx="6" fill="#27431f" stroke="#83c167" stroke-width="2"/><text x="316.0" y="146.55" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">1</text><text x="195.0" y="52" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">a</text><text x="175.0" y="174" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">OR(a[p..5]) для начал p — не больше log A значений</text><rect x="400" y="50" width="330" height="230" rx="8" fill="#1E2836" stroke="#3b4a63"/><rect x="520" y="150" width="110" height="130" fill="#4d4d00" stroke="#ffff00" stroke-width="2" stroke-dasharray="6 4" opacity="0.9"/><circle cx="454" cy="89" r="4" fill="#58c4dd"/><circle cx="488" cy="158" r="4" fill="#58c4dd"/><circle cx="522" cy="254" r="4" fill="#58c4dd"/><circle cx="556" cy="144" r="4" fill="#58c4dd"/><circle cx="556" cy="130" r="4" fill="#58c4dd"/><circle cx="556" cy="221" r="4" fill="#58c4dd"/><circle cx="590" cy="221" r="4" fill="#58c4dd"/><circle cx="624" cy="214" r="4" fill="#58c4dd"/><circle cx="658" cy="106" r="4" fill="#58c4dd"/><circle cx="658" cy="176" r="4" fill="#58c4dd"/><circle cx="658" cy="229" r="4" fill="#58c4dd"/><circle cx="692" cy="251" r="4" fill="#58c4dd"/><circle cx="692" cy="196" r="4" fill="#58c4dd"/><text x="565.0" y="298" text-anchor="middle" font-size="12" font-weight="400" fill="#9aa4b2">j  →</text><text x="414" y="62" text-anchor="start" font-size="12" font-weight="400" fill="#9aa4b2">y ↑</text><text x="575" y="142" text-anchor="middle" font-size="12" font-weight="400" fill="#ffff00">j ∈ [l_x, r_x],  y &lt; x</text><text x="380" y="318" text-anchor="middle" font-size="13" font-weight="400" fill="#dfe7f1">dp[i][x] = сумма весов в прямоугольнике = F(r_x, x) − F(l_x − 1, x)</text><text x="380" y="342" text-anchor="middle" font-size="13" font-weight="400" fill="#83c167">заметаем по j, в Фенвике по y храним суммы добавленных точек</text></svg><figcaption>Для фиксированного правого конца значений OR не больше log A, и каждому соответствует промежуток j. Состояния динамики — точки плоскости, запрос — прямоугольник, считаем оффлайн заметающей прямой.</figcaption></figure>
+<p><ts t="4:35:13"/> <strong>Динамика «в лоб».</strong> $dp[i][x]$ — число разбиений префикса длины $i$, у которых последний отрезок имеет OR, равный $x$. Тогда $dp[i][x]=\sum_{j<i,\ \mathrm{OR}(j+1..i)=x}\ \sum_{y<x} dp[j][y]$ (<ts t="4:35:20"/>–<ts t="4:37:38"/>). Проблемы: $x$ принимает до $A$ значений (память $nA$), и есть «индикатор» $\mathrm{OR}(j+1..i)=x$ (<ts t="4:37:52"/>–<ts t="4:39:15"/>).</p>
+<ul>
+<li><ts t="4:39:15"/> Для данного $i$ значения $x$ — это не более $\log A$ различных OR, и каждому соответствует <em>промежуток</em> значений $j$ (OR монотонен), так что индикатор заменяется суммой по промежутку $j\in[l_x,r_x]$; для данного $i$ эти промежутки можно найти, поддерживая список групп при добавлении элемента (<ts t="4:39:36"/>–<ts t="4:40:51"/>).</li>
+<li><ts t="4:41:00"/> Само $dp$ хранится только для значений $x$, реально встречающихся для данного префикса, то есть $O(n\log A)$ памяти (<ts t="4:38:34"/>–<ts t="4:38:58"/>).</li>
+</ul>
+<p><ts t="4:41:00"/> <strong>Геометрия.</strong> Нарисуем каждое состояние $(j,y)$ как точку на плоскости с весом $dp[j][y]$. Тогда $dp[i][x]$ — сумма весов в <em>прямоугольнике</em> $j\in[l_x,r_x]$, $y<x$ (<ts t="4:41:34"/>–<ts t="4:43:23"/>). Точек и запросов по $n\log A$ штук.</p>
+<p><ts t="4:44:10"/> <strong>Заметающая прямая.</strong> Идём по $j$ слева направо; в дереве (по значению $y$) храним суммы уже добавленных точек. Прямоугольный запрос сумм — это разность двух префиксных по $j$: $F(r_x,x)-F(l_x-1,x)$, где $F(t,x)=\sum_{j\le t}\sum_{y<x}dp[j][y]$ (<ts t="4:45:14"/>–<ts t="4:46:07"/>). К моменту, когда мы доходим до $i$, значения $dp[i][\cdot]$ уже посчитаны: порог запроса строго меньше $i$ (<ts t="4:46:07"/>–<ts t="4:46:55"/>). Значения $y$ можно сжать до чисел $0,1,\dots$ — тогда дерево на $O(n\log A)$ ячеек (<ts t="4:47:20"/>–<ts t="4:48:03"/>); без сжатия — неявное дерево (<ts t="4:47:09"/>–<ts t="4:47:20"/>). Время $O(n\log A\log n)$. Ответ — сумма $dp[n][\cdot]$ (<ts t="4:48:19"/>–<ts t="4:48:31"/>).</p>
+<pre class="cpp">int or_partitions(const vector&lt;int&gt;&amp; a) {
+    int n = a.size();
+    struct Grp { int x, lo, hi; };                  // OR(a[p..i]) = x для всех начал p в [lo, hi] (индексы с 1)
+    vector&lt;vector&lt;Grp&gt;&gt; g(n + 1);
+    vector&lt;Grp&gt; cur;
+    for (int i = 1; i &lt;= n; i++) {
+        for (auto&amp; e : cur) e.x |= a[i - 1];
+        cur.push_back({a[i - 1], i, i});
+        vector&lt;Grp&gt; nw;                             // склеиваем соседние группы с одинаковым OR; их не более log A
+        for (auto&amp; e : cur) {
+            if (!nw.empty() &amp;&amp; nw.back().x == e.x) nw.back().hi = e.hi; else nw.push_back(e);
+        }
+        cur = nw; g[i] = cur;
+    }
+    vector&lt;int&gt; xs = {-1};                          // -1 — виртуальное «предыдущее значение» для первого отрезка
+    for (int i = 1; i &lt;= n; i++) for (auto&amp; e : g[i]) xs.push_back(e.x);
+    sort(xs.begin(), xs.end()); xs.erase(unique(xs.begin(), xs.end()), xs.end());
+    auto id = [&amp;](int x) { return int(lower_bound(xs.begin(), xs.end(), x) - xs.begin()) + 1; };
+    struct Qr { int i, k, sign; };                  // для dp[i][g[i][k].x] нужно прибавить sign * F(t, x)
+    vector&lt;vector&lt;Qr&gt;&gt; at(n + 1);                   // at[t]: запросы с порогом t
+    vector&lt;vector&lt;ll&gt;&gt; dp(n + 1);
+    for (int i = 1; i &lt;= n; i++) {
+        dp[i].assign(g[i].size(), 0);
+        for (int k = 0; k &lt; (int)g[i].size(); k++) {
+            at[g[i][k].hi - 1].push_back({i, k, +1});                       // j &lt;= hi - 1
+            if (g[i][k].lo - 2 &gt;= 0) at[g[i][k].lo - 2].push_back({i, k, -1});  // j &lt;= lo - 2
+        }
+    }
+    Fenwick f(xs.size());                           // по значению OR храним сумму dp[j][y]
+    for (int t = 0; t &lt; n; t++) {
+        if (t == 0) f.add(id(-1), 1);               // dp[0][-1] = 1
+        else for (int k = 0; k &lt; (int)g[t].size(); k++) f.add(id(g[t][k].x), dp[t][k] % MOD);
+        for (auto&amp; q : at[t]) {
+            ll v = f.pref(id(g[q.i][q.k].x) - 1) % MOD;                      // сумма по y &lt; x
+            dp[q.i][q.k] = ((dp[q.i][q.k] + q.sign * v) % MOD + MOD) % MOD;
+        }
+    }
+    ll ans = 0;
+    for (ll v : dp[n]) ans = (ans + v) % MOD;
+    return ans;
+}</pre>
+<div class="own"><b>Проверка.</b> Для первого отрезка добавлен виртуальный столбец $y=-1$ с единицей (чтобы любой OR подходил). Подсчёт сверен с перебором всех $2^{n-1}$ разбиений на 500 случайных массивах $n\le 14$.</div>
+
+<div class="note"><b>Про память и время.</b> <ts t="4:49:36"/>–<ts t="4:55:24"/> Ведущие отвечают на вопрос участника, упирающегося в ограничения по памяти: события не нужно хранить все, достаточно дерева на $O(n)$ и последнего слоя из $\log A$ чисел; для скорости полезно сжать координаты. Если вектор векторов не помещается, можно один плоский массив и указатели. Про уменьшение типов: из-за выравнивания структура из <code>short</code> и <code>char</code> всё равно занимает кратно двум байтам, а приведение указателей на невыровненный адрес — неопределённое поведение. Совет участнику с ТЛ и ML: заменить дерево отрезков на дерево Фенвика — по памяти это даёт около 20 раз (<ts t="4:54:56"/>–<ts t="4:55:29"/>).</div>
+<div class="note"><b>Конец занятия.</b> <ts t="4:48:41"/>–<ts t="4:49:16"/> Две оставшиеся задачи ведущий переносит на занятие по динамическому программированию. Последние минуты (<ts t="4:55:35"/>–<ts t="4:56:15"/>) — обсуждение, что частичное каскадирование — «теоретический изыск»: оно красиво асимптотически, но на практике не всегда выигрывает.</div>
