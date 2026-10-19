@@ -256,7 +256,12 @@ def main():
             prev = p["lessons"][i - 1] if i else None
             nxt = p["lessons"][i + 1] if i + 1 < len(p["lessons"]) else None
             l["out"].parent.mkdir(parents=True, exist_ok=True)
-            l["out"].write_text(page(l["meta"], l["body"], prev, nxt))
+            html_ = page(l["meta"], l["body"], prev, nxt)
+            fn = l["out"].name
+            html_ = html_.replace('<button type="button" id="theme-toggle"',
+                f'<a class="back dl" href="{fn}" download="{fn}" title="Скачать конспект одним HTML-файлом, откроется без интернета">⬇ Скачать конспект</a><button type="button" id="theme-toggle"', 1)
+            html_ = html_.replace("</head>", '<style id="dlstyle">.top{flex-wrap:wrap}.top .dl{margin-left:auto;margin-right:8px;white-space:nowrap}</style></head>', 1)
+            l["out"].write_text(html_)
             print("built", l["href"], l["out"].stat().st_size // 1024, "KB")
     (ROOT / "index.html").write_text(index([{"pname": p["pname"], "lessons": [{k: l[k] for k in ("n", "title", "subtitle", "href")} for l in p["lessons"]]} for p in plist]))
     print("built index.html")
